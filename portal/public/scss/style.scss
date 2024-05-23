@@ -1,0 +1,22 @@
+/*============================================ 
+# Template Name: Oddsx
+# Version: 1.0
+# Date: 02-03-2024
+# Author: 
+# Author URI: 
+# Description: Oddsx Sports Betting Website HTML Template
+============================================*/
+
+// Bootstrap
+@import "bootstrap.scss";
+// Scss main
+@import "main/_variable";
+@import "main/_mixins";
+@import "main/_typography";
+@import "main/_global";
+
+// Scss Pages
+@import "pages/_navbar";
+@import "pages/_footer";
+@import "pages/_section";
+@import "pages/_index.scss";
