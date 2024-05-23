@@ -1,11 +1,46 @@
+"use client";
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import { Navigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import { useAuth } from '../../../contexts/authContext'
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
+import { doCreateUserWithEmailAndPassword, doSignInWithGoogle } from '../../../firebase/auth'
 
-export default function CreateAcount() {
+const CreateAcount = () => {
+
+
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [isRegistering, setIsRegistering] = useState(false)
+
+
+    const { userLoggedIn } = useAuth() || {};
+    const onSubmit = async (e: { preventDefault: () => void; }) => {
+        e.preventDefault()
+        if (!isRegistering) {
+            setIsRegistering(true)
+            await doCreateUserWithEmailAndPassword(email, password)
+        }
+    }
+
+    const onGoogleSignIn = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        e.preventDefault();
+        if (!isRegistering) {
+            setIsRegistering(true)
+
+            try {
+                await doSignInWithGoogle()
+                window.location.replace('/dashboard');
+            } catch (e) {
+                console.log(e)
+            }
+
+        }
+    }
     return (
         <section className="login_section pt-120 p3-bg">
+            {userLoggedIn && (<Navigate to={'/dashboard'} replace={true} />)}
             <div className="container-fluid">
                 <div className="row justify-content-between align-items-center">
                     <div className="col-6">
@@ -22,18 +57,18 @@ export default function CreateAcount() {
                                         <p className="mb-10 mb-md-15">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
                                             aliquet justo magna.</p>
                                         <div className="login_section__form">
-                                            <form>
+                                            <form onSubmit={onSubmit}>
                                                 <div className="mb-5 mb-md-6">
                                                     <input className="n11-bg" name="Input-2" data-name="Input 2" placeholder="Name"
                                                         type="text" id="Input-2" data-listener-added_da55015d="true" />
                                                 </div>
                                                 <div className="mb-5 mb-md-6">
                                                     <input className="n11-bg" name="Input-1" data-name="Input 1" placeholder="Email"
-                                                        type="email" id="Input" />
+                                                        type="email" id="Input" value={email} onChange={(e) => { setEmail(e.target.value) }} />
                                                 </div>
                                                 <div className="mb-5 mb-md-6">
                                                     <input className="n11-bg" name="Input-3" data-name="Input 3" placeholder="Password"
-                                                        type="password" id="Input-3" />
+                                                        type="password" id="Input-3" value={password} onChange={(e) => { setPassword(e.target.value) }} />
                                                 </div>
                                                 <div className="d-flex align-items-center flex-wrap flex-sm-nowrap gap-2 mb-6">
                                                     <input type="checkbox" />
@@ -51,9 +86,7 @@ export default function CreateAcount() {
                                                 <Link href="#" className="n11-bg px-3 py-2 rounded-5">
                                                     <IconBrandTwitterFilled className="ti ti-brand-twitter-filled fs-four" />
                                                 </Link>
-                                                <Link href="#" className="n11-bg px-3 py-2 rounded-5">
-                                                    <IconBrandGoogle className="ti ti-brand-google fs-four fw-bold " />
-                                                </Link>
+                                                <Link href="#" onClick={(e) => { onGoogleSignIn(e) }} className="n11-bg px-3 py-2 rounded-5"><IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" /></Link>
                                             </div>
                                         </div>
                                         <span className="d-center gap-1">Already a member? <Link className="g1-color" href="/login">Login</Link></span>
@@ -68,3 +101,5 @@ export default function CreateAcount() {
         </section>
     )
 }
+
+export default CreateAcount
