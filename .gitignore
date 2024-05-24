@@ -1,3 +1,15 @@
 /portal/node_modules
 
 /node_modules
+
+/portal/.next
+
+/.next
+
+firebase-debug.log
+.firebaserc
+
+logs
+*.log
+
+package-lock.json

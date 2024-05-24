@@ -20,7 +20,13 @@ const CreateAcount = () => {
         e.preventDefault()
         if (!isRegistering) {
             setIsRegistering(true)
-            await doCreateUserWithEmailAndPassword(email, password)
+            try {
+                await doCreateUserWithEmailAndPassword(email, password)
+                window.location.replace('/dashboard');
+            } catch (e) {
+                console.log(e)
+            }
+
         }
     }
 

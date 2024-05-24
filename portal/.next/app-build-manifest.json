@@ -12,20 +12,15 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/(common)/login/page": [
+    "/(common)/create-acount/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(common)/login/page.js"
+      "static/chunks/app/(common)/create-acount/page.js"
     ],
     "/(common)/dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(common)/dashboard/page.js"
-    ],
-    "/(common)/create-acount/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(common)/create-acount/page.js"
     ]
   }
 }
