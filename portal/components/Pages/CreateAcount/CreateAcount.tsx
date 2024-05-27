@@ -13,17 +13,20 @@ const CreateAcount = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isRegistering, setIsRegistering] = useState(false)
+    const [message, setMessage] = useState('');
 
 
     const { userLoggedIn } = useAuth() || {};
     const onSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault()
+        setMessage("");
         if (!isRegistering) {
             setIsRegistering(true)
             try {
                 await doCreateUserWithEmailAndPassword(email, password)
                 window.location.replace('/dashboard');
             } catch (e) {
+                setMessage('User Already Registered! Please Log in');
                 console.log(e)
             }
 
@@ -63,6 +66,8 @@ const CreateAcount = () => {
                                         <p className="mb-10 mb-md-15">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
                                             aliquet justo magna.</p>
                                         <div className="login_section__form">
+                                            {message && <p className="message">{message}</p>}
+
                                             <form onSubmit={onSubmit}>
                                                 <div className="mb-5 mb-md-6">
                                                     <input className="n11-bg" name="Input-2" data-name="Input 2" placeholder="Name"

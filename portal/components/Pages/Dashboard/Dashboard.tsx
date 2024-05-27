@@ -8,12 +8,31 @@ import { Tab } from '@headlessui/react';
 import WithdrawalAmount from './WithdrawalAmount';
 import Link from 'next/link';
 import { dashboardTabs } from '@/public/data/dashTabs';
+import { doSignOut } from '../../../firebase/auth';
 
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
 
+    // Adding Logout Function
+
+    const handleLogout = async () => {
+        try {
+            await doSignOut();
+            window.location.replace('/login');
+            console.log('Logged out successfully');
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
+
+
     const handleClick = (itemName: any) => {
-        setActiveItem(itemName);
+
+        if (itemName.tabname === 'Log out') {
+            handleLogout();
+        } else {
+            setActiveItem(itemName);
+        }
     };
     const getItemStyle = (itemName: any) => {
         return {
@@ -473,7 +492,8 @@ export default function Dashboard() {
                                                     </div>
                                                 </Tab.Panel>
                                                 <Tab.Panel>
-                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                    {/* <div onClick={handleLogout} style={{ cursor: 'pointer' }} className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8" >
+
                                                         <div
                                                             className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
                                                             <IconBellRinging width={28} height={28} className="ti ti-bell-ringing fs-four" />
@@ -559,7 +579,7 @@ export default function Dashboard() {
                                                                 </label>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div> */}
                                                 </Tab.Panel>
                                             </Tab.Panels>
                                         </div>

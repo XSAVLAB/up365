@@ -4,8 +4,11 @@ import Link from 'next/link'
 import { Navigate } from 'react-router-dom'
 import React, { useState } from 'react'
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
-import { doSignInWithEmailAndPassword, doSignInWithGoogle } from '../../../firebase/auth'
+import { doSignInWithEmailAndPassword, doSignInWithGoogle, doPasswordReset } from '../../../firebase/auth'
 import { useAuth } from '../../../contexts/authContext'
+// import { fetchSignInMethodsForEmail } from 'firebase/auth';
+// import { auth } from '../../../firebase/firebase';
+
 
 const Login = () => {
 
@@ -14,16 +17,22 @@ const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isSigningIn, setIsSigningIn] = useState(false)
+    const [message, setMessage] = useState('');
 
     const onSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
+        setMessage("");
+        if (!email || !password) {
+            setMessage('Email address and Password is required');
+            return;
+        }
         if (!isSigningIn) {
             setIsSigningIn(true)
             try {
                 await doSignInWithEmailAndPassword(email, password)
                 window.location.replace('/dashboard');
             } catch (e) {
-                console.log("Invalid Credentials! " + e)
+                setMessage('Invalid Credentials!');
             }
         }
     }
@@ -42,6 +51,28 @@ const Login = () => {
 
         }
     }
+
+    const handleForgotPassword = async () => {
+        setMessage('');
+        if (!email) {
+            setMessage('Email address is required');
+            return;
+        }
+        try {
+            // const signInMethods = await getSignInMethodsForEmail(email);
+            // console.log('Sign-in methods:', signInMethods);
+            // if (signInMethods.length === 0) {
+            //     setMessage('No user found with this email address.');
+            //     return;
+            // }
+            await doPasswordReset(email);
+            setMessage('Password reset email sent!');
+        } catch (e) {
+            setMessage('Error sending password reset email!');
+        }
+    };
+
+
 
     return (
 
@@ -64,6 +95,7 @@ const Login = () => {
                                         <p className="mb-10 mb-md-15">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
                                             aliquet justo magna.</p>
                                         <div className="login_section__form">
+                                            {message && <p className="message">{message}</p>}
                                             <form onSubmit={onSubmit}>
                                                 <div className="mb-5 mb-md-6">
                                                     <input className="n11-bg" name="Input-1" data-name="Input 1" placeholder="Email"
@@ -77,7 +109,7 @@ const Login = () => {
                                                         value={password} onChange={(e) => { setPassword(e.target.value) }}
                                                     />
                                                 </div>
-                                                <button className="cmn-btn px-5 py-3 mb-6 w-100" type="submit">Sign Up Now</button>
+                                                <button className="cmn-btn px-5 py-3 mb-6 w-100" type="submit">Login</button>
                                             </form>
                                         </div>
                                         <div className="login_section__socialmedia text-center mb-6">
@@ -90,6 +122,9 @@ const Login = () => {
                                                 <Link href="#" onClick={(e) => { onGoogleSignIn(e) }} className="n11-bg px-3 py-2 rounded-5"><IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" /></Link>
                                             </div>
                                         </div>
+                                        <span className="d-center gap-1">
+                                            <button className="g1-color" onClick={handleForgotPassword}>Forgot Password?</button>
+                                        </span>
                                         <span className="d-center gap-1">Create your account? <Link className="g1-color" href="/create-acount">Sing Up Now</Link></span>
                                     </div>
                                 </div>

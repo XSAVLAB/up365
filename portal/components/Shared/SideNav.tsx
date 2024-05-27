@@ -4,19 +4,32 @@ import Link from 'next/link'
 import { IconStarFilled } from '@tabler/icons-react';
 import { popularData, otherSportsData } from '@/public/data/navData';
 import { usePathname } from 'next/navigation';
+// import { useAuth } from '@/contexts/authContext';
 
 export default function SideNav() {
     const path = usePathname()
+    // const { userLoggedIn, currentUser } = useAuth();
+
+
     return (
         <>
             <ul className="secend-actives bg1-color rounded-5 d-flex flex-column gap-5 mb-5">
                 <li className="active">
-                    <Link href="/" className="d-flex align-items-center gap-2"><i
-                        className="ti ti-brand-google-home n5-color fs-five"></i> Home</Link>
+
+                    {/* {userLoggedIn ? (
+                        <Link href="/dashboard" className="d-flex align-items-center gap-2"><i
+                            className="ti ti-brand-google-home n5-color fs-five"></i> Home</Link>
+                    ) : (
+                        <Link href="/" className="d-flex align-items-center gap-2"><i
+                            className="ti ti-brand-google-home n5-color fs-five"></i> Home</Link>
+                    )} */}
+
+                    {/* <Link href="/" className="d-flex align-items-center gap-2"><i
+                        className="ti ti-brand-google-home n5-color fs-five"></i> Home</Link> */}
                 </li>
                 <li className="active">
                     <Link href="#" className="d-flex align-items-center gap-2"><i
-                        className="ti ti-garden-cart n5-color fs-five"></i>
+                        className="ti ti-garden-cart n5-color fs-fidve"></i>
                         Marketplace</Link>
                 </li>
                 <li className="active">
@@ -47,7 +60,7 @@ export default function SideNav() {
             </ul>
             <hr className="py-0 my-5" />
             <h5 className="mb-4 mb-md-6">Other sports</h5>
-            <ul className="aside_namelist d-flex flex-column gap-2 mb-15">
+            {/* <ul className="aside_namelist d-flex flex-column gap-2 mb-15">
                 {otherSportsData.map((otherSingle) => (
                     <li
                         className={`d-flex align-items-center justify-content-between px-3 py-2 rounded-3 gap-5  ${path == otherSingle.href && 'n11-bg'}`} key={otherSingle.id}>
@@ -60,7 +73,7 @@ export default function SideNav() {
                         }
                     </li>
                 ))}
-            </ul>
+            </ul> */}
         </>
     )
 }

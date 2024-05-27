@@ -1,5 +1,5 @@
 {
+  "/(common)/cricket/page": "app/(common)/cricket/page.js",
   "/page": "app/page.js",
-  "/(common)/create-acount/page": "app/(common)/create-acount/page.js",
-  "/(common)/dashboard/page": "app/(common)/dashboard/page.js"
+  "/favicon.ico/route": "app/favicon.ico/route.js"
 }
