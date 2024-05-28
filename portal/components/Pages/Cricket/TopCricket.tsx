@@ -1,7 +1,53 @@
+"use client";
 import Image from "next/image";
-import { soccerMatch } from "@/public/data/tabOne";
+// import { soccerMatch } from "@/public/data/tabOne";
+import React, { useEffect, useState } from 'react';
+import { collection, addDoc, getDocs, setDoc, doc, DocumentData } from "firebase/firestore";
+import { db } from '../../../firebase/firebase';
+import { cricketMatches } from '../../../public/data/cricketData';
 
 export default function TopCricket() {
+  const [matches, setMatches] = useState<DocumentData[]>([]);
+  useEffect(() => {
+    const populateFirestore = async () => {
+      try {
+        const cricketCollection = collection(db, "cricketMatches");
+
+        const existingDocs = await getDocs(cricketCollection);
+        const existingDocIds = existingDocs.docs.map(doc => doc.id);
+
+        for (const match of cricketMatches) {
+          if (!existingDocIds.includes(match.id)) {
+            const docRef = doc(cricketCollection, match.id);
+            await setDoc(docRef, match, { merge: true });
+            console.log("Document written with ID: ", match.id);
+          } else {
+            console.log(`Document with ID: ${match.id} already exists`);
+          }
+        }
+      } catch (e) {
+        console.error("Error checking/adding document: ", e);
+      }
+    };
+    const fetchMatches = async () => {
+      try {
+        const cricketCollection = collection(db, "cricketMatches");
+        const matchSnapshot = await getDocs(cricketCollection);
+        const matchList = matchSnapshot.docs.map(doc => doc.data());
+        setMatches(matchList);
+      } catch (e) {
+        console.error("Error fetching documents: ", e);
+      }
+    };
+
+    populateFirestore().then(fetchMatches);
+  }, []);
+
+
+  const getMatchById = (id: string) => {
+    return cricketMatches.find(match => match.id === id);
+  };
+
   return (
     <section className="top_matches">
       <div className="container-fluid">
@@ -14,36 +60,52 @@ export default function TopCricket() {
                     <Image src="/images/icon/king.png" width={32}
                       height={32} alt="Icon" />
                     <h3>Top Cricket</h3>
+
                   </div>
                   <div className="top_matches__content">
                     <div className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4">
                       <div className="row gx-0 gy-xl-0 gy-7">
                         <div className="col-xl-5 col-xxl-4">
                           <div className="top_matches__clubname">
-                            <div className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4 ">
-                              <div className="d-flex align-items-center gap-1">
-                                <Image
-                                  src="/images/icon/cricket.png" width={16} height={16}
-                                  alt="Icon"
-                                />{" "}
-                                <span className="fs-eight cpoint">
-                                  International Euroleague
-                                </span>
-                              </div>
-                              <div className="d-flex align-items-center gap-2 pe-xl-19 flex-nowrap flex-xl-wrap">
-                                <Image
-                                  src="/images/icon/live.png" width={16} height={16}
-                                  alt="icon"
-                                />
-                                <span className="fs-eight cpoint">
-                                  Today, 23:00
-                                </span>
-                                <Image
-                                  src="/images/icon/updwon.png" width={16} height={16}
-                                  alt="icon"
-                                />
-                              </div>
-                            </div>
+                            {(() => {
+                              const match = getMatchById("3");
+                              return match ? (
+                                <div className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4 ">
+                                  <div className="d-flex align-items-center gap-1">
+                                    <Image
+                                      src={match.cricket} width={16} height={16}
+                                      alt="Icon"
+                                    />{""}
+                                    <span className="fs-eight cpoint">
+
+                                      {/* {matches.map((match, index) => (
+                                    <p key={index}>
+                                      <p>{match.clubNameOne} vs {match.clubNameTwo}</p>
+                                    </p>
+                                  ))} */}
+
+                                      <p>{match.clubNameOne} vs {match.clubNameTwo}</p>
+                                    </span>
+                                  </div>
+                                  <div className="d-flex align-items-center gap-2 pe-xl-19 flex-nowrap flex-xl-wrap">
+                                    <Image
+                                      src="/images/icon/live.png" width={16} height={16}
+                                      alt="icon"
+                                    />
+                                    <span className="fs-eight cpoint">
+                                      Today, 23:00
+                                    </span>
+                                    <Image
+                                      src="/images/icon/updwon.png" width={16} height={16}
+                                      alt="icon"
+                                    />
+                                  </div>
+                                </div>
+                              ) : (
+                                <p>N/A</p>
+                              );
+                            })()}
+
                             <div className="top_matches__cmncard-left d-flex align-items-center justify-content-between pe-xl-10">
                               <div>
                                 <div className="d-flex align-items-center gap-2 mb-4">
