@@ -6,13 +6,14 @@ import { useRouter } from 'next/navigation';
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
 import { auth } from '../../../firebaseConfig';
 import { signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, signInWithPopup } from "firebase/auth";
-
+import { doPasswordReset } from '@/firebase/auth';
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [message, setMessage] = useState('');
     const router = useRouter();
 
-    const handleLogin = (e) => {
+    const handleLogin = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
@@ -64,6 +65,21 @@ export default function Login() {
             });
     };
 
+
+    const handleForgotPassword = async () => {
+        setMessage('');
+        if (!email) {
+            setMessage('Email address is required');
+            return;
+        }
+        try {
+            await doPasswordReset(email);
+            setMessage('Password reset email sent!');
+        } catch (e) {
+            setMessage('Error sending password reset email!');
+        }
+    };
+
     return (
         <section className="login_section pt-120 p3-bg">
             <div className="container-fluid">
@@ -82,29 +98,30 @@ export default function Login() {
                                         <p className="mb-10 mb-md-15">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
                                             aliquet justo magna.</p>
                                         <div className="login_section__form">
+                                            {message && <p className="message">{message}</p>}
                                             <form onSubmit={handleLogin}>
                                                 <div className="mb-5 mb-md-6">
-                                                    <input 
-                                                        className="n11-bg" 
-                                                        name="Input-1" 
-                                                        data-name="Input 1" 
-                                                        placeholder="Email" 
-                                                        type="email" 
-                                                        id="Input" 
-                                                        value={email} 
-                                                        onChange={(e) => setEmail(e.target.value)} 
+                                                    <input
+                                                        className="n11-bg"
+                                                        name="Input-1"
+                                                        data-name="Input 1"
+                                                        placeholder="Email"
+                                                        type="email"
+                                                        id="Input"
+                                                        value={email}
+                                                        onChange={(e) => setEmail(e.target.value)}
                                                     />
                                                 </div>
                                                 <div className="mb-5 mb-md-6">
-                                                    <input 
-                                                        className="n11-bg" 
-                                                        name="Input-3" 
-                                                        data-name="Input 3" 
-                                                        placeholder="Password" 
-                                                        type="password" 
-                                                        id="Input-3" 
-                                                        value={password} 
-                                                        onChange={(e) => setPassword(e.target.value)} 
+                                                    <input
+                                                        className="n11-bg"
+                                                        name="Input-3"
+                                                        data-name="Input 3"
+                                                        placeholder="Password"
+                                                        type="password"
+                                                        id="Input-3"
+                                                        value={password}
+                                                        onChange={(e) => setPassword(e.target.value)}
                                                     />
                                                 </div>
                                                 <button className="cmn-btn px-5 py-3 mb-6 w-100" type="submit">Sign Up Now</button>
@@ -123,6 +140,9 @@ export default function Login() {
                                                     <IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" />
                                                 </Link>
                                             </div>
+                                            <span className="d-center gap-1">
+                                                <button className="g1-color" onClick={handleForgotPassword}>Forgot Password?</button>
+                                            </span>
                                         </div>
                                         <span className="d-center gap-1">Create your account? <Link className="g1-color" href="/create-acount">Sign Up Now</Link></span>
                                     </div>
