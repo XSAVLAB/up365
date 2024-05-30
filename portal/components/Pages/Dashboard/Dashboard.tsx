@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IconWallet, IconCreditCard, IconCreditCardOff, IconLogout, IconUser, IconSettings, IconBellRinging, IconHistory, } from "@tabler/icons-react";
 import { amountData } from '@/public/data/dashBoard';
 import DepositCard from './DepositCard';
@@ -9,9 +9,60 @@ import WithdrawalAmount from './WithdrawalAmount';
 import Link from 'next/link';
 import { dashboardTabs } from '@/public/data/dashTabs';
 import { doSignOut } from '../../../firebase/auth';
+import { User, onAuthStateChanged } from 'firebase/auth';
+import { db, auth } from '@/firebaseConfig';
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        day: '',
+        month: '',
+        year: '',
+        phoneCode: '',
+        phoneNumber: '',
+        address: '',
+        gender: '',
+        city: '',
+        country: '',
+    });
+
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+        });
+        return () => unsubscribe();
+    }, []);
+
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    const updateProfile = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (user) {
+            try {
+                const userDocRef = doc(db, 'users', user.uid);
+                await setDoc(userDocRef, formData, { merge: true });
+                console.log('Profile data stored in Firestore');
+            } catch (error) {
+                console.error('Error adding document: ', error);
+            }
+        } else {
+            console.log('No user is logged in');
+        }
+    };
+
 
     // Adding Logout Function
 
@@ -39,6 +90,8 @@ export default function Dashboard() {
             backgroundColor: activeItem === itemName ? '#0F1B42' : '',
         };
     };
+
+
 
     return (
         <>
@@ -262,83 +315,145 @@ export default function Dashboard() {
                                                             <h5 className="n10-color">About You</h5>
                                                         </div>
                                                         <div className="pay_method__formarea">
-                                                            <form>
-                                                                <div
-                                                                    className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                            <form onSubmit={updateProfile}>
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
                                                                         <label className="mb-3">First Name (Given Name)</label>
-                                                                        <input className="n11-bg rounded-8" type="text"
-                                                                            placeholder="First Name" />
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="firstName"
+                                                                            placeholder="First Name"
+                                                                            value={formData.firstName}
+                                                                            onChange={handleChange}
+                                                                        />
                                                                     </div>
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Last Name</label>
-                                                                        <input className="n11-bg rounded-8" type="text"
-                                                                            placeholder="Last Name" />
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="lastName"
+                                                                            placeholder="Last Name"
+                                                                            value={formData.lastName}
+                                                                            onChange={handleChange}
+                                                                        />
                                                                     </div>
                                                                 </div>
-                                                                <div
-                                                                    className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
+                                                                <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Date Of Birth</label>
                                                                         <div className="d-flex align-items-center gap-6 w-100">
-
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
-                                                                                <input type="text" placeholder="12" />
+                                                                                <input
+                                                                                    type="text"
+                                                                                    name="day"
+                                                                                    placeholder="12"
+                                                                                    value={formData.day}
+                                                                                    onChange={handleChange}
+                                                                                />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
-                                                                                <input type="text" placeholder="09" />
+                                                                                <input
+                                                                                    type="text"
+                                                                                    name="month"
+                                                                                    placeholder="09"
+                                                                                    value={formData.month}
+                                                                                    onChange={handleChange}
+                                                                                />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
-                                                                                <input type="text" placeholder="1999" />
+                                                                                <input
+                                                                                    type="text"
+                                                                                    name="year"
+                                                                                    placeholder="1999"
+                                                                                    value={formData.year}
+                                                                                    onChange={handleChange}
+                                                                                />
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Phone Number</label>
                                                                         <div className="d-flex gap-2">
-                                                                            <input className="w-25 n11-bg rounded-8" type="text"
-                                                                                placeholder="+962" />
-                                                                            <input className="n11-bg rounded-8" type="text"
-                                                                                placeholder="XX-XXX-XXXXX" />
+                                                                            <input
+                                                                                className="w-25 n11-bg rounded-8"
+                                                                                type="text"
+                                                                                name="phoneCode"
+                                                                                placeholder="+962"
+                                                                                value={formData.phoneCode}
+                                                                                onChange={handleChange}
+                                                                            />
+                                                                            <input
+                                                                                className="n11-bg rounded-8"
+                                                                                type="text"
+                                                                                name="phoneNumber"
+                                                                                placeholder="XX-XXX-XXXXX"
+                                                                                value={formData.phoneNumber}
+                                                                                onChange={handleChange}
+                                                                            />
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div
-                                                                    className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Address</label>
-                                                                        <input className="n11-bg rounded-8" type="text"
-                                                                            placeholder="Address..." />
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="address"
+                                                                            placeholder="Address..."
+                                                                            value={formData.address}
+                                                                            onChange={handleChange}
+                                                                        />
                                                                     </div>
                                                                     <div className="w-100">
                                                                         <label className="mb-3 d-block">Male & Female</label>
-                                                                        <select className='n11-bg extrastyle rounded-8 w-100 py-3 pe-5'>
-                                                                            <option className='p6-color' data-display="Male & Female...">Male & Female...
+                                                                        <select
+                                                                            className="n11-bg extrastyle rounded-8 w-100 py-3 pe-5"
+                                                                            name="gender"
+                                                                            value={formData.gender}
+                                                                            onChange={handleChange}
+                                                                        >
+                                                                            <option className="p6-color" value="">
+                                                                                Select Gender...
                                                                             </option>
-                                                                            <option className='p6-color' value="1">Male</option>
-                                                                            <option className='p6-color' value="2">Female</option>
+                                                                            <option className="p6-color" value="Male">
+                                                                                Male
+                                                                            </option>
+                                                                            <option className="p6-color" value="Female">
+                                                                                Female
+                                                                            </option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
-                                                                <div
-                                                                    className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
                                                                         <label className="mb-3">City / Region</label>
-                                                                        <input className="n11-bg rounded-8" type="text"
-                                                                            placeholder="City / Region..." />
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="city"
+                                                                            placeholder="City / Region..."
+                                                                            value={formData.city}
+                                                                            onChange={handleChange}
+                                                                        />
                                                                     </div>
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Country</label>
-                                                                        <input className="n11-bg rounded-8" type="text"
-                                                                            placeholder="United Kingdom" />
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="country"
+                                                                            placeholder="United Kingdom"
+                                                                            value={formData.country}
+                                                                            onChange={handleChange}
+                                                                        />
                                                                     </div>
                                                                 </div>
-                                                                <div className="d-flex gap-2 align-items-start align-items-xl-center mb-5">
-                                                                    <input type="checkbox" id="demoCheckbox" name="checkbox"
-                                                                        value="1" />
-                                                                    <label className="fs-seven">I authorize to collect and transmit my personal information for identity verification or <span className="g1-color"> similar uses as defined</span> in order to confirm my ability to use the website.</label>
-                                                                </div>
-                                                                <button className="cmn-btn py-3 px-10">Save</button>
+                                                                <button className="cmn-btn py-3 px-10" type="submit">
+                                                                    Save
+                                                                </button>
                                                             </form>
                                                         </div>
                                                     </div>
