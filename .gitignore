@@ -10,3 +10,5 @@ package-lock.json
 
 /portal/.firebase
 
+# Ignore secret key JSON file
+secret_key.json
