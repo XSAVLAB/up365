@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IconWallet, IconCreditCard, IconCreditCardOff, IconLogout, IconUser, IconSettings, IconBellRinging, IconHistory, } from "@tabler/icons-react";
 import { amountData } from '@/public/data/dashBoard';
 import DepositCard from './DepositCard';
@@ -9,12 +9,95 @@ import WithdrawalAmount from './WithdrawalAmount';
 import Link from 'next/link';
 import { dashboardTabs } from '@/public/data/dashTabs';
 import { doSignOut } from '../../../firebase/auth';
+import { User, onAuthStateChanged } from 'firebase/auth';
+import { db, auth } from '@/firebaseConfig';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
+    const [user, setUser] = useState<User | null>(null);
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    // Profile Updates
+    const [formProfileData, setFormProfileData] = useState({
+        firstName: '',
+        lastName: '',
+        day: '',
+        month: '',
+        year: '',
+        phoneCode: '',
+        phoneNumber: '',
+        address: '',
+        gender: '',
+        city: '',
+        country: '',
+    });
+
+    const updateProfile = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (user) {
+            try {
+                const userDocRef = doc(db, 'users', user.uid);
+                await setDoc(userDocRef, formProfileData, { merge: true });
+                console.log('Profile data stored in Firestore');
+            } catch (error) {
+                console.error('Error adding document: ', error);
+            }
+        } else {
+            console.log('No user is logged in');
+        }
+    };
+    const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormProfileData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    // Setting Updates
+    const [formSettingsData, setFormSettingsData] = useState({
+        cardNumber: '',
+        expiration: '',
+        streetAddress: '',
+        aptUnit: '',
+        phoneNumber: '',
+        city: '',
+        state: '',
+        zipCode: '',
+    });
+
+    const updateSettings = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (user) {
+            try {
+                const userDocRef = doc(db, 'cardDetails', user.uid);
+                await setDoc(userDocRef, {
+                    ...formSettingsData,
+                    timestamp: new Date(),
+                });
+                console.log('Settings updated in Firestore');
+            } catch (error) {
+                console.error('Error updating settings: ', error);
+            }
+        } else {
+            console.log('No user is logged in');
+        }
+    };
+    const handleSettingsChange = (e: { target: { name: any; value: any; }; }) => {
+        const { name, value } = e.target;
+        setFormSettingsData((prevData) => ({ ...prevData, [name]: value }));
+    };
+
 
     // Adding Logout Function
-
     const handleLogout = async () => {
         try {
             await doSignOut();
@@ -39,6 +122,8 @@ export default function Dashboard() {
             backgroundColor: activeItem === itemName ? '#0F1B42' : '',
         };
     };
+
+
 
     return (
         <>
@@ -262,83 +347,145 @@ export default function Dashboard() {
                                                             <h5 className="n10-color">About You</h5>
                                                         </div>
                                                         <div className="pay_method__formarea">
-                                                            <form>
-                                                                <div
-                                                                    className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                            <form onSubmit={updateProfile}>
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
                                                                         <label className="mb-3">First Name (Given Name)</label>
-                                                                        <input className="n11-bg rounded-8" type="text"
-                                                                            placeholder="First Name" />
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="firstName"
+                                                                            placeholder="First Name"
+                                                                            value={formProfileData.firstName}
+                                                                            onChange={handleProfileChange}
+                                                                        />
                                                                     </div>
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Last Name</label>
-                                                                        <input className="n11-bg rounded-8" type="text"
-                                                                            placeholder="Last Name" />
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="lastName"
+                                                                            placeholder="Last Name"
+                                                                            value={formProfileData.lastName}
+                                                                            onChange={handleProfileChange}
+                                                                        />
                                                                     </div>
                                                                 </div>
-                                                                <div
-                                                                    className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
+                                                                <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Date Of Birth</label>
                                                                         <div className="d-flex align-items-center gap-6 w-100">
-
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
-                                                                                <input type="text" placeholder="12" />
+                                                                                <input
+                                                                                    type="text"
+                                                                                    name="day"
+                                                                                    placeholder="12"
+                                                                                    value={formProfileData.day}
+                                                                                    onChange={handleProfileChange}
+                                                                                />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
-                                                                                <input type="text" placeholder="09" />
+                                                                                <input
+                                                                                    type="text"
+                                                                                    name="month"
+                                                                                    placeholder="09"
+                                                                                    value={formProfileData.month}
+                                                                                    onChange={handleProfileChange}
+                                                                                />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
-                                                                                <input type="text" placeholder="1999" />
+                                                                                <input
+                                                                                    type="text"
+                                                                                    name="year"
+                                                                                    placeholder="1999"
+                                                                                    value={formProfileData.year}
+                                                                                    onChange={handleProfileChange}
+                                                                                />
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Phone Number</label>
                                                                         <div className="d-flex gap-2">
-                                                                            <input className="w-25 n11-bg rounded-8" type="text"
-                                                                                placeholder="+962" />
-                                                                            <input className="n11-bg rounded-8" type="text"
-                                                                                placeholder="XX-XXX-XXXXX" />
+                                                                            <input
+                                                                                className="w-25 n11-bg rounded-8"
+                                                                                type="text"
+                                                                                name="phoneCode"
+                                                                                placeholder="+962"
+                                                                                value={formProfileData.phoneCode}
+                                                                                onChange={handleProfileChange}
+                                                                            />
+                                                                            <input
+                                                                                className="n11-bg rounded-8"
+                                                                                type="text"
+                                                                                name="phoneNumber"
+                                                                                placeholder="XX-XXX-XXXXX"
+                                                                                value={formProfileData.phoneNumber}
+                                                                                onChange={handleProfileChange}
+                                                                            />
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div
-                                                                    className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Address</label>
-                                                                        <input className="n11-bg rounded-8" type="text"
-                                                                            placeholder="Address..." />
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="address"
+                                                                            placeholder="Address..."
+                                                                            value={formProfileData.address}
+                                                                            onChange={handleProfileChange}
+                                                                        />
                                                                     </div>
                                                                     <div className="w-100">
                                                                         <label className="mb-3 d-block">Male & Female</label>
-                                                                        <select className='n11-bg extrastyle rounded-8 w-100 py-3 pe-5'>
-                                                                            <option className='p6-color' data-display="Male & Female...">Male & Female...
+                                                                        <select
+                                                                            className="n11-bg extrastyle rounded-8 w-100 py-3 pe-5"
+                                                                            name="gender"
+                                                                            value={formProfileData.gender}
+                                                                            onChange={handleProfileChange}
+                                                                        >
+                                                                            <option className="p6-color" value="">
+                                                                                Select Gender...
                                                                             </option>
-                                                                            <option className='p6-color' value="1">Male</option>
-                                                                            <option className='p6-color' value="2">Female</option>
+                                                                            <option className="p6-color" value="Male">
+                                                                                Male
+                                                                            </option>
+                                                                            <option className="p6-color" value="Female">
+                                                                                Female
+                                                                            </option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
-                                                                <div
-                                                                    className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
                                                                         <label className="mb-3">City / Region</label>
-                                                                        <input className="n11-bg rounded-8" type="text"
-                                                                            placeholder="City / Region..." />
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="city"
+                                                                            placeholder="City / Region..."
+                                                                            value={formProfileData.city}
+                                                                            onChange={handleProfileChange}
+                                                                        />
                                                                     </div>
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Country</label>
-                                                                        <input className="n11-bg rounded-8" type="text"
-                                                                            placeholder="United Kingdom" />
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="country"
+                                                                            placeholder="United Kingdom"
+                                                                            value={formProfileData.country}
+                                                                            onChange={handleProfileChange}
+                                                                        />
                                                                     </div>
                                                                 </div>
-                                                                <div className="d-flex gap-2 align-items-start align-items-xl-center mb-5">
-                                                                    <input type="checkbox" id="demoCheckbox" name="checkbox"
-                                                                        value="1" />
-                                                                    <label className="fs-seven">I authorize to collect and transmit my personal information for identity verification or <span className="g1-color"> similar uses as defined</span> in order to confirm my ability to use the website.</label>
-                                                                </div>
-                                                                <button className="cmn-btn py-3 px-10">Save</button>
+                                                                <button className="cmn-btn py-3 px-10" type="submit">
+                                                                    Save
+                                                                </button>
                                                             </form>
                                                         </div>
                                                     </div>
@@ -349,55 +496,98 @@ export default function Dashboard() {
                                                             <h5 className="n10-color">Enter your payment details</h5>
                                                         </div>
                                                         <div className="pay_method__formarea">
-                                                            <form>
-                                                                <div
-                                                                    className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                            <form onSubmit={updateSettings}>
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="d-flex w-100 p1-bg ps-3 rounded-8">
                                                                         <div className="d-flex align-items-center w-100">
                                                                             <i className="ti ti-credit-card fs-five"></i>
-                                                                            <input type="text" id="card_number2" name="card_number"
-                                                                                placeholder="Card number" />
+                                                                            <input
+                                                                                type="text"
+                                                                                id="card_number2"
+                                                                                name="cardNumber"
+                                                                                placeholder="Card number"
+                                                                                value={formSettingsData.cardNumber}
+                                                                                onChange={handleSettingsChange}
+                                                                            />
                                                                         </div>
                                                                         <div className="d-flex align-items-center justify-content-end">
-                                                                            <input className="w-75" type="text" id="expiration2"
-                                                                                name="expiration" placeholder="MM/YY CVC" />
+                                                                            <input
+                                                                                className="w-75"
+                                                                                type="text"
+                                                                                id="expiration2"
+                                                                                name="expiration"
+                                                                                placeholder="MM/YY CVC"
+                                                                                value={formSettingsData.expiration}
+                                                                                onChange={handleSettingsChange}
+                                                                            />
                                                                         </div>
                                                                     </div>
                                                                     <div className="d-flex w-100 p1-bg rounded-8">
-                                                                        <input type="text" placeholder="Street address" />
+                                                                        <input
+                                                                            type="text"
+                                                                            name="streetAddress"
+                                                                            placeholder="Street address"
+                                                                            value={formSettingsData.streetAddress}
+                                                                            onChange={handleSettingsChange}
+                                                                        />
                                                                     </div>
                                                                 </div>
-                                                                <div
-                                                                    className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
+                                                                <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
                                                                     <div className="d-flex w-100 p1-bg rounded-8">
-                                                                        <input type="text"
-                                                                            placeholder="Apt, unit, suite, etc. (optional)" />
+                                                                        <input
+                                                                            type="text"
+                                                                            name="aptUnit"
+                                                                            placeholder="Apt, unit, suite, etc. (optional)"
+                                                                            value={formSettingsData.aptUnit}
+                                                                            onChange={handleSettingsChange}
+                                                                        />
                                                                     </div>
                                                                     <div className="d-flex w-100 p1-bg rounded-8">
-                                                                        <input type="text" placeholder="(+33)7 35 55 21 02" />
+                                                                        <input
+                                                                            type="text"
+                                                                            name="phoneNumber"
+                                                                            placeholder="(+33)7 35 55 21 02"
+                                                                            value={formSettingsData.phoneNumber}
+                                                                            onChange={handleSettingsChange}
+                                                                        />
                                                                     </div>
                                                                 </div>
-                                                                <div
-                                                                    className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
+                                                                <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
                                                                     <div className="d-flex p1-bg rounded-8 w-100">
-                                                                        <input type="text" placeholder="City" />
+                                                                        <input
+                                                                            type="text"
+                                                                            name="city"
+                                                                            placeholder="City"
+                                                                            value={formSettingsData.city}
+                                                                            onChange={handleSettingsChange}
+                                                                        />
                                                                     </div>
                                                                     <div className="d-flex align-items-center gap-6 w-100">
-                                                                        <div className="d-flex  p1-bg rounded-8 w-50">
-                                                                            <input type="text" placeholder="State" />
+                                                                        <div className="d-flex p1-bg rounded-8 w-50">
+                                                                            <input
+                                                                                type="text"
+                                                                                name="state"
+                                                                                placeholder="State"
+                                                                                value={formSettingsData.state}
+                                                                                onChange={handleSettingsChange}
+                                                                            />
                                                                         </div>
                                                                         <div className="d-flex p1-bg rounded-8 w-50">
-                                                                            <input type="text" placeholder="Zip code" />
+                                                                            <input
+                                                                                type="text"
+                                                                                name="zipCode"
+                                                                                placeholder="Zip code"
+                                                                                value={formSettingsData.zipCode}
+                                                                                onChange={handleSettingsChange}
+                                                                            />
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div
-                                                                    className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
+                                                                <div className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
                                                                     <span>Total</span>
                                                                     <span>$3,000</span>
                                                                 </div>
-                                                                <button type="submit"
-                                                                    className="py-4 px-5 n11-bg rounded-2 w-100">Save</button>
+                                                                <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">Save</button>
                                                             </form>
                                                         </div>
                                                     </div>
