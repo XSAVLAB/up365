@@ -11,11 +11,20 @@ import { dashboardTabs } from '@/public/data/dashTabs';
 import { doSignOut } from '../../../firebase/auth';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '@/firebaseConfig';
-import { doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
-    const [formData, setFormData] = useState({
+    const [user, setUser] = useState<User | null>(null);
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    // Profile Updates
+    const [formProfileData, setFormProfileData] = useState({
         firstName: '',
         lastName: '',
         day: '',
@@ -29,31 +38,13 @@ export default function Dashboard() {
         country: '',
     });
 
-    const [user, setUser] = useState<User | null>(null);
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
-        });
-        return () => unsubscribe();
-    }, []);
-
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
-
     const updateProfile = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (user) {
             try {
                 const userDocRef = doc(db, 'users', user.uid);
-                await setDoc(userDocRef, formData, { merge: true });
+                await setDoc(userDocRef, formProfileData, { merge: true });
                 console.log('Profile data stored in Firestore');
             } catch (error) {
                 console.error('Error adding document: ', error);
@@ -62,10 +53,51 @@ export default function Dashboard() {
             console.log('No user is logged in');
         }
     };
+    const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormProfileData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    // Setting Updates
+    const [formSettingsData, setFormSettingsData] = useState({
+        cardNumber: '',
+        expiration: '',
+        streetAddress: '',
+        aptUnit: '',
+        phoneNumber: '',
+        city: '',
+        state: '',
+        zipCode: '',
+    });
+
+    const updateSettings = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (user) {
+            try {
+                const userDocRef = doc(db, 'cardDetails', user.uid);
+                await setDoc(userDocRef, {
+                    ...formSettingsData,
+                    timestamp: new Date(),
+                });
+                console.log('Settings updated in Firestore');
+            } catch (error) {
+                console.error('Error updating settings: ', error);
+            }
+        } else {
+            console.log('No user is logged in');
+        }
+    };
+    const handleSettingsChange = (e: { target: { name: any; value: any; }; }) => {
+        const { name, value } = e.target;
+        setFormSettingsData((prevData) => ({ ...prevData, [name]: value }));
+    };
 
 
     // Adding Logout Function
-
     const handleLogout = async () => {
         try {
             await doSignOut();
@@ -324,8 +356,8 @@ export default function Dashboard() {
                                                                             type="text"
                                                                             name="firstName"
                                                                             placeholder="First Name"
-                                                                            value={formData.firstName}
-                                                                            onChange={handleChange}
+                                                                            value={formProfileData.firstName}
+                                                                            onChange={handleProfileChange}
                                                                         />
                                                                     </div>
                                                                     <div className="w-100">
@@ -335,8 +367,8 @@ export default function Dashboard() {
                                                                             type="text"
                                                                             name="lastName"
                                                                             placeholder="Last Name"
-                                                                            value={formData.lastName}
-                                                                            onChange={handleChange}
+                                                                            value={formProfileData.lastName}
+                                                                            onChange={handleProfileChange}
                                                                         />
                                                                     </div>
                                                                 </div>
@@ -349,8 +381,8 @@ export default function Dashboard() {
                                                                                     type="text"
                                                                                     name="day"
                                                                                     placeholder="12"
-                                                                                    value={formData.day}
-                                                                                    onChange={handleChange}
+                                                                                    value={formProfileData.day}
+                                                                                    onChange={handleProfileChange}
                                                                                 />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
@@ -358,8 +390,8 @@ export default function Dashboard() {
                                                                                     type="text"
                                                                                     name="month"
                                                                                     placeholder="09"
-                                                                                    value={formData.month}
-                                                                                    onChange={handleChange}
+                                                                                    value={formProfileData.month}
+                                                                                    onChange={handleProfileChange}
                                                                                 />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
@@ -367,8 +399,8 @@ export default function Dashboard() {
                                                                                     type="text"
                                                                                     name="year"
                                                                                     placeholder="1999"
-                                                                                    value={formData.year}
-                                                                                    onChange={handleChange}
+                                                                                    value={formProfileData.year}
+                                                                                    onChange={handleProfileChange}
                                                                                 />
                                                                             </div>
                                                                         </div>
@@ -381,16 +413,16 @@ export default function Dashboard() {
                                                                                 type="text"
                                                                                 name="phoneCode"
                                                                                 placeholder="+962"
-                                                                                value={formData.phoneCode}
-                                                                                onChange={handleChange}
+                                                                                value={formProfileData.phoneCode}
+                                                                                onChange={handleProfileChange}
                                                                             />
                                                                             <input
                                                                                 className="n11-bg rounded-8"
                                                                                 type="text"
                                                                                 name="phoneNumber"
                                                                                 placeholder="XX-XXX-XXXXX"
-                                                                                value={formData.phoneNumber}
-                                                                                onChange={handleChange}
+                                                                                value={formProfileData.phoneNumber}
+                                                                                onChange={handleProfileChange}
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -403,8 +435,8 @@ export default function Dashboard() {
                                                                             type="text"
                                                                             name="address"
                                                                             placeholder="Address..."
-                                                                            value={formData.address}
-                                                                            onChange={handleChange}
+                                                                            value={formProfileData.address}
+                                                                            onChange={handleProfileChange}
                                                                         />
                                                                     </div>
                                                                     <div className="w-100">
@@ -412,8 +444,8 @@ export default function Dashboard() {
                                                                         <select
                                                                             className="n11-bg extrastyle rounded-8 w-100 py-3 pe-5"
                                                                             name="gender"
-                                                                            value={formData.gender}
-                                                                            onChange={handleChange}
+                                                                            value={formProfileData.gender}
+                                                                            onChange={handleProfileChange}
                                                                         >
                                                                             <option className="p6-color" value="">
                                                                                 Select Gender...
@@ -435,8 +467,8 @@ export default function Dashboard() {
                                                                             type="text"
                                                                             name="city"
                                                                             placeholder="City / Region..."
-                                                                            value={formData.city}
-                                                                            onChange={handleChange}
+                                                                            value={formProfileData.city}
+                                                                            onChange={handleProfileChange}
                                                                         />
                                                                     </div>
                                                                     <div className="w-100">
@@ -446,8 +478,8 @@ export default function Dashboard() {
                                                                             type="text"
                                                                             name="country"
                                                                             placeholder="United Kingdom"
-                                                                            value={formData.country}
-                                                                            onChange={handleChange}
+                                                                            value={formProfileData.country}
+                                                                            onChange={handleProfileChange}
                                                                         />
                                                                     </div>
                                                                 </div>
@@ -464,55 +496,98 @@ export default function Dashboard() {
                                                             <h5 className="n10-color">Enter your payment details</h5>
                                                         </div>
                                                         <div className="pay_method__formarea">
-                                                            <form>
-                                                                <div
-                                                                    className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                            <form onSubmit={updateSettings}>
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="d-flex w-100 p1-bg ps-3 rounded-8">
                                                                         <div className="d-flex align-items-center w-100">
                                                                             <i className="ti ti-credit-card fs-five"></i>
-                                                                            <input type="text" id="card_number2" name="card_number"
-                                                                                placeholder="Card number" />
+                                                                            <input
+                                                                                type="text"
+                                                                                id="card_number2"
+                                                                                name="cardNumber"
+                                                                                placeholder="Card number"
+                                                                                value={formSettingsData.cardNumber}
+                                                                                onChange={handleSettingsChange}
+                                                                            />
                                                                         </div>
                                                                         <div className="d-flex align-items-center justify-content-end">
-                                                                            <input className="w-75" type="text" id="expiration2"
-                                                                                name="expiration" placeholder="MM/YY CVC" />
+                                                                            <input
+                                                                                className="w-75"
+                                                                                type="text"
+                                                                                id="expiration2"
+                                                                                name="expiration"
+                                                                                placeholder="MM/YY CVC"
+                                                                                value={formSettingsData.expiration}
+                                                                                onChange={handleSettingsChange}
+                                                                            />
                                                                         </div>
                                                                     </div>
                                                                     <div className="d-flex w-100 p1-bg rounded-8">
-                                                                        <input type="text" placeholder="Street address" />
+                                                                        <input
+                                                                            type="text"
+                                                                            name="streetAddress"
+                                                                            placeholder="Street address"
+                                                                            value={formSettingsData.streetAddress}
+                                                                            onChange={handleSettingsChange}
+                                                                        />
                                                                     </div>
                                                                 </div>
-                                                                <div
-                                                                    className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
+                                                                <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
                                                                     <div className="d-flex w-100 p1-bg rounded-8">
-                                                                        <input type="text"
-                                                                            placeholder="Apt, unit, suite, etc. (optional)" />
+                                                                        <input
+                                                                            type="text"
+                                                                            name="aptUnit"
+                                                                            placeholder="Apt, unit, suite, etc. (optional)"
+                                                                            value={formSettingsData.aptUnit}
+                                                                            onChange={handleSettingsChange}
+                                                                        />
                                                                     </div>
                                                                     <div className="d-flex w-100 p1-bg rounded-8">
-                                                                        <input type="text" placeholder="(+33)7 35 55 21 02" />
+                                                                        <input
+                                                                            type="text"
+                                                                            name="phoneNumber"
+                                                                            placeholder="(+33)7 35 55 21 02"
+                                                                            value={formSettingsData.phoneNumber}
+                                                                            onChange={handleSettingsChange}
+                                                                        />
                                                                     </div>
                                                                 </div>
-                                                                <div
-                                                                    className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
+                                                                <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
                                                                     <div className="d-flex p1-bg rounded-8 w-100">
-                                                                        <input type="text" placeholder="City" />
+                                                                        <input
+                                                                            type="text"
+                                                                            name="city"
+                                                                            placeholder="City"
+                                                                            value={formSettingsData.city}
+                                                                            onChange={handleSettingsChange}
+                                                                        />
                                                                     </div>
                                                                     <div className="d-flex align-items-center gap-6 w-100">
-                                                                        <div className="d-flex  p1-bg rounded-8 w-50">
-                                                                            <input type="text" placeholder="State" />
+                                                                        <div className="d-flex p1-bg rounded-8 w-50">
+                                                                            <input
+                                                                                type="text"
+                                                                                name="state"
+                                                                                placeholder="State"
+                                                                                value={formSettingsData.state}
+                                                                                onChange={handleSettingsChange}
+                                                                            />
                                                                         </div>
                                                                         <div className="d-flex p1-bg rounded-8 w-50">
-                                                                            <input type="text" placeholder="Zip code" />
+                                                                            <input
+                                                                                type="text"
+                                                                                name="zipCode"
+                                                                                placeholder="Zip code"
+                                                                                value={formSettingsData.zipCode}
+                                                                                onChange={handleSettingsChange}
+                                                                            />
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div
-                                                                    className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
+                                                                <div className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
                                                                     <span>Total</span>
                                                                     <span>$3,000</span>
                                                                 </div>
-                                                                <button type="submit"
-                                                                    className="py-4 px-5 n11-bg rounded-2 w-100">Save</button>
+                                                                <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">Save</button>
                                                             </form>
                                                         </div>
                                                     </div>

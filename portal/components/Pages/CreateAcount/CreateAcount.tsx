@@ -24,7 +24,7 @@ const CreateAcount = () => {
 
         try {
             await doCreateUserWithEmailAndPassword(email, password)
-            router.push('/'); // Redirect to the root URL
+            router.push('/dashboard'); // Redirect to the root URL
         } catch (e) {
             setMessage('User Already Registered! Please Log in');
             console.log(e)

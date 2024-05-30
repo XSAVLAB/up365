@@ -20,7 +20,7 @@ export default function Login() {
                 // Signed in 
                 const user = userCredential.user;
                 console.log(user);
-                router.push('/'); // Redirect to the root URL
+                router.push('/dashboard'); // Redirect to the root URL
             })
             .catch((error) => {
                 const errorCode = error.code;
