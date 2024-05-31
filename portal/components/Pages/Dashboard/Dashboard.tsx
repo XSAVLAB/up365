@@ -583,10 +583,10 @@ export default function Dashboard() {
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
+                                                                {/* <div className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
                                                                     <span>Total</span>
                                                                     <span>$3,000</span>
-                                                                </div>
+                                                                </div> */}
                                                                 <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">Save</button>
                                                             </form>
                                                         </div>

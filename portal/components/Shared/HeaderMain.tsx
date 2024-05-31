@@ -73,7 +73,7 @@ export default function HeaderMain() {
                             </>
                         ) : (
                             <div className="d-flex align-items-center gap-3">
-                                <Link href="/profile" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link>
+                                <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link>
                                 <button onClick={() => auth.signOut()} className="cmn-btn px-xxl-11">Log Out</button>
                             </div>
                         )}
