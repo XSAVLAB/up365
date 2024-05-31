@@ -11,14 +11,23 @@ import { dashboardTabs } from '@/public/data/dashTabs';
 import { doSignOut } from '../../../firebase/auth';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '@/firebaseConfig';
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, collectionGroup, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
     const [user, setUser] = useState<User | null>(null);
+    const [balanceHistory, setBalanceHistory] = useState<any[]>([]);
+
     useEffect(() => {
+
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
+            if (currentUser) {
+                setUser(currentUser);
+                fetchBalanceHistory(currentUser.uid);
+            }
+            else {
+                setUser(null)
+            }
         });
         return () => unsubscribe();
     }, []);
@@ -97,6 +106,32 @@ export default function Dashboard() {
     };
 
 
+    // Fetch and Display balance history
+    const fetchBalanceHistory = async (userId: string) => {
+        try {
+            const transactionsCollectionRef = collection(db, 'transactions');
+            const withdrawalsCollectionRef = collection(db, 'withdrawals');
+
+            const transactionsSnapshot = await getDocs(transactionsCollectionRef);
+            const withdrawalsSnapshot = await getDocs(withdrawalsCollectionRef);
+
+            const transactionsData = transactionsSnapshot.docs
+                .filter(doc => doc.data().userId === userId)
+                .map(doc => ({ id: doc.id, type: 'Deposit', ...doc.data() }));
+
+            const withdrawalsData = withdrawalsSnapshot.docs
+                .filter(doc => doc.data().userId === userId)
+                .map(doc => ({ id: doc.id, type: 'Withdrawal', ...doc.data() }));
+
+            console.log('Transactions:', transactionsData);
+            console.log('Withdrawals:', withdrawalsData);
+
+            const combinedData = [...transactionsData, ...withdrawalsData];
+            setBalanceHistory(combinedData);
+        } catch (error) {
+            console.error('Error fetching balance history: ', error);
+        }
+    };
     // Adding Logout Function
     const handleLogout = async () => {
         try {
@@ -274,69 +309,28 @@ export default function Dashboard() {
                                                     <div className="pay_method__tabletwo">
                                                         <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
                                                             <table className="w-100 text-center p2-bg">
-                                                                <tr>
-                                                                    <th className="text-nowrap">Transaction ID</th>
-                                                                    <th className="text-nowrap">Date</th>
-                                                                    <th className="text-nowrap">Transaction type</th>
-                                                                    <th className="text-nowrap">Amount/Balance</th>
-                                                                    <th className="text-nowrap">Status</th>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className="text-nowrap">2PQ8B4KYMJ</td>
-                                                                    <td className="text-nowrap">27.12.2023, 11:31</td>
-                                                                    <td className="text-nowrap">5,591 USD</td>
-                                                                    <td className="text-nowrap">300.00/300.00</td>
-                                                                    <td className="g1-color fw-normal cpoint text-nowrap">Complete</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className="text-nowrap">4TQRW5WXF4</td>
-                                                                    <td className="text-nowrap">27.12.2023, 11:31</td>
-                                                                    <td className="text-nowrap">5,591 USD</td>
-                                                                    <td className="text-nowrap">300.00/300.00</td>
-                                                                    <td className="g1-color fw-normal cpoint text-nowrap">Complete</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className="text-nowrap">4TQRW5WXF4</td>
-                                                                    <td className="text-nowrap">27.12.2023, 11:31</td>
-                                                                    <td className="text-nowrap">5,591 USD</td>
-                                                                    <td className="text-nowrap">300.00/300.00</td>
-                                                                    <td className="g1-color fw-normal cpoint text-nowrap">Complete</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className="text-nowrap">VEJP8A5J87</td>
-                                                                    <td className="text-nowrap">27.12.2023, 11:31</td>
-                                                                    <td className="text-nowrap">5,591 USD</td>
-                                                                    <td className="text-nowrap">300.00/300.00</td>
-                                                                    <td className="g1-color fw-normal cpoint text-nowrap">Complete</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className="text-nowrap">JKNFWEJ123</td>
-                                                                    <td className="text-nowrap">27.12.2023, 11:31</td>
-                                                                    <td className="text-nowrap">5,591 USD</td>
-                                                                    <td className="text-nowrap">300.00/300.00</td>
-                                                                    <td className="g1-color fw-normal cpoint text-nowrap">Complete</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className="text-nowrap">NC8S4QJ4K2</td>
-                                                                    <td className="text-nowrap">27.12.2023, 11:31</td>
-                                                                    <td className="text-nowrap">5,591 USD</td>
-                                                                    <td className="text-nowrap">300.00/300.00</td>
-                                                                    <td className="g1-color fw-normal cpoint text-nowrap">Complete</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className="text-nowrap">DGPSN7SRM4</td>
-                                                                    <td className="text-nowrap">27.12.2023, 11:31</td>
-                                                                    <td className="text-nowrap">5,591 USD</td>
-                                                                    <td className="text-nowrap">300.00/300.00</td>
-                                                                    <td className="g1-color fw-normal cpoint text-nowrap">Complete</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className="text-nowrap">ZT3FA5D8N7</td>
-                                                                    <td className="text-nowrap">27.12.2023, 11:31</td>
-                                                                    <td className="text-nowrap">5,591 USD</td>
-                                                                    <td className="text-nowrap">300.00/300.00</td>
-                                                                    <td className="g1-color fw-normal cpoint text-nowrap">Complete</td>
-                                                                </tr>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th className="text-nowrap">Transaction ID</th>
+                                                                        <th className="text-nowrap">Date</th>
+                                                                        <th className="text-nowrap">Transaction Type</th>
+                                                                        <th className="text-nowrap">Amount/Balance</th>
+                                                                        <th className="text-nowrap">Status</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {balanceHistory.map((entry) => (
+                                                                        <tr key={entry.id}>
+                                                                            <td className="text-nowrap">{entry.id}</td>
+                                                                            <td className="text-nowrap">{new Date(entry.timestamp.seconds * 1000).toLocaleString()}</td>
+                                                                            <td className="text-nowrap">{entry.type}</td>
+                                                                            <td className="text-nowrap">{entry.amount}</td>
+                                                                            <td className={`${entry.status === 'Complete' ? 'g1-color' : 'r1-color'} fw-normal cpoint text-nowrap`}>
+                                                                                {entry.status}
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
                                                             </table>
                                                         </div>
                                                     </div>
@@ -583,10 +577,10 @@ export default function Dashboard() {
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
+                                                                {/* <div className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
                                                                     <span>Total</span>
                                                                     <span>$3,000</span>
-                                                                </div>
+                                                                </div> */}
                                                                 <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">Save</button>
                                                             </form>
                                                         </div>

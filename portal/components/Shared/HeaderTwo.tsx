@@ -65,7 +65,7 @@ export default function HeaderTwo() {
                             <span className="fs-seven mb-1 d-block">Your balance</span>
                             <span className="fw-bold d-block">$0.22</span>
                         </div>
-                        <button className="cmn-btn px-xxl-6 d-none d-sm-block d-lg-none d-xxl-block">Deposit</button>
+                        <Link href="/dashboard" className="cmn-btn px-xxl-6 d-none d-sm-block d-lg-none d-xxl-block">Deposit</Link>
                         <div className="d-flex align-items-center gap-2 mt-1">
                             <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative">
                                 <IconGift height={24} width={24} className="ti ti-gift fs-four" />
@@ -95,22 +95,22 @@ export default function HeaderTwo() {
                         </Link>
                     </div>
                     <div id="div10" className="navigation left-nav-area box3  position-fixed">
-                    <div
-                        className="logo-area slide-toggle3 trader-list position-fixed top-0 d-flex align-items-center justify-content-center pt-6 pt-md-8 gap-sm-4 gap-md-5 gap-lg-7 px-4 px-lg-8">
-                        <i className="ti ti-menu-deep left-nav-icon n8-color order-2 order-lg-0 d-none">
-                        </i>
-                        <Link className="navbar-brand d-center text-center gap-1 gap-lg-2 ms-lg-4" href="/">
-                            <Image className="logo" width={32} height={34} src="/images/logo.png" alt="Logo" />
-                            <Image className="logo d-none d-xl-block" width={64} height={24} src="/images/logo-text.png" alt="Logo" />
-                        </Link>
-                    </div>
-                    <div className={`nav_aside px-5 p2-bg ${isMiddleExpanded ? "show" : "hide"}`}>
-                        <div className="nav-clsoeicon d-flex justify-content-end">
-                            <IconX onClick={toggleMiddle} width={32} height={32} className="ti ti-x left-nav-icon n8-color order-2 order-lg-0 d-block d-lg-none fs-three" />
+                        <div
+                            className="logo-area slide-toggle3 trader-list position-fixed top-0 d-flex align-items-center justify-content-center pt-6 pt-md-8 gap-sm-4 gap-md-5 gap-lg-7 px-4 px-lg-8">
+                            <i className="ti ti-menu-deep left-nav-icon n8-color order-2 order-lg-0 d-none">
+                            </i>
+                            <Link className="navbar-brand d-center text-center gap-1 gap-lg-2 ms-lg-4" href="/">
+                                <Image className="logo" width={32} height={34} src="/images/logo.png" alt="Logo" />
+                                <Image className="logo d-none d-xl-block" width={64} height={24} src="/images/logo-text.png" alt="Logo" />
+                            </Link>
                         </div>
-                        <SideNav />
+                        <div className={`nav_aside px-5 p2-bg ${isMiddleExpanded ? "show" : "hide"}`}>
+                            <div className="nav-clsoeicon d-flex justify-content-end">
+                                <IconX onClick={toggleMiddle} width={32} height={32} className="ti ti-x left-nav-icon n8-color order-2 order-lg-0 d-block d-lg-none fs-three" />
+                            </div>
+                            <SideNav />
+                        </div>
                     </div>
-                </div>
 
                 </div>
             </header >

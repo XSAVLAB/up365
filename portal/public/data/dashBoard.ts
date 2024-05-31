@@ -98,19 +98,19 @@ export const amountData = [
 
 export const dashboardAmmount = [
   { id: 1, 
-    ammounts: "$17,000", 
+    amount: "$17,000", 
 
   },
   { id: 2, 
-    ammounts: "$15,000", 
+    amount: "$15,000", 
 
   },
   { id: 3, 
-    ammounts: "$21,000", 
+    amount: "$21,000", 
 
   },
   { id: 4, 
-    ammounts: "$40,000", 
+    amount: "$40,000", 
 
   },
 ];
