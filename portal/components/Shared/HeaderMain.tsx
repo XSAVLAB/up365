@@ -84,9 +84,10 @@ export default function HeaderMain() {
                 </nav>
                 <div id="div10" className="navigation left-nav-area box3 position-fixed">
                     <div className="logo-area slide-toggle3 trader-list position-fixed top-0 d-flex align-items-center justify-content-center pt-6 pt-md-8 gap-sm-4 gap-md-5 gap-lg-7 px-4 px-lg-8">
-                        <Link className="navbar-brand d-center text-center gap-1 gap-lg-2 ms-lg-4" href="/">
-                            <Image className="logo" width={32} height={34} src="/images/logo.png" alt="Logo" />
-                            <Image className="logo d-none d-xl-block" width={64} height={24} src="/images/logo-text.png" alt="Logo" />
+                        <Link className="navbar-brand d-center text-center gap-1 gap-lg-1 ms-lg-1 -m" href="/">
+                            <Image className="logo" width={98} height={98} src="/images/logo.png" alt="Logo" />
+                            <Image className="logo d-none d-xl-block" width={84} height={44} src="/images/logo-text.png" alt="Logo" />
+
                         </Link>
                     </div>
                     <div className={`nav_aside px-5 p2-bg ${isMiddleExpanded ? "show" : "hide"}`}>
