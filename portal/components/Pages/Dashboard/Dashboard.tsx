@@ -12,7 +12,7 @@ import { doSignOut } from '../../../firebase/auth';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '@/firebaseConfig';
 import { addDoc, collection, collectionGroup, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
-import { fetchBalanceHistory, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
+import { fetchBalanceHistory, fetchProfileData, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
 
 export default function Dashboard() {
 
@@ -20,7 +20,7 @@ export default function Dashboard() {
     const [user, setUser] = useState<User | null>(null);
     const [balanceHistory, setBalanceHistory] = useState<any[]>([]);
     const [isProfileForm, setIsProfileForm] = useState(false)
-
+    const [isProfileLoaded, setIsProfileLoaded] = useState(false);
 
     useEffect(() => {
 
@@ -52,6 +52,40 @@ export default function Dashboard() {
         city: '',
         country: '',
     });
+
+
+    const handleProfileClick = () => {
+        setIsProfileForm(true);
+        if (user) {
+            fetchProfileData(user.uid)
+                .then(profileData => {
+                    if (profileData) {
+                        setFormProfileData(profileData);
+                        setIsProfileLoaded(true);
+                    } else {
+                        setFormProfileData({
+                            firstName: '',
+                            lastName: '',
+                            day: '',
+                            month: '',
+                            year: '',
+                            phoneCode: '',
+                            phoneNumber: '',
+                            address: '',
+                            gender: '',
+                            city: '',
+                            country: '',
+                        });
+                        setIsProfileLoaded(false);
+                    }
+                })
+                .catch(error => console.error('Error fetching profile data:', error));
+        }
+    };
+
+
+
+
 
     // Settings
     const [formSettingsData, setFormSettingsData] = useState({
@@ -101,6 +135,9 @@ export default function Dashboard() {
 
         if (itemName.tabname === 'Log out') {
             handleLogout();
+        } else if (itemName.tabname === 'Profile') {
+            handleProfileClick();
+            setActiveItem(itemName);
         } else {
             setActiveItem(itemName);
         }
@@ -288,12 +325,33 @@ export default function Dashboard() {
                                                         </div>
                                                     </div>
                                                 </Tab.Panel>
-                                                <Tab.Panel onClick={() => setIsProfileForm(true)}>
+                                                {/* <Tab.Panel onClick={() => setIsProfileForm(true)}> */}
+                                                <Tab.Panel onClick={handleProfileClick}>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                                             <h5 className="n10-color">About You</h5>
                                                         </div>
                                                         <div className="pay_method__formarea">
+                                                            {/* {isProfileLoaded && !isProfileForm ? (
+                                                                <div>
+                                                                    <div className="mb-5">
+                                                                        <h6>First Name: {formProfileData.firstName}</h6>
+                                                                        <h6>Last Name: {formProfileData.lastName}</h6>
+                                                                        <h6>Date of Birth: {`${formProfileData.day}/${formProfileData.month}/${formProfileData.year}`}</h6>
+                                                                        <h6>Phone: {`${formProfileData.phoneCode} ${formProfileData.phoneNumber}`}</h6>
+                                                                        <h6>Address: {formProfileData.address}</h6>
+                                                                        <h6>Gender: {formProfileData.gender}</h6>
+                                                                        <h6>City: {formProfileData.city}</h6>
+                                                                        <h6>Country: {formProfileData.country}</h6>
+                                                                    </div>
+                                                                    <button className="cmn-btn py-3 px-10" onClick={() => setIsProfileForm(true)}>
+                                                                        Edit
+                                                                    </button>
+                                                                    <button className="cmn-btn py-3 px-10">
+                                                                        Delete
+                                                                    </button>
+                                                                </div>
+                                                            ) : ( */}
                                                             <form onSubmit={onSubmit}>
                                                                 <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
@@ -431,9 +489,10 @@ export default function Dashboard() {
                                                                     </div>
                                                                 </div>
                                                                 <button className="cmn-btn py-3 px-10" type="submit">
-                                                                    Save
+                                                                    Update
                                                                 </button>
                                                             </form>
+                                                            {/* )} */}
                                                         </div>
                                                     </div>
                                                 </Tab.Panel>

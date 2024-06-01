@@ -3,6 +3,7 @@ import {
   doc,
   setDoc,
   deleteDoc,
+  getDoc,
   collection,
   getDocs,
   addDoc,
@@ -42,6 +43,22 @@ export const fetchBalanceHistory = async (userId) => {
 };
 
 // Profile management functions:
+
+// Fetch Profile Data
+export const fetchProfileData = async (userId) => {
+  try {
+    const userDocRef = doc(db, "users", userId);
+    const docSnapshot = await getDoc(userDocRef);
+    if (docSnapshot.exists()) {
+      return docSnapshot.data();
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching profile data: ", error);
+    throw error;
+  }
+};
 
 // Create Profile
 export const createProfile = async (userId, profileData) => {
