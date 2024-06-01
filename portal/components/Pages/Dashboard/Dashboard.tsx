@@ -12,18 +12,24 @@ import { doSignOut } from '../../../firebase/auth';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '@/firebaseConfig';
 import { addDoc, collection, collectionGroup, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { fetchBalanceHistory, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
 
 export default function Dashboard() {
+
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
     const [user, setUser] = useState<User | null>(null);
     const [balanceHistory, setBalanceHistory] = useState<any[]>([]);
+    const [isProfileForm, setIsProfileForm] = useState(false)
+
 
     useEffect(() => {
 
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                fetchBalanceHistory(currentUser.uid);
+                fetchBalanceHistory(currentUser.uid)
+                    .then(data => setBalanceHistory(data))
+                    .catch(error => console.error('Error fetching balance history:', error));
             }
             else {
                 setUser(null)
@@ -32,7 +38,7 @@ export default function Dashboard() {
         return () => unsubscribe();
     }, []);
 
-    // Profile Updates
+    // Profile
     const [formProfileData, setFormProfileData] = useState({
         firstName: '',
         lastName: '',
@@ -47,30 +53,7 @@ export default function Dashboard() {
         country: '',
     });
 
-    const updateProfile = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (user) {
-            try {
-                const userDocRef = doc(db, 'users', user.uid);
-                await setDoc(userDocRef, formProfileData, { merge: true });
-                console.log('Profile data stored in Firestore');
-            } catch (error) {
-                console.error('Error adding document: ', error);
-            }
-        } else {
-            console.log('No user is logged in');
-        }
-    };
-    const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormProfileData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
-
-    // Setting Updates
+    // Settings
     const [formSettingsData, setFormSettingsData] = useState({
         cardNumber: '',
         expiration: '',
@@ -82,57 +65,27 @@ export default function Dashboard() {
         zipCode: '',
     });
 
-    const updateSettings = async (e: React.FormEvent) => {
+    // Handle Submit
+    const onSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-
         if (user) {
             try {
-                const userDocRef = doc(db, 'cardDetails', user.uid);
-                await setDoc(userDocRef, {
-                    ...formSettingsData,
-                    timestamp: new Date(),
-                });
-                console.log('Settings updated in Firestore');
+                if (isProfileForm) {
+                    await updateProfile(db, user.uid, formProfileData);
+                } else {
+                    await updateSettings(user.uid, formSettingsData);
+                }
+                console.log('Data updated successfully');
             } catch (error) {
-                console.error('Error updating settings: ', error);
+                console.error('Error updating data: ', error);
             }
         } else {
-            console.log('No user is logged in');
+            console.error('No user found');
         }
-    };
-    const handleSettingsChange = (e: { target: { name: any; value: any; }; }) => {
-        const { name, value } = e.target;
-        setFormSettingsData((prevData) => ({ ...prevData, [name]: value }));
+
     };
 
-
-    // Fetch and Display balance history
-    const fetchBalanceHistory = async (userId: string) => {
-        try {
-            const transactionsCollectionRef = collection(db, 'transactions');
-            const withdrawalsCollectionRef = collection(db, 'withdrawals');
-
-            const transactionsSnapshot = await getDocs(transactionsCollectionRef);
-            const withdrawalsSnapshot = await getDocs(withdrawalsCollectionRef);
-
-            const transactionsData = transactionsSnapshot.docs
-                .filter(doc => doc.data().userId === userId)
-                .map(doc => ({ id: doc.id, type: 'Deposit', ...doc.data() }));
-
-            const withdrawalsData = withdrawalsSnapshot.docs
-                .filter(doc => doc.data().userId === userId)
-                .map(doc => ({ id: doc.id, type: 'Withdrawal', ...doc.data() }));
-
-            console.log('Transactions:', transactionsData);
-            console.log('Withdrawals:', withdrawalsData);
-
-            const combinedData = [...transactionsData, ...withdrawalsData];
-            setBalanceHistory(combinedData);
-        } catch (error) {
-            console.error('Error fetching balance history: ', error);
-        }
-    };
-    // Adding Logout Function
+    // Logout
     const handleLogout = async () => {
         try {
             await doSignOut();
@@ -311,7 +264,7 @@ export default function Dashboard() {
                                                             <table className="w-100 text-center p2-bg">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th className="text-nowrap">Transaction ID</th>
+                                                                        {/* <th className="text-nowrap">Transaction ID</th> */}
                                                                         <th className="text-nowrap">Date</th>
                                                                         <th className="text-nowrap">Transaction Type</th>
                                                                         <th className="text-nowrap">Amount/Balance</th>
@@ -321,7 +274,7 @@ export default function Dashboard() {
                                                                 <tbody>
                                                                     {balanceHistory.map((entry) => (
                                                                         <tr key={entry.id}>
-                                                                            <td className="text-nowrap">{entry.id}</td>
+                                                                            {/* <td className="text-nowrap">{entry.id}</td> */}
                                                                             <td className="text-nowrap">{new Date(entry.timestamp.seconds * 1000).toLocaleString()}</td>
                                                                             <td className="text-nowrap">{entry.type}</td>
                                                                             <td className="text-nowrap">{entry.amount}</td>
@@ -335,13 +288,13 @@ export default function Dashboard() {
                                                         </div>
                                                     </div>
                                                 </Tab.Panel>
-                                                <Tab.Panel>
+                                                <Tab.Panel onClick={() => setIsProfileForm(true)}>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                                             <h5 className="n10-color">About You</h5>
                                                         </div>
                                                         <div className="pay_method__formarea">
-                                                            <form onSubmit={updateProfile}>
+                                                            <form onSubmit={onSubmit}>
                                                                 <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
                                                                         <label className="mb-3">First Name (Given Name)</label>
@@ -351,7 +304,7 @@ export default function Dashboard() {
                                                                             name="firstName"
                                                                             placeholder="First Name"
                                                                             value={formProfileData.firstName}
-                                                                            onChange={handleProfileChange}
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
                                                                         />
                                                                     </div>
                                                                     <div className="w-100">
@@ -362,7 +315,7 @@ export default function Dashboard() {
                                                                             name="lastName"
                                                                             placeholder="Last Name"
                                                                             value={formProfileData.lastName}
-                                                                            onChange={handleProfileChange}
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
                                                                         />
                                                                     </div>
                                                                 </div>
@@ -376,7 +329,7 @@ export default function Dashboard() {
                                                                                     name="day"
                                                                                     placeholder="12"
                                                                                     value={formProfileData.day}
-                                                                                    onChange={handleProfileChange}
+                                                                                    onChange={handleChange(formProfileData, setFormProfileData)}
                                                                                 />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
@@ -385,7 +338,7 @@ export default function Dashboard() {
                                                                                     name="month"
                                                                                     placeholder="09"
                                                                                     value={formProfileData.month}
-                                                                                    onChange={handleProfileChange}
+                                                                                    onChange={handleChange(formProfileData, setFormProfileData)}
                                                                                 />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
@@ -394,7 +347,7 @@ export default function Dashboard() {
                                                                                     name="year"
                                                                                     placeholder="1999"
                                                                                     value={formProfileData.year}
-                                                                                    onChange={handleProfileChange}
+                                                                                    onChange={handleChange(formProfileData, setFormProfileData)}
                                                                                 />
                                                                             </div>
                                                                         </div>
@@ -408,7 +361,7 @@ export default function Dashboard() {
                                                                                 name="phoneCode"
                                                                                 placeholder="+962"
                                                                                 value={formProfileData.phoneCode}
-                                                                                onChange={handleProfileChange}
+                                                                                onChange={handleChange(formProfileData, setFormProfileData)}
                                                                             />
                                                                             <input
                                                                                 className="n11-bg rounded-8"
@@ -416,7 +369,7 @@ export default function Dashboard() {
                                                                                 name="phoneNumber"
                                                                                 placeholder="XX-XXX-XXXXX"
                                                                                 value={formProfileData.phoneNumber}
-                                                                                onChange={handleProfileChange}
+                                                                                onChange={handleChange(formProfileData, setFormProfileData)}
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -430,7 +383,7 @@ export default function Dashboard() {
                                                                             name="address"
                                                                             placeholder="Address..."
                                                                             value={formProfileData.address}
-                                                                            onChange={handleProfileChange}
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
                                                                         />
                                                                     </div>
                                                                     <div className="w-100">
@@ -439,7 +392,7 @@ export default function Dashboard() {
                                                                             className="n11-bg extrastyle rounded-8 w-100 py-3 pe-5"
                                                                             name="gender"
                                                                             value={formProfileData.gender}
-                                                                            onChange={handleProfileChange}
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
                                                                         >
                                                                             <option className="p6-color" value="">
                                                                                 Select Gender...
@@ -462,7 +415,7 @@ export default function Dashboard() {
                                                                             name="city"
                                                                             placeholder="City / Region..."
                                                                             value={formProfileData.city}
-                                                                            onChange={handleProfileChange}
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
                                                                         />
                                                                     </div>
                                                                     <div className="w-100">
@@ -473,7 +426,7 @@ export default function Dashboard() {
                                                                             name="country"
                                                                             placeholder="United Kingdom"
                                                                             value={formProfileData.country}
-                                                                            onChange={handleProfileChange}
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
                                                                         />
                                                                     </div>
                                                                 </div>
@@ -484,13 +437,13 @@ export default function Dashboard() {
                                                         </div>
                                                     </div>
                                                 </Tab.Panel>
-                                                <Tab.Panel>
+                                                <Tab.Panel onClick={() => setIsProfileForm(false)}>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                                             <h5 className="n10-color">Enter your payment details</h5>
                                                         </div>
                                                         <div className="pay_method__formarea">
-                                                            <form onSubmit={updateSettings}>
+                                                            <form onSubmit={onSubmit}>
                                                                 <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="d-flex w-100 p1-bg ps-3 rounded-8">
                                                                         <div className="d-flex align-items-center w-100">
@@ -501,7 +454,7 @@ export default function Dashboard() {
                                                                                 name="cardNumber"
                                                                                 placeholder="Card number"
                                                                                 value={formSettingsData.cardNumber}
-                                                                                onChange={handleSettingsChange}
+                                                                                onChange={handleChange(formSettingsData, setFormSettingsData)}
                                                                             />
                                                                         </div>
                                                                         <div className="d-flex align-items-center justify-content-end">
@@ -512,7 +465,7 @@ export default function Dashboard() {
                                                                                 name="expiration"
                                                                                 placeholder="MM/YY CVC"
                                                                                 value={formSettingsData.expiration}
-                                                                                onChange={handleSettingsChange}
+                                                                                onChange={handleChange(formSettingsData, setFormSettingsData)}
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -522,7 +475,7 @@ export default function Dashboard() {
                                                                             name="streetAddress"
                                                                             placeholder="Street address"
                                                                             value={formSettingsData.streetAddress}
-                                                                            onChange={handleSettingsChange}
+                                                                            onChange={handleChange(formSettingsData, setFormSettingsData)}
                                                                         />
                                                                     </div>
                                                                 </div>
@@ -533,7 +486,7 @@ export default function Dashboard() {
                                                                             name="aptUnit"
                                                                             placeholder="Apt, unit, suite, etc. (optional)"
                                                                             value={formSettingsData.aptUnit}
-                                                                            onChange={handleSettingsChange}
+                                                                            onChange={handleChange(formSettingsData, setFormSettingsData)}
                                                                         />
                                                                     </div>
                                                                     <div className="d-flex w-100 p1-bg rounded-8">
@@ -542,7 +495,7 @@ export default function Dashboard() {
                                                                             name="phoneNumber"
                                                                             placeholder="(+33)7 35 55 21 02"
                                                                             value={formSettingsData.phoneNumber}
-                                                                            onChange={handleSettingsChange}
+                                                                            onChange={handleChange(formSettingsData, setFormSettingsData)}
                                                                         />
                                                                     </div>
                                                                 </div>
@@ -553,7 +506,7 @@ export default function Dashboard() {
                                                                             name="city"
                                                                             placeholder="City"
                                                                             value={formSettingsData.city}
-                                                                            onChange={handleSettingsChange}
+                                                                            onChange={handleChange(formSettingsData, setFormSettingsData)}
                                                                         />
                                                                     </div>
                                                                     <div className="d-flex align-items-center gap-6 w-100">
@@ -563,7 +516,7 @@ export default function Dashboard() {
                                                                                 name="state"
                                                                                 placeholder="State"
                                                                                 value={formSettingsData.state}
-                                                                                onChange={handleSettingsChange}
+                                                                                onChange={handleChange(formSettingsData, setFormSettingsData)}
                                                                             />
                                                                         </div>
                                                                         <div className="d-flex p1-bg rounded-8 w-50">
@@ -572,7 +525,7 @@ export default function Dashboard() {
                                                                                 name="zipCode"
                                                                                 placeholder="Zip code"
                                                                                 value={formSettingsData.zipCode}
-                                                                                onChange={handleSettingsChange}
+                                                                                onChange={handleChange(formSettingsData, setFormSettingsData)}
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -580,7 +533,7 @@ export default function Dashboard() {
                                                                 {/* <div className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
                                                                     <span>Total</span>
                                                                     <span>$3,000</span>
-                                                                </div> */}
+                                                                </div>  */}
                                                                 <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">Save</button>
                                                             </form>
                                                         </div>
