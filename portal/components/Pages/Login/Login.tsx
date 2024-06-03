@@ -4,30 +4,39 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation';
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
-import { auth } from '../../../firebaseConfig';
+import { auth, db } from '../../../firebaseConfig';
 import { signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, signInWithPopup } from "firebase/auth";
 import { doPasswordReset } from '@/firebase/auth';
+import { getDoc, doc } from 'firebase/firestore';
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const router = useRouter();
 
+
     const handleLogin = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Signed in 
+            .then(async (userCredential) => {
                 const user = userCredential.user;
-                console.log(user);
-                router.push('/dashboard'); // Redirect to the root URL
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                const userData = userDoc.data();
+
+                if (userData?.role === 'admin') {
+                    router.push('/signup');
+                } else {
+                    router.push('/dashboard');
+                }
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 console.error(errorCode, errorMessage);
+                setMessage('Error signing in. Please check your credentials.');
             });
     };
+
 
     const handleGoogleLogin = () => {
         const provider = new GoogleAuthProvider();
