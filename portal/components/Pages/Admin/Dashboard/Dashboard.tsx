@@ -1,17 +1,36 @@
-"use client"
+'use client'
 import React, { useEffect, useState } from 'react'
 import { Tab } from '@headlessui/react';
 import Link from 'next/link';
 import { dashboardTabs } from '@/public/data/adminTabs';
 import { doSignOut } from '../../../../firebase/auth';
-import { User, onAuthStateChanged } from 'firebase/auth';
+import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchAllUsers, deleteUser } from '../../../../api/firestoreAdminService';
+import EditUserForm from '../UserManagement/EditUserForm';
+
+interface User {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    wallet: number;
+    day: string;
+    month: string;
+    year: string;
+    country: string;
+    city: string;
+    phoneCode: string;
+    phoneNumber: string;
+    address: string;
+}
+
 
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
-    const [user, setUser] = useState<User | null>(null);
-    const [userDetails, setUserDetails] = useState<any[]>([]);
+    const [user, setUser] = useState<FirebaseUser | null>(null);
+    const [userDetails, setUserDetails] = useState<User[]>([]);
+    const [editingUser, setEditingUser] = useState<User | null>(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -70,6 +89,19 @@ export default function Dashboard() {
         }
     };
 
+    const handleEditUser = (user: User) => {
+        setEditingUser(user);
+    };
+
+    const handleSaveUser = (updatedUser: User) => {
+        setUserDetails(userDetails.map((user) => (user.id === updatedUser.id ? updatedUser : user)));
+        setEditingUser(null);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingUser(null);
+    };
+
     return (
         <>
             <section className="pay_method pb-120">
@@ -96,38 +128,44 @@ export default function Dashboard() {
                                         <div className="col-xxl-9">
                                             <Tab.Panels className="tabcontents">
                                                 <Tab.Panel>
-                                                    <div className="pay_method__tabletwo">
-                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
-                                                            <table className="w-100 text-center p2-bg">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Name</th>
-                                                                        <th>Email Id</th>
-                                                                        <th>Wallet Balance</th>
-                                                                        <th>Edit</th>
-                                                                        <th>Delete</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {userDetails.map((entry) => (
-                                                                        <tr key={entry.id}>
-                                                                            <td>{entry.firstName} {entry.lastName}</td>
-                                                                            <td>{entry.email}</td>
-                                                                            <td>{entry.wallet}</td>
-                                                                            <td>
-                                                                                <Link href={`/edit-user/${entry.id}`}>
-                                                                                    <button className="btn btn-primary">Edit</button>
-                                                                                </Link>
-                                                                            </td>
-                                                                            <td>
-                                                                                <button onClick={() => handleDeleteUser(entry.id)} className="btn btn-danger">Delete</button>
-                                                                            </td>
+                                                    {editingUser ? (
+                                                        <EditUserForm
+                                                            user={editingUser}
+                                                            onSave={handleSaveUser}
+                                                            onCancel={handleCancelEdit}
+                                                        />
+                                                    ) : (
+                                                        <div className="pay_method__tabletwo">
+                                                            <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                                <table className="w-100 text-center p2-bg">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Name</th>
+                                                                            <th>Email Id</th>
+                                                                            <th>Wallet Balance</th>
+                                                                            <th>Edit</th>
+                                                                            <th>Delete</th>
                                                                         </tr>
-                                                                    ))}
-                                                                </tbody>
-                                                            </table>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {userDetails.map((entry) => (
+                                                                            <tr key={entry.id}>
+                                                                                <td>{entry.firstName} {entry.lastName}</td>
+                                                                                <td>{entry.email}</td>
+                                                                                <td>{entry.wallet}</td>
+                                                                                <td>
+                                                                                    <button onClick={() => handleEditUser(entry)} className="btn btn-primary">Edit</button>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <button onClick={() => handleDeleteUser(entry.id)} className="btn btn-danger">Delete</button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    )}
                                                 </Tab.Panel>
                                             </Tab.Panels>
                                         </div>
