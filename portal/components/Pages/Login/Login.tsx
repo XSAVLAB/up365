@@ -24,7 +24,7 @@ export default function Login() {
                 const userData = userDoc.data();
 
                 if (userData?.role === 'admin') {
-                    router.push('/signup');
+                    router.push('/admin');
                 } else {
                     router.push('/dashboard');
                 }

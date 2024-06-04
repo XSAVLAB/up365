@@ -12,6 +12,7 @@ import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 const CreateAcount = () => {
 
     const [name, setName] = useState('');
+    const [walletBalance, setWallet] = useState(0);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -31,6 +32,7 @@ const CreateAcount = () => {
             await setDoc(doc(db, "users", user.uid), {
                 name,
                 email,
+                walletBalance,
                 role: "user"
             });
 
