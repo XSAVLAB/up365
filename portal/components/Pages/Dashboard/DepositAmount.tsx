@@ -3,6 +3,7 @@ import { amountData } from '@/public/data/dashBoard';
 import { db, auth } from '@/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { updateUserCardDetails, addTransaction, handleChange } from '@/api/firestoreService';
 
 export default function DepositAmount() {
     const [activeItem, setActiveItem] = useState(amountData[0]);
@@ -45,31 +46,17 @@ export default function DepositAmount() {
         };
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormDepositData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (user) {
             try {
-                const userDocRef = doc(db, 'cardDetails', user.uid);
-                await setDoc(userDocRef, {
-                    ...formDepositData,
-                    timestamp: new Date(),
-                });
+                await updateUserCardDetails(user.uid, formDepositData);
 
-                const depositCollectionRef = collection(db, 'transactions');
-                await addDoc(depositCollectionRef, {
-                    userId: user.uid,
+                await addTransaction(user.uid, {
                     amount: formDepositData.amount,
                     status: 'pending',
-                    timestamp: new Date(),
                 });
 
                 console.log('Deposit details stored in Firestore');
@@ -80,6 +67,7 @@ export default function DepositAmount() {
             console.log('No user is logged in');
         }
     };
+
 
     return (
         <>
@@ -122,7 +110,7 @@ export default function DepositAmount() {
                                         name="card_number"
                                         placeholder="Card number"
                                         value={formDepositData.card_number}
-                                        onChange={handleInputChange}
+                                        onChange={handleChange(formDepositData, setFormDepositData)}
                                     />
                                 </div>
                                 <div className="d-flex align-items-center justify-content-end">
@@ -133,7 +121,7 @@ export default function DepositAmount() {
                                         name="expiration"
                                         placeholder="MM/YY CVC"
                                         value={formDepositData.expiration}
-                                        onChange={handleInputChange}
+                                        onChange={handleChange(formDepositData, setFormDepositData)}
                                     />
                                 </div>
                             </div>
@@ -143,7 +131,7 @@ export default function DepositAmount() {
                                     placeholder="Street address"
                                     name="street_address"
                                     value={formDepositData.street_address}
-                                    onChange={handleInputChange}
+                                    onChange={handleChange(formDepositData, setFormDepositData)}
                                 />
                             </div>
                         </div>
@@ -154,7 +142,7 @@ export default function DepositAmount() {
                                     placeholder="Apt, unit, suite, etc. (optional)"
                                     name="apt_unit_suite"
                                     value={formDepositData.apt_unit_suite}
-                                    onChange={handleInputChange}
+                                    onChange={handleChange(formDepositData, setFormDepositData)}
                                 />
                             </div>
                             <div className="d-flex w-100 p1-bg rounded-8">
@@ -163,7 +151,7 @@ export default function DepositAmount() {
                                     placeholder="(+33)7 35 55 21 02"
                                     name="phone_number"
                                     value={formDepositData.phone_number}
-                                    onChange={handleInputChange}
+                                    onChange={handleChange(formDepositData, setFormDepositData)}
                                 />
                             </div>
                         </div>
@@ -174,7 +162,7 @@ export default function DepositAmount() {
                                     placeholder="City"
                                     name="city"
                                     value={formDepositData.city}
-                                    onChange={handleInputChange}
+                                    onChange={handleChange(formDepositData, setFormDepositData)}
                                 />
                             </div>
                             <div className="d-flex align-items-center gap-6 w-100">
@@ -184,7 +172,7 @@ export default function DepositAmount() {
                                         placeholder="State"
                                         name="state"
                                         value={formDepositData.state}
-                                        onChange={handleInputChange}
+                                        onChange={handleChange(formDepositData, setFormDepositData)}
                                     />
                                 </div>
                                 <div className="d-flex p1-bg rounded-8 w-50">
@@ -193,7 +181,7 @@ export default function DepositAmount() {
                                         placeholder="Zip code"
                                         name="zip_code"
                                         value={formDepositData.zip_code}
-                                        onChange={handleInputChange}
+                                        onChange={handleChange(formDepositData, setFormDepositData)}
                                     />
                                 </div>
                             </div>

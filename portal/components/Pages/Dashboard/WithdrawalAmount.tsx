@@ -3,6 +3,7 @@ import { dashboardAmmount } from '@/public/data/dashBoard';
 import { db, auth } from '@/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { collection, addDoc } from 'firebase/firestore';
+import { addWithdrawalRequest } from '@/api/firestoreService';
 
 export default function WithdrawalAmount() {
 
@@ -37,15 +38,7 @@ export default function WithdrawalAmount() {
 
         if (user) {
             try {
-                const withdrawalCollectionRef = collection(db, 'withdrawals');
-                await addDoc(withdrawalCollectionRef, {
-                    userId: user.uid,
-                    amount: activeItem.amount,
-                    status: 'pending',
-                    timestamp: new Date(),
-                });
-
-                console.log('Withdrawal request stored in Firestore');
+                await addWithdrawalRequest(user.uid, activeItem.amount);
             } catch (error) {
                 console.error('Error storing withdrawal request: ', error);
             }

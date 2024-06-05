@@ -7,45 +7,66 @@ import { useAuth } from '../../../contexts/authContext'
 import { useRouter } from 'next/navigation';
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
 import { doCreateUserWithEmailAndPassword, doSignInWithGoogle } from '../../../firebase/auth'
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 
 const CreateAcount = () => {
 
-
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [name, setName] = useState('');
+    const [walletBalance, setWallet] = useState(0);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const router = useRouter();
 
-
     const { userLoggedIn } = useAuth() || {};
+
     const onSubmit = async (e: { preventDefault: () => void; }) => {
-        e.preventDefault()
+        e.preventDefault();
         setMessage("");
 
         try {
-            await doCreateUserWithEmailAndPassword(email, password)
-            router.push('/dashboard'); // Redirect to the root URL
+            const userCredential = await doCreateUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+
+            const db = getFirestore();
+            await setDoc(doc(db, "users", user.uid), {
+                name,
+                email,
+                walletBalance,
+                role: "user"
+            });
+
+            router.push('/dashboard');
         } catch (e) {
             setMessage('User Already Registered! Please Log in');
-            console.log(e)
+            console.log(e);
         }
-
-    }
-
+    };
 
     const onGoogleSignIn = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
         e.preventDefault();
 
-
         try {
-            await doSignInWithGoogle()
+            const userCredential = await doSignInWithGoogle();
+            const user = userCredential.user;
+
+            const db = getFirestore();
+            const userDoc = doc(db, "users", user.uid);
+            const docSnap = await getDoc(userDoc);
+
+            if (!docSnap.exists()) {
+                await setDoc(userDoc, {
+                    name: user.displayName || '',
+                    email: user.email,
+                    role: "user"
+                });
+            }
+
             window.location.replace('/dashboard');
         } catch (e) {
-            console.log(e)
+            console.log(e);
         }
-
-
-    }
+    };
     return (
         <section className="login_section pt-120 p3-bg">
             {userLoggedIn && (<Navigate to={'/dashboard'} replace={true} />)}
