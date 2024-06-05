@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Tab } from '@headlessui/react';
 import Link from 'next/link';
@@ -7,7 +7,7 @@ import { dashboardTabs } from '@/public/data/adminTabs';
 import { doSignOut } from '../../../../firebase/auth';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchAllUsers, deleteUser, fetchUserRole } from '../../../../api/firestoreAdminService';
+import { fetchAllUsers, deleteUser, fetchUserRole, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus } from '../../../../api/firestoreAdminService';
 import EditUserForm from '../UserManagement/EditUserForm';
 
 interface User {
@@ -26,11 +26,27 @@ interface User {
     address: string;
 }
 
+interface Transaction {
+    id: string;
+    userId: string;
+    amount: number;
+    status: string;
+}
+
+interface Withdrawal {
+    id: string;
+    userId: string;
+    amount: number;
+    status: string;
+}
+
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
     const [user, setUser] = useState<FirebaseUser | null>(null);
     const [userDetails, setUserDetails] = useState<User[]>([]);
     const [editingUser, setEditingUser] = useState<User | null>(null);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const router = useRouter();
 
@@ -47,7 +63,7 @@ export default function Dashboard() {
                 }
             } else {
                 setUser(null);
-                router.push('/login'); 
+                router.push('/login');
             }
         });
 
@@ -60,9 +76,29 @@ export default function Dashboard() {
             }
         };
 
+        const fetchTransactionsData = async () => {
+            try {
+                const transactions = await fetchTransactions();
+                setTransactions(transactions);
+            } catch (error) {
+                console.error('Error fetching transactions:', error);
+            }
+        };
+
+        const fetchWithdrawalsData = async () => {
+            try {
+                const withdrawals = await fetchWithdrawals();
+                setWithdrawals(withdrawals);
+            } catch (error) {
+                console.error('Error fetching withdrawals:', error);
+            }
+        };
+
         fetchUsers();
+        fetchTransactionsData();
+        fetchWithdrawalsData();
         return () => unsubscribe();
-    }, []);
+    }, [router]);
 
     const handleLogout = async () => {
         try {
@@ -110,6 +146,31 @@ export default function Dashboard() {
 
     const handleCancelEdit = () => {
         setEditingUser(null);
+    };
+
+    const handleUpdateTransaction = async (transactionId: string, userId: string, amount: number, status: string) => {
+        try {
+            await updateTransactionStatus(transactionId, status);
+            if (status === 'approved') {
+                await updateUserWallet(userId, amount);
+            }
+            setTransactions(transactions.map((transaction) => transaction.id === transactionId ? { ...transaction, status } : transaction));
+        } catch (error) {
+            console.error('Error updating transaction:', error);
+        }
+    };
+
+
+    const handleUpdateWithdrawal = async (withdrawalId: string, userId: string, amount: number, status: string) => {
+        try {
+            await updateWithdrawalStatus(withdrawalId, userId, amount, status);
+            if (status === 'approved') {
+                await updateUserWallet(userId, -amount); // Subtract withdrawal amount from user's wallet
+            }
+            setWithdrawals(withdrawals.map((withdrawal) => withdrawal.id === withdrawalId ? { ...withdrawal, status } : withdrawal));
+        } catch (error) {
+            console.error('Error updating withdrawal:', error);
+        }
     };
 
     if (!isAdmin) {
@@ -180,6 +241,83 @@ export default function Dashboard() {
                                                             </div>
                                                         </div>
                                                     )}
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    <div className="pay_method__tabletwo">
+                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                            <table className="w-100 text-center p2-bg">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Transaction ID</th>
+                                                                        <th>User ID</th>
+                                                                        <th>Amount</th>
+                                                                        <th>Status</th>
+                                                                        <th>Approve</th>
+                                                                        <th>Reject</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {transactions.map((transaction) => (
+                                                                        <tr key={transaction.id}>
+                                                                            <td>{transaction.id}</td>
+                                                                            <td>{transaction.userId}</td>
+                                                                            <td>{transaction.amount}</td>
+                                                                            <td>{transaction.status}</td>
+                                                                            <td>
+                                                                                <button onClick={() => handleUpdateTransaction(transaction.id, transaction.userId, transaction.amount, 'approved')} className="btn btn-success" disabled={transaction.status !== 'pending'}>
+                                                                                    Approve
+                                                                                </button>
+                                                                            </td>
+                                                                            <td>
+                                                                                <button onClick={() => handleUpdateTransaction(transaction.id, transaction.userId, transaction.amount, 'rejected')} className="btn btn-danger" disabled={transaction.status !== 'pending'}>
+                                                                                    Reject
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    <div className="pay_method__tabletwo">
+                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                            <table className="w-100 text-center p2-bg">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Transaction ID</th>
+                                                                        <th>User ID</th>
+                                                                        <th>Amount</th>
+                                                                        <th>Status</th>
+                                                                        <th>Approve</th>
+                                                                        <th>Reject</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {withdrawals.map((withdrawal) => (
+                                                                        <tr key={withdrawal.id}>
+                                                                            <td>{withdrawal.id}</td>
+                                                                            <td>{withdrawal.userId}</td>
+                                                                            <td>{withdrawal.amount}</td>
+                                                                            <td>{withdrawal.status}</td>
+                                                                            <td>
+                                                                                <button onClick={() => handleUpdateWithdrawal(withdrawal.id, withdrawal.userId, withdrawal.amount, 'approved')} className="btn btn-success" disabled={withdrawal.status !== 'pending'}>
+                                                                                    Approve
+                                                                                </button>
+
+                                                                            </td>
+                                                                            <td>
+                                                                                <button onClick={() => handleUpdateWithdrawal(withdrawal.id, withdrawal.userId, withdrawal.amount, 'rejected')} className="btn btn-danger" disabled={withdrawal.status !== 'pending'}>
+                                                                                    Reject
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
                                                 </Tab.Panel>
                                             </Tab.Panels>
                                         </div>
