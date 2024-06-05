@@ -45,3 +45,22 @@ export const updateUserDetails = async (userId, updatedData) => {
     throw error;
   }
 };
+
+// Fetch user role by user ID
+export const fetchUserRole = async (userId) => {
+  try {
+    const userDocRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      return userData.role || null;
+    } else {
+      console.log("No such user document!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching user role:", error);
+    throw error;
+  }
+};

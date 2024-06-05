@@ -1,12 +1,13 @@
 'use client'
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation';
 import { Tab } from '@headlessui/react';
 import Link from 'next/link';
 import { dashboardTabs } from '@/public/data/adminTabs';
 import { doSignOut } from '../../../../firebase/auth';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchAllUsers, deleteUser } from '../../../../api/firestoreAdminService';
+import { fetchAllUsers, deleteUser, fetchUserRole } from '../../../../api/firestoreAdminService';
 import EditUserForm from '../UserManagement/EditUserForm';
 
 interface User {
@@ -25,19 +26,28 @@ interface User {
     address: string;
 }
 
-
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
     const [user, setUser] = useState<FirebaseUser | null>(null);
     const [userDetails, setUserDetails] = useState<User[]>([]);
     const [editingUser, setEditingUser] = useState<User | null>(null);
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const router = useRouter();
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
+                const role = await fetchUserRole(currentUser.uid);
+                if (role === 'admin') {
+                    setIsAdmin(true);
+                } else {
+                    setIsAdmin(false);
+                    router.push('/login');
+                }
             } else {
                 setUser(null);
+                router.push('/login'); 
             }
         });
 
@@ -101,6 +111,10 @@ export default function Dashboard() {
     const handleCancelEdit = () => {
         setEditingUser(null);
     };
+
+    if (!isAdmin) {
+        return <div>Loading...</div>; // Or any other loading indicator
+    }
 
     return (
         <>
