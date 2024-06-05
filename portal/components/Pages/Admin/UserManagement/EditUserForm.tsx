@@ -6,7 +6,7 @@ interface User {
     firstName: string;
     lastName: string;
     email: string;
-    wallet: number;
+    wallet: string;
     day: string;
     month: string;
     year: string;

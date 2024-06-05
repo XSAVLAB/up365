@@ -98,8 +98,13 @@ export const updateUserWallet = async (userId, amount) => {
   try {
     const userDocRef = doc(db, "users", userId);
     const userDoc = await getDoc(userDocRef);
-    const currentWallet = userDoc.data().wallet;
-    await updateDoc(userDocRef, { wallet: currentWallet + amount });
+    if (userDoc.exists()) {
+      const currentWallet = parseFloat(userDoc.data().wallet || "0");
+      const newWallet = (currentWallet + parseFloat(amount)).toString();
+      await updateDoc(userDocRef, { wallet: newWallet });
+    } else {
+      throw new Error(`User document with ID ${userId} does not exist.`);
+    }
   } catch (error) {
     console.error("Error updating user wallet: ", error);
     throw error;
@@ -138,11 +143,13 @@ export const updateWithdrawalStatus = async (
       throw new Error(`User document with ID ${userId} does not exist.`);
     }
 
-    const currentWallet = userDoc.data().wallet || 0;
+    const currentWallet = parseFloat(userDoc.data().wallet || "0");
+    const withdrawalAmount = parseFloat(amount);
 
-    if (status === "approved" && currentWallet >= amount) {
-      await updateDoc(userDocRef, { wallet: currentWallet - amount });
-    } else {
+    if (status === "approved" && currentWallet >= withdrawalAmount) {
+      const newWallet = (currentWallet - withdrawalAmount).toString();
+      await updateDoc(userDocRef, { wallet: newWallet });
+    } else if (status === "approved") {
       throw new Error(`Insufficient balance in the user's wallet.`);
     }
 

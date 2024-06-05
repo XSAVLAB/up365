@@ -15,7 +15,7 @@ interface User {
     firstName: string;
     lastName: string;
     email: string;
-    wallet: number;
+    wallet: string;
     day: string;
     month: string;
     year: string;
@@ -29,14 +29,14 @@ interface User {
 interface Transaction {
     id: string;
     userId: string;
-    amount: number;
+    amount: string;
     status: string;
 }
 
 interface Withdrawal {
     id: string;
     userId: string;
-    amount: number;
+    amount: string;
     status: string;
 }
 
@@ -148,11 +148,11 @@ export default function Dashboard() {
         setEditingUser(null);
     };
 
-    const handleUpdateTransaction = async (transactionId: string, userId: string, amount: number, status: string) => {
+    const handleUpdateTransaction = async (transactionId: string, userId: string, amount: string, status: string) => {
         try {
             await updateTransactionStatus(transactionId, status);
             if (status === 'approved') {
-                await updateUserWallet(userId, amount);
+                await updateUserWallet(userId, parseFloat(amount));
             }
             setTransactions(transactions.map((transaction) => transaction.id === transactionId ? { ...transaction, status } : transaction));
         } catch (error) {
@@ -160,12 +160,10 @@ export default function Dashboard() {
         }
     };
 
-
-    const handleUpdateWithdrawal = async (withdrawalId: string, userId: string, amount: number, status: string) => {
+    const handleUpdateWithdrawal = async (withdrawalId: string, userId: string, amount: string, status: string) => {
         try {
-            await updateWithdrawalStatus(withdrawalId, userId, amount, status);
             if (status === 'approved') {
-                await updateUserWallet(userId, -amount); // Subtract withdrawal amount from user's wallet
+                await updateWithdrawalStatus(withdrawalId, userId, parseFloat(amount), status);
             }
             setWithdrawals(withdrawals.map((withdrawal) => withdrawal.id === withdrawalId ? { ...withdrawal, status } : withdrawal));
         } catch (error) {
@@ -174,7 +172,7 @@ export default function Dashboard() {
     };
 
     if (!isAdmin) {
-        return <div>Loading...</div>; // Or any other loading indicator
+        return <div>Loading...</div>;
     }
 
     return (
@@ -248,18 +246,17 @@ export default function Dashboard() {
                                                             <table className="w-100 text-center p2-bg">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th>Transaction ID</th>
                                                                         <th>User ID</th>
                                                                         <th>Amount</th>
                                                                         <th>Status</th>
                                                                         <th>Approve</th>
                                                                         <th>Reject</th>
+                                                                        <th>Transaction ID</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     {transactions.map((transaction) => (
                                                                         <tr key={transaction.id}>
-                                                                            <td>{transaction.id}</td>
                                                                             <td>{transaction.userId}</td>
                                                                             <td>{transaction.amount}</td>
                                                                             <td>{transaction.status}</td>
@@ -273,6 +270,7 @@ export default function Dashboard() {
                                                                                     Reject
                                                                                 </button>
                                                                             </td>
+                                                                            <td>{transaction.id}</td>
                                                                         </tr>
                                                                     ))}
                                                                 </tbody>
@@ -286,18 +284,17 @@ export default function Dashboard() {
                                                             <table className="w-100 text-center p2-bg">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th>Transaction ID</th>
                                                                         <th>User ID</th>
                                                                         <th>Amount</th>
                                                                         <th>Status</th>
                                                                         <th>Approve</th>
                                                                         <th>Reject</th>
+                                                                        <th>Withdrawal ID</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     {withdrawals.map((withdrawal) => (
                                                                         <tr key={withdrawal.id}>
-                                                                            <td>{withdrawal.id}</td>
                                                                             <td>{withdrawal.userId}</td>
                                                                             <td>{withdrawal.amount}</td>
                                                                             <td>{withdrawal.status}</td>
@@ -306,12 +303,14 @@ export default function Dashboard() {
                                                                                     Approve
                                                                                 </button>
 
+
                                                                             </td>
                                                                             <td>
                                                                                 <button onClick={() => handleUpdateWithdrawal(withdrawal.id, withdrawal.userId, withdrawal.amount, 'rejected')} className="btn btn-danger" disabled={withdrawal.status !== 'pending'}>
                                                                                     Reject
                                                                                 </button>
                                                                             </td>
+                                                                            <td>{withdrawal.id}</td>
                                                                         </tr>
                                                                     ))}
                                                                 </tbody>
