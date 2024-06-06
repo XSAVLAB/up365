@@ -1,30 +1,54 @@
-'use client'
+"use client";
+import { IconCricket } from "@tabler/icons-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
 export default function TopCricket() {
-
-  // Fetching Cricket Data
   const [matches, setMatches] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchCricketMatches = async () => {
       try {
         const response = await fetch('https://api.cricapi.com/v1/cricScore?apikey=30003ac7-c7ef-4828-bcce-4a461e26902d');
-        console.log(response)
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        console.log('Cricket Matches:', data);
-        setMatches(data.data);
+        const sortedMatches = sortMatches(data.data);
+        setMatches(sortedMatches);
       } catch (error) {
         console.error('Error fetching cricket matches: ', error);
       }
     };
 
     fetchCricketMatches();
+
+    // Update sorting every hour
+    const interval = setInterval(() => {
+      setMatches((prevMatches) => sortMatches(prevMatches));
+    }, 600000);
+
+    return () => clearInterval(interval);
   }, []);
+
+  const sortMatches = (matches: any[]) => {
+    const now = new Date().getTime();
+
+    return matches.sort((a: any, b: any) => {
+      const dateA = new Date(a.dateTimeGMT).getTime();
+      const dateB = new Date(b.dateTimeGMT).getTime();
+
+      if (dateA > now && dateB > now) {
+        return dateA - dateB;
+      } else if (dateA < now && dateB < now) {
+        return dateB - dateA;
+      } else if (dateA > now) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+  };
 
   return (
     <section className="top_matches">
@@ -35,39 +59,26 @@ export default function TopCricket() {
               <div className="row w-100 pt-md-5">
                 <div className="col-12">
                   <div className="top_matches__title d-flex align-items-center gap-2 mb-4 mb-md-5">
-                    <Image src="/images/icon/king.png" width={32}
-                      height={32} alt="Icon" />
+                    <Image src="/images/icon/king.png" width={32} height={32} alt="Icon" />
                     <h3>Top Cricket</h3>
                   </div>
                   <div className="top_matches__content">
                     {matches && matches.map((match: any) => (
-
-                      <div className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4">
+                      <div key={match.id} className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4">
                         <div className="row gx-0 gy-xl-0 gy-7">
                           <div className="col-xl-5 col-xxl-4">
                             <div className="top_matches__clubname">
                               <div className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4 ">
                                 <div className="d-flex align-items-center gap-1">
-                                  {/* <Image
-                                    src={match.cricket} width={16} height={16}
-                                    alt="Icon"
-                                  />{" "} */}
+                                  <IconCricket className="n5-color" />
                                   <span className="fs-eight cpoint">
                                     {match.series}
                                   </span>
                                 </div>
                                 <div className="d-flex align-items-center gap-2 pe-xl-19 flex-nowrap flex-xl-wrap">
-                                  {/* <Image
-                                    src="/images/icon/live.png" width={16} height={16}
-                                    alt="icon"
-                                  /> */}
                                   <span className="fs-eight cpoint">
-                                    {match.dateTimeGMT}
+                                    {new Date(match.dateTimeGMT).toLocaleString()}
                                   </span>
-                                  {/* <Image
-                                    src="/images/icon/updwon.png" width={16} height={16}
-                                    alt="icon"
-                                  /> */}
                                 </div>
                               </div>
                               <div className="top_matches__cmncard-left d-flex align-items-center justify-content-between pe-xl-10">
@@ -102,11 +113,6 @@ export default function TopCricket() {
                                   </div>
                                   <span className="v-line lg d-none d-xl-block"></span>
                                   <div className="d-flex flex-column gap-5">
-                                    {/* <Image
-                                      className="cpoint"
-                                      src="/images/icon/line-chart.png" width={16} height={16}
-                                      alt="Icon"
-                                    /> */}
                                   </div>
                                 </div>
                               </div>
@@ -135,7 +141,6 @@ export default function TopCricket() {
                                       </th>
                                     </tr>
                                   </thead>
-
                                   <tbody>
                                     <tr>
                                       <td className="pt-4">
@@ -207,9 +212,7 @@ export default function TopCricket() {
                           </div>
                         </div>
                       </div>
-
                     ))}
-
                   </div>
                 </div>
               </div>
@@ -218,5 +221,5 @@ export default function TopCricket() {
         </div>
       </div>
     </section>
-  )
+  );
 }
