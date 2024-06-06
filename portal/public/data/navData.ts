@@ -193,27 +193,27 @@ export const naviTemData = [
   },
   {
     id: 120341,
-    linkText: "Live Betting",
-    href: "/floorball",
+    linkText: "Cricket",
+    href: "/cricket",
   },
-  {
-    id: 151272,
-    linkText: "Sports",
-    href: "/soccer",
-  },
-  {
-    id: 155534,
-    linkText: "eSports",
-    href: "/ecricket",
-  },
-  {
-    id: 138128,
-    linkText: "Racing",
-    href: "/cycling",
-  },
-  {
-    id: 122880,
-    linkText: "Promotions",
-    href: "/promotions",
-  },
+  // {
+  //   id: 151272,
+  //   linkText: "Sports",
+  //   href: "/soccer",
+  // },
+  // {
+  //   id: 155534,
+  //   linkText: "eSports",
+  //   href: "/ecricket",
+  // },
+  // {
+  //   id: 138128,
+  //   linkText: "Racing",
+  //   href: "/cycling",
+  // },
+  // {
+  //   id: 122880,
+  //   linkText: "Promotions",
+  //   href: "/promotions",
+  // },
 ];

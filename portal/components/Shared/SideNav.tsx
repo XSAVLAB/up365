@@ -15,12 +15,12 @@ export default function SideNav() {
                         className="ti ti-brand-google-home n5-color fs-five"></i> Home</Link>
                 </li>
                 <li className="active">
-                    <Link href="#" className="d-flex align-items-center gap-2"><i
+                    <Link href="/cricket" className="d-flex align-items-center gap-2"><i
                         className="ti ti-garden-cart n5-color fs-five"></i>
                         Marketplace</Link>
                 </li>
                 <li className="active">
-                    <Link href="/efighting" className="d-flex align-items-center gap-2"><svg
+                    <Link href="/cricket" className="d-flex align-items-center gap-2"><svg
                         xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 22"
                         fill="none">
                         <path
