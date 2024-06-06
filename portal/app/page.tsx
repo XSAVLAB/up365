@@ -1,19 +1,17 @@
-import HeaderMain from "@/components/Shared/HeaderMain";
-import HeroSlider from "@/components/Pages/Home/HeroSlider";
-import HeroMatches from "@/components/Pages/Home/HeroMatches";
-import LiveMatches from "@/components/Pages/Home/LiveMatches";
-import MiddleSlider from "@/components/Pages/Home/MiddleSlider";
-import UpComingEvents from "@/components/Pages/Home/UpComingEvents";
+import HeaderMain from '@/components/Shared/HeaderMain';
+import CricketLive from '@/components/Pages/Cricket/CricketLive';
+import TopCricket from '@/components/Pages/Cricket/TopCricket';
+import UpCmingCricket from '@/components/Pages/Cricket/UpCmingCricket';
+import TopSlider from '@/components/Pages/Cricket/CricketSlider';
 
-export default function Home() {
+export default function page() {
   return (
     <>
       <HeaderMain />
-      <HeroSlider />
-      <HeroMatches />
-      <LiveMatches />
-      <MiddleSlider />
-      <UpComingEvents />
+      <TopSlider />
+      <TopCricket />
+      <CricketLive />
+      <UpCmingCricket />
     </>
-  );
+  )
 }
