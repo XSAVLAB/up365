@@ -7,6 +7,8 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  query,
+  where,
 } from "firebase/firestore";
 
 // Fetch all users
@@ -158,4 +160,20 @@ export const updateWithdrawalStatus = async (
     console.error("Error updating withdrawal status: ", error);
     throw error;
   }
+};
+
+// Fetch Approved Transactions
+export const fetchApprovedTransactions = async () => {
+  const transactionsCollection = collection(db, "transactions");
+  const q = query(transactionsCollection, where("status", "==", "approved"));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map((doc) => doc.data());
+};
+
+// Fetch Approved Withdrawals
+export const fetchApprovedWithdrawals = async () => {
+  const withdrawalsCollection = collection(db, "withdrawals");
+  const q = query(withdrawalsCollection, where("status", "==", "approved"));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map((doc) => doc.data());
 };

@@ -84,9 +84,9 @@ export default function TopSlider() {
                                                                         <span className="fs-seven n5-color cpoint">
                                                                             {match.series}
                                                                         </span>
-                                                                    </div>
+                                                                    </div>{" "}
                                                                     <span className="fs-seven n5-color cpoint">
-                                                                        {match.dateTimeGMT}
+                                                                        {new Date(match.dateTimeGMT).toLocaleString()}
                                                                     </span>
                                                                 </div>
                                                                 <div className="hero_area__topslider-cardbody d-flex align-items-center justify-content-between mb-4 mb-md-6">

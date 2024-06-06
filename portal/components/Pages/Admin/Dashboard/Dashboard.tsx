@@ -9,6 +9,7 @@ import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchAllUsers, deleteUser, fetchUserRole, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus } from '../../../../api/firestoreAdminService';
 import EditUserForm from '../UserManagement/EditUserForm';
+import History from '../Dashboard/History';
 
 interface User {
     id: string;
@@ -302,8 +303,6 @@ export default function Dashboard() {
                                                                                 <button onClick={() => handleUpdateWithdrawal(withdrawal.id, withdrawal.userId, withdrawal.amount, 'approved')} className="btn btn-success" disabled={withdrawal.status !== 'pending'}>
                                                                                     Approve
                                                                                 </button>
-
-
                                                                             </td>
                                                                             <td>
                                                                                 <button onClick={() => handleUpdateWithdrawal(withdrawal.id, withdrawal.userId, withdrawal.amount, 'rejected')} className="btn btn-danger" disabled={withdrawal.status !== 'pending'}>
@@ -317,6 +316,9 @@ export default function Dashboard() {
                                                             </table>
                                                         </div>
                                                     </div>
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    <History /> {/* Add the History component as a new tab */}
                                                 </Tab.Panel>
                                             </Tab.Panels>
                                         </div>
