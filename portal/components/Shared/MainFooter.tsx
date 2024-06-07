@@ -21,13 +21,13 @@ export default function MainFooter() {
                                         <ul className="d-flex flex-column gap-5">
                                             <li className="iconstyle d-flex align-items-center">
                                                 <IconArrowBadgeRight className="fs-five rtawin" />
-                                                <Link className="fs-ten n4-color" href="#">Sports</Link>
+                                                <Link className="fs-ten n4-color" href="/cricket">Cricket</Link>
                                             </li>
-                                            <li className="iconstyle d-flex align-items-center">
+                                            {/* <li className="iconstyle d-flex align-items-center">
                                                 <IconArrowBadgeRight className="fs-five rtawin" />
-                                                <Link className="fs-ten n4-color" href="/floorball">Live Betting</Link>
-                                            </li>
-                                            <li className="iconstyle d-flex align-items-center">
+                                                <Link className="fs-ten n4-color" href="#">Sports</Link>
+                                            </li> */}
+                                            {/* <li className="iconstyle d-flex align-items-center">
                                                 <IconArrowBadgeRight className="fs-five rtawin" />
                                                 <Link className="fs-ten n4-color" href="#">Virtuals</Link>
                                             </li>
@@ -42,7 +42,7 @@ export default function MainFooter() {
                                             <li className="iconstyle d-flex align-items-center">
                                                 <IconArrowBadgeRight className="fs-five rtawin" />
                                                 <Link className="fs-ten n4-color" href="/ice-hockey">Ice Hockey</Link>
-                                            </li>
+                                            </li> */}
                                         </ul>
                                     </div>
                                 </div>

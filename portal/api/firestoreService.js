@@ -146,3 +146,19 @@ export const addWithdrawalRequest = async (userId, amount) => {
     throw error;
   }
 };
+
+// Fetch user wallet by user ID
+export const fetchUserWallet = async (userId) => {
+    try {
+        const userDocRef = doc(db, "users", userId);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+            return userDoc.data().wallet;
+        } else {
+            throw new Error("User not found");
+        }
+    } catch (error) {
+        console.error("Error fetching user wallet: ", error);
+        throw error;
+    }
+};

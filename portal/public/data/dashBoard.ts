@@ -75,42 +75,42 @@ export const imagesData = [
 
 export const amountData = [
     { id: 1, 
-      amount: "$3,000", 
+      amount: "3000", 
       bonus: "Bonus + 10%" 
     },
     { id: 2, 
-      amount: "$4,000", 
+      amount: "4000", 
       bonus: "Bonus + 12%" 
     },
     { id: 3, 
-      amount: "$1,000", 
+      amount: "1000", 
       bonus: "Bonus + 15%" 
     },
     { id: 4, 
-      amount: "$500", 
+      amount: "500", 
       bonus: "Bonus + 15%" 
     },
     { id: 5, 
-      amount: "$50", 
+      amount: "50", 
       bonus: "Bonus + 5%" 
     },
 ];
 
 export const dashboardAmmount = [
   { id: 1, 
-    amount: "$17,000", 
+    amount: "1700", 
 
   },
   { id: 2, 
-    amount: "$15,000", 
+    amount: "1500", 
 
   },
   { id: 3, 
-    amount: "$21,000", 
+    amount: "2100", 
 
   },
   { id: 4, 
-    amount: "$40,000", 
+    amount: "4000", 
 
   },
 ];

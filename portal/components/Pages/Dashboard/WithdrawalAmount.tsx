@@ -66,7 +66,7 @@ export default function WithdrawalAmount() {
                         ))}
                     </div>
                     <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">
-                        Withdrawal {activeItem.amount}
+                        Withdrawal ${activeItem.amount}
                     </button>
                 </form>
                 <div className="text-center mt-4">
