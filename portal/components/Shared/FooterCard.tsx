@@ -120,6 +120,8 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
     const t1odds = 1.50; // Example odds for Team 1
     const t2odds = 2.50; // Example odds for Team 2
 
+    
+
     useEffect(() => {
         const selectedOdds = selectedTeam === 't1' ? t1odds : t2odds;
         if (betAmount && !isNaN(Number(betAmount))) {
@@ -224,7 +226,16 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
             let isWin = false;
             if (resultData.data) {
                 const match = resultData.data;
-                const winner = match.winner_team;
+                const status = match.status;
+                let winner = '';
+                if (status.includes('won')) {
+                    if (status.includes(bet.team1)) {
+                        winner = bet.team1;
+                    } else if (status.includes(bet.team2)) {
+                        winner = bet.team2;
+                    }
+                }
+
                 isWin = (winner === bet.selectedTeam);
             }
 
@@ -253,6 +264,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
             console.error('Error settling bet: ', error);
         }
     };
+
 
     return (
         <>
