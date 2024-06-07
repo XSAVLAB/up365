@@ -1,15 +1,18 @@
-"use client";
+'use client'
 import { IconCricket } from "@tabler/icons-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import FooterCard from '../../Shared/FooterCard';
 
 export default function TopCricket() {
   const [matches, setMatches] = useState<any[]>([]);
+  const [selectedMatch, setSelectedMatch] = useState<any>(null);
+  const [isCardExpanded, setIsCardExpanded] = useState(false);
 
   useEffect(() => {
     const fetchCricketMatches = async () => {
       try {
-        const response = await fetch('https://api.cricapi.com/v1/cricScore?apikey=30003ac7-c7ef-4828-bcce-4a461e26902d');
+        const response = await fetch('https://api.cricapi.com/v1/cricScore?apikey=2dc77f32-82dc-4048-9b54-50baa8ab8ef8');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -50,6 +53,11 @@ export default function TopCricket() {
     });
   };
 
+  const handleMatchClick = (match: any) => {
+    setSelectedMatch(match);
+    setIsCardExpanded(true);
+  };
+
   return (
     <section className="top_matches">
       <div className="container-fluid">
@@ -64,7 +72,11 @@ export default function TopCricket() {
                   </div>
                   <div className="top_matches__content">
                     {matches && matches.map((match: any) => (
-                      <div key={match.id} className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4">
+                      <div
+                        key={match.id}
+                        className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4"
+                        onClick={() => handleMatchClick(match)} // Handle match click
+                      >
                         <div className="row gx-0 gy-xl-0 gy-7">
                           <div className="col-xl-5 col-xxl-4">
                             <div className="top_matches__clubname">
@@ -220,6 +232,13 @@ export default function TopCricket() {
           </div>
         </div>
       </div>
+      {selectedMatch &&
+        <FooterCard
+          match={selectedMatch}
+          isCardExpanded={isCardExpanded}
+          setIsCardExpanded={setIsCardExpanded}
+        />
+      } {/* Render FooterCard with selected match */}
     </section>
   );
 }
