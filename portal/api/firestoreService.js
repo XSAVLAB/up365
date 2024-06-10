@@ -149,16 +149,29 @@ export const addWithdrawalRequest = async (userId, amount) => {
 
 // Fetch user wallet by user ID
 export const fetchUserWallet = async (userId) => {
-    try {
-        const userDocRef = doc(db, "users", userId);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-            return userDoc.data().wallet;
-        } else {
-            throw new Error("User not found");
-        }
-    } catch (error) {
-        console.error("Error fetching user wallet: ", error);
-        throw error;
+  try {
+    const userDocRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+      return userDoc.data().wallet;
+    } else {
+      throw new Error("User not found");
     }
+  } catch (error) {
+    console.error("Error fetching user wallet: ", error);
+    throw error;
+  }
+};
+
+// Fetch match data from Firestore
+export const fetchMatchData = async () => {
+  try {
+    const matchDataCollection = collection(db, "matchData");
+    const matchDataSnapshot = await getDocs(matchDataCollection);
+    const matchData = matchDataSnapshot.docs.map((doc) => doc.data());
+    return matchData;
+  } catch (error) {
+    console.error("Error fetching match data: ", error);
+    throw error;
+  }
 };
