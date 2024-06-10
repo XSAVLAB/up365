@@ -1,8 +1,9 @@
-'use client'
+'use client';
 import { IconCricket } from "@tabler/icons-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import FooterCard from '../../Shared/FooterCard';
+import { fetchMatchData } from '../../../api/firestoreService';
 
 export default function TopCricket() {
   const [matches, setMatches] = useState<any[]>([]);
@@ -10,21 +11,17 @@ export default function TopCricket() {
   const [isCardExpanded, setIsCardExpanded] = useState(false);
 
   useEffect(() => {
-    const fetchCricketMatches = async () => {
+    const getMatchData = async () => {
       try {
-        const response = await fetch('https://api.cricapi.com/v1/cricScore?apikey=2dc77f32-82dc-4048-9b54-50baa8ab8ef8');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        const sortedMatches = sortMatches(data.data);
+        const matchData = await fetchMatchData();
+        const sortedMatches = sortMatches(matchData);
         setMatches(sortedMatches);
       } catch (error) {
         console.error('Error fetching cricket matches: ', error);
       }
     };
 
-    fetchCricketMatches();
+    getMatchData();
 
     // Update sorting every hour
     const interval = setInterval(() => {
@@ -75,7 +72,7 @@ export default function TopCricket() {
                       <div
                         key={match.id}
                         className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4"
-                        onClick={() => handleMatchClick(match)} // Handle match click
+                        onClick={() => handleMatchClick(match)}
                       >
                         <div className="row gx-0 gy-xl-0 gy-7">
                           <div className="col-xl-5 col-xxl-4">
@@ -242,3 +239,4 @@ export default function TopCricket() {
     </section>
   );
 }
+
