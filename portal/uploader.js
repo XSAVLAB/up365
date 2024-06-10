@@ -1,48 +1,33 @@
 import admin from "firebase-admin";
-import { join, dirname } from "path";
-import { readdir } from "fs/promises";
-import { createRequire } from "module";
-import { fileURLToPath } from "url";
-
-const require = createRequire(import.meta.url);
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const serviceAccount = require("./secret_key.json");
+import axios from "axios";
+import serviceAccount from "./secret_key.json" assert { type: "json" };
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-const firestore = admin.firestore();
-const directoryPath = join(__dirname, "seeds");
+const db = admin.firestore();
 
-async function uploadFiles() {
+async function fetchAndStoreMatchData() {
   try {
-    const files = await readdir(directoryPath);
-    for (const file of files) {
-      if (file.endsWith(".json")) {
-        const lastDotIndex = file.lastIndexOf(".");
-        const collectionName = file.substring(0, lastDotIndex);
-        const menu = require(`./seeds/${file}`);
+    const response = await axios.get(
+      "https://api.cricapi.com/v1/cricScore?apikey=30003ac7-c7ef-4828-bcce-4a461e26902d"
+    );
+    const data = response.data.data;
 
-        for (const obj of menu) {
-          console.log(`Processing object: ${JSON.stringify(obj)}`);
+    const batch = db.batch();
+    const matchDataRef = db.collection("matchData");
 
-          try {
-            await firestore.collection(collectionName).add(obj);
-            console.log(`Document written in collection "${collectionName}"`);
-          } catch (error) {
-            console.error(`Error writing document:`, error);
-          }
-        }
-      } else {
-        console.log(`Skipping non-JSON file: ${file}`);
-      }
-    }
+    data.forEach((match) => {
+      const docRef = matchDataRef.doc(match.id.toString());
+      batch.set(docRef, match);
+    });
+
+    await batch.commit();
+    console.log("Match data updated successfully");
   } catch (error) {
-    console.error("Error scanning directory or adding document:", error);
+    console.error("Error updating match data:", error);
   }
 }
 
-uploadFiles();
+fetchAndStoreMatchData();
