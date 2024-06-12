@@ -2,6 +2,16 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const axios = require('axios');
 
+const next = require('next');
+
+const dev = process.env.NODE_ENV !== 'production';
+const app = next({ dev });
+const handle = app.getRequestHandler();
+
+exports.nextjs = functions.https.onRequest((req, res) => {
+  return app.prepare().then(() => handle(req, res));
+});
+
 admin.initializeApp();
 const db = admin.firestore();
 

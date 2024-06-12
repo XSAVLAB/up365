@@ -1,19 +1,36 @@
 {
-  "hosting": {
-    "source": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "frameworksBackend": {
-      "region": "us-central1"
+  "hosting": [
+    {
+      "target": "nextjs",
+      "public": "public",
+      "rewrites": [
+        {
+          "source": "**",
+          "function": "nextjs"
+        }
+      ]
     }
-  },
+  ],
   "functions": [
     {
-      "source": "functions",
-      "codebase": "default",
+      "source": ".",
+      "runtime": "nodejs16",
+      "trigger": {
+        "event": "google.firebase.database.ref.written",
+        "resource": "projects/{projectId}/databases/(default)/refs/{databaseId}/{databaseId}",
+        "service": "firebase.database.ref.written"
+      },
+      "entryPoint": "functions/index.js",
+      "timeout": "540s",
+      "availableMemoryMb": 256,
+      "minInstances": 1,
+      "maxInstances": 100,
+      "environmentVariables": {
+        
+      },
+      "deployment": {
+        
+      },
       "ignore": [
         "node_modules",
         ".git",
