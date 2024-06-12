@@ -120,7 +120,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
     const t1odds = 1.50; // Example odds for Team 1
     const t2odds = 2.50; // Example odds for Team 2
 
-    
+
 
     useEffect(() => {
         const selectedOdds = selectedTeam === 't1' ? t1odds : t2odds;
@@ -217,53 +217,53 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
         fetchBets();
     }, []);
 
-    const settleBet = async (bet: Bet) => {
-        try {
-            const db = getFirestore();
-            const matchResult = await fetch(`https://api.cricapi.com/v1/match_info?apikey=YOUR_API_KEY&unique_id=${bet.matchId}`);
-            const resultData = await matchResult.json();
+    // const settleBet = async (bet: Bet) => {
+    //     try {
+    //         const db = getFirestore();
+    //         const matchResult = await fetch(`https://api.cricapi.com/v1/match_info?apikey=YOUR_API_KEY&unique_id=${bet.matchId}`);
+    //         const resultData = await matchResult.json();
 
-            let isWin = false;
-            if (resultData.data) {
-                const match = resultData.data;
-                const status = match.status;
-                let winner = '';
-                if (status.includes('won')) {
-                    if (status.includes(bet.team1)) {
-                        winner = bet.team1;
-                    } else if (status.includes(bet.team2)) {
-                        winner = bet.team2;
-                    }
-                }
+    //         let isWin = false;
+    //         if (resultData.data) {
+    //             const match = resultData.data;
+    //             const status = match.status;
+    //             let winner = '';
+    //             if (status.includes('won')) {
+    //                 if (status.includes(bet.team1)) {
+    //                     winner = bet.team1;
+    //                 } else if (status.includes(bet.team2)) {
+    //                     winner = bet.team2;
+    //                 }
+    //             }
 
-                isWin = (winner === bet.selectedTeam);
-            }
+    //             isWin = (winner === bet.selectedTeam);
+    //         }
 
-            const betRef = doc(db, 'bets', bet.id);
-            await updateDoc(betRef, {
-                settled: true
-            });
+    //         const betRef = doc(db, 'bets', bet.id);
+    //         await updateDoc(betRef, {
+    //             settled: true
+    //         });
 
-            if (isWin) {
-                const winnings = Number(bet.possibleWin);
-                const userWalletRef = doc(db, 'users', bet.userId);
-                const userSnap = await getDoc(userWalletRef);
-                const userData = userSnap.data() as User;
-                const currentBalance = Number(userData.wallet);
-                await updateDoc(userWalletRef, {
-                    wallet: (currentBalance + winnings).toString()
-                });
+    //         if (isWin) {
+    //             const winnings = Number(bet.possibleWin);
+    //             const userWalletRef = doc(db, 'users', bet.userId);
+    //             const userSnap = await getDoc(userWalletRef);
+    //             const userData = userSnap.data() as User;
+    //             const currentBalance = Number(userData.wallet);
+    //             await updateDoc(userWalletRef, {
+    //                 wallet: (currentBalance + winnings).toString()
+    //             });
 
-                setBalance((currentBalance + winnings).toString());
-                setMessage(`Congratulations! You won $${winnings}`);
-            } else {
-                setMessage('Sorry, your bet lost.');
-            }
+    //             setBalance((currentBalance + winnings).toString());
+    //             setMessage(`Congratulations! You won $${winnings}`);
+    //         } else {
+    //             setMessage('Sorry, your bet lost.');
+    //         }
 
-        } catch (error) {
-            console.error('Error settling bet: ', error);
-        }
-    };
+    //     } catch (error) {
+    //         console.error('Error settling bet: ', error);
+    //     }
+    // };
 
 
     return (
@@ -382,14 +382,14 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
                     {message && <div className="alert alert-info mt-3">{message}</div>}
                 </div>
             </div>
-            <div>
+            {/* <div>
                 {bets.map(bet => (
                     <div key={bet.id} className="bet-item">
                         <span>{bet.team1} vs {bet.team2} - Bet on {bet.selectedTeam} - Amount: ${bet.betAmount}</span>
                         <button className="btn btn-sm btn-success" onClick={() => settleBet(bet)}>Settle Bet</button>
                     </div>
                 ))}
-            </div>
+            </div> */}
         </>
     );
 }
