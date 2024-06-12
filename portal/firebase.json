@@ -1,16 +1,15 @@
 {
-  "hosting": [
-    {
-      "target": "nextjs",
-      "public": "public",
-      "rewrites": [
-        {
-          "source": "**",
-          "function": "nextjs"
-        }
-      ]
+  "hosting": {
+    "source": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "frameworksBackend": {
+      "region": "us-central1"
     }
-  ],
+  },
   "functions": [
     {
       "source": ".",
@@ -25,12 +24,8 @@
       "availableMemoryMb": 256,
       "minInstances": 1,
       "maxInstances": 100,
-      "environmentVariables": {
-        
-      },
-      "deployment": {
-        
-      },
+      "environmentVariables": {},
+      "deployment": {},
       "ignore": [
         "node_modules",
         ".git",
