@@ -3,7 +3,7 @@ import { IconCricket } from "@tabler/icons-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import FooterCard from '../../Shared/FooterCard';
-import { fetchMatchData } from '../../../api/firestoreService';
+import { fetchActiveSeriesMatches } from '../../../api/firestoreService';
 
 export default function TopCricket() {
   const [matches, setMatches] = useState<any[]>([]);
@@ -13,7 +13,7 @@ export default function TopCricket() {
   useEffect(() => {
     const getMatchData = async () => {
       try {
-        const matchData = await fetchMatchData();
+        const matchData = await fetchActiveSeriesMatches();
         const sortedMatches = sortMatches(matchData);
         setMatches(sortedMatches);
       } catch (error) {
@@ -239,4 +239,3 @@ export default function TopCricket() {
     </section>
   );
 }
-

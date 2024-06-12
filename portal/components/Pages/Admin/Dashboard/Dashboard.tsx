@@ -7,7 +7,7 @@ import { dashboardTabs } from '@/public/data/adminTabs';
 import { doSignOut } from '../../../../firebase/auth';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchAllUsers, deleteUser, fetchUserRole, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus } from '../../../../api/firestoreAdminService';
+import { fetchAllUsers, deleteUser, fetchUserRole, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive } from '../../../../api/firestoreAdminService';
 import EditUserForm from '../UserManagement/EditUserForm';
 import History from '../Dashboard/History';
 
@@ -48,6 +48,7 @@ export default function Dashboard() {
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
+    const [series, setSeries] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const router = useRouter();
 
@@ -95,9 +96,19 @@ export default function Dashboard() {
             }
         };
 
+        const fetchSeriesData = async () => {
+            try {
+                const series = await fetchSeries();
+                setSeries(series);
+            } catch (error) {
+                console.error('Error fetching series:', error);
+            }
+        };
+
         fetchUsers();
         fetchTransactionsData();
         fetchWithdrawalsData();
+        fetchSeriesData();
         return () => unsubscribe();
     }, [router]);
 
@@ -169,6 +180,15 @@ export default function Dashboard() {
             setWithdrawals(withdrawals.map((withdrawal) => withdrawal.id === withdrawalId ? { ...withdrawal, status } : withdrawal));
         } catch (error) {
             console.error('Error updating withdrawal:', error);
+        }
+    };
+
+    const handleToggleSeries = async (seriesName: string, currentStatus: boolean) => {
+        try {
+            await toggleSeriesActive(seriesName, !currentStatus);
+            setSeries(series.map((s) => s.id === seriesName ? { ...s, active: !currentStatus } : s));
+        } catch (error) {
+            console.error('Error toggling series active status:', error);
         }
     };
 
@@ -318,7 +338,35 @@ export default function Dashboard() {
                                                     </div>
                                                 </Tab.Panel>
                                                 <Tab.Panel>
-                                                    <History /> {/* Add the History component as a new tab */}
+                                                    <History />
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    <div className="pay_method__tabletwo">
+                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                            <table className="w-100 text-center p2-bg">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Series Name</th>
+                                                                        <th>Status</th>
+                                                                        <th>Toggle Active</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {series.map((seriesItem) => (
+                                                                        <tr key={seriesItem.id}>
+                                                                            <td>{seriesItem.id}</td>
+                                                                            <td>{seriesItem.active ? 'Active' : 'Inactive'}</td>
+                                                                            <td>
+                                                                                <button onClick={() => handleToggleSeries(seriesItem.id, seriesItem.active)} className="btn btn-primary">
+                                                                                    {seriesItem.active ? 'Deactivate' : 'Activate'}
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
                                                 </Tab.Panel>
                                             </Tab.Panels>
                                         </div>

@@ -7,6 +7,8 @@ import {
   collection,
   getDocs,
   addDoc,
+  query,
+  where,
 } from "firebase/firestore";
 
 export const handleChange = (profileData, setProfileData) => (e) => {
@@ -163,12 +165,15 @@ export const fetchUserWallet = async (userId) => {
   }
 };
 
-// Fetch match data from Firestore
-export const fetchMatchData = async () => {
+// Fetch active series match data from Firestore
+export const fetchActiveSeriesMatches = async () => {
   try {
-    const matchDataCollection = collection(db, "matchData");
-    const matchDataSnapshot = await getDocs(matchDataCollection);
-    const matchData = matchDataSnapshot.docs.map((doc) => doc.data());
+    const matchDataCollection = collection(db, "cricketDataNew");
+    const q = query(matchDataCollection, where("active", "==", true));
+    const matchDataSnapshot = await getDocs(q);
+    const matchData = matchDataSnapshot.docs.flatMap(
+      (doc) => doc.data().matches
+    );
     return matchData;
   } catch (error) {
     console.error("Error fetching match data: ", error);

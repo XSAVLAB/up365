@@ -177,3 +177,30 @@ export const fetchApprovedWithdrawals = async () => {
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map((doc) => doc.data());
 };
+
+// Fetch series data
+export const fetchSeries = async () => {
+  try {
+    const seriesCollectionRef = collection(db, "cricketDataNew");
+    const seriesSnapshot = await getDocs(seriesCollectionRef);
+    const seriesData = seriesSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return seriesData;
+  } catch (error) {
+    console.error("Error fetching series data: ", error);
+    throw error;
+  }
+};
+
+// Toggle series active status
+export const toggleSeriesActive = async (seriesName, activeStatus) => {
+  try {
+    const seriesDocRef = doc(db, "cricketDataNew", seriesName);
+    await updateDoc(seriesDocRef, { active: activeStatus });
+  } catch (error) {
+    console.error("Error toggling series active status: ", error);
+    throw error;
+  }
+};
