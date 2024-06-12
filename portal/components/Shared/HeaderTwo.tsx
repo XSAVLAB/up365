@@ -91,7 +91,7 @@ export default function HeaderTwo() {
                             <span className="fs-seven mb-1 d-block">Your balance</span>
                             <span className="fw-bold d-block">$ {walletBalance}</span>
                         </div>
-                        <Link href="/dashboard" className="cmn-btn px-xxl-6 d-none d-sm-block d-lg-none d-xxl-block">Deposit</Link>
+                        {/* <Link href="/dashboard" className="cmn-btn px-xxl-6 d-none d-sm-block d-lg-none d-xxl-block">Deposit</Link> */}
                         <div className="d-flex align-items-center gap-2 mt-1">
                             <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative">
                                 <IconGift height={24} width={24} className="ti ti-gift fs-four" />

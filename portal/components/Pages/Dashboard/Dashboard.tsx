@@ -15,29 +15,37 @@ import { addDoc, collection, collectionGroup, doc, getDocs, query, setDoc, where
 import { fetchBalanceHistory, fetchProfileData, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
 
 export default function Dashboard() {
-
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
     const [user, setUser] = useState<User | null>(null);
     const [balanceHistory, setBalanceHistory] = useState<any[]>([]);
-    const [isProfileForm, setIsProfileForm] = useState(false)
+    const [isProfileForm, setIsProfileForm] = useState(false);
     const [isProfileLoaded, setIsProfileLoaded] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
                 fetchBalanceHistory(currentUser.uid)
                     .then(data => setBalanceHistory(data))
                     .catch(error => console.error('Error fetching balance history:', error));
-            }
-            else {
-                setUser(null)
+            } else {
+                setUser(null);
             }
         });
         return () => unsubscribe();
     }, []);
+    useEffect(() => {
+        if (successMessage || errorMessage) {
+            const timer = setTimeout(() => {
+                setSuccessMessage('');
+                setErrorMessage('');
+            }, 5000);
 
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage, errorMessage]);
     // Profile
     const [formProfileData, setFormProfileData] = useState({
         firstName: '',
@@ -52,7 +60,6 @@ export default function Dashboard() {
         city: '',
         country: '',
     });
-
 
     const handleProfileClick = () => {
         setIsProfileForm(true);
@@ -83,10 +90,6 @@ export default function Dashboard() {
         }
     };
 
-
-
-
-
     // Settings
     const [formSettingsData, setFormSettingsData] = useState({
         cardNumber: '',
@@ -109,14 +112,16 @@ export default function Dashboard() {
                 } else {
                     await updateSettings(user.uid, formSettingsData);
                 }
-                console.log('Data updated successfully');
+                setSuccessMessage('Data updated successfully');
+                setErrorMessage('');
             } catch (error) {
-                console.error('Error updating data: ', error);
+                setErrorMessage('Error updating data!');
+                setSuccessMessage('');
             }
         } else {
-            console.error('No user found');
+            setErrorMessage('No user found');
+            setSuccessMessage('');
         }
-
     };
 
     // Logout
@@ -130,9 +135,7 @@ export default function Dashboard() {
         }
     };
 
-
     const handleClick = (itemName: any) => {
-
         if (itemName.tabname === 'Log out') {
             handleLogout();
         } else if (itemName.tabname === 'Profile') {
@@ -142,13 +145,12 @@ export default function Dashboard() {
             setActiveItem(itemName);
         }
     };
+
     const getItemStyle = (itemName: any) => {
         return {
             backgroundColor: activeItem === itemName ? '#0F1B42' : '',
         };
     };
-
-
 
     return (
         <>
@@ -157,6 +159,9 @@ export default function Dashboard() {
                     <div className="row">
                         <div className="col-12 gx-0 gx-sm-4">
                             <div className="hero_area__main">
+                                {successMessage && <div className="alert alert-success">{successMessage}</div>}
+                                {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+
                                 <Tab.Group>
                                     <div className="row gy-6 gy-xxl-0 singletab">
                                         <div className="col-xxl-3">
@@ -243,48 +248,7 @@ export default function Dashboard() {
                                                                     <th className="text-nowrap">Amount</th>
                                                                     <th className="text-nowrap">Status</th>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td>2PQ8B4KYMJ</td>
-                                                                    <td>Bank / CC</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="r1-color fw-normal cpoint">Cancel</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>4TQRW5WXF4</td>
-                                                                    <td>Credit Card</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="g1-color fw-normal cpoint">Complete</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>XR97K86R7Y</td>
-                                                                    <td>tether TRC20</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="r1-color fw-normal cpoint">Cancel</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>VEJP8A5J87</td>
-                                                                    <td>Bank</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="g1-color fw-normal cpoint">Complete</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>JKNFWEJ123</td>
-                                                                    <td>Credit Card</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="r1-color fw-normal cpoint">Cancel</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>NC8S4QJ4K2</td>
-                                                                    <td>tether TRC20</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="r1-color fw-normal cpoint">Cancel</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>DGPSN7SRM4</td>
-                                                                    <td>TRON</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="g1-color fw-normal cpoint">Complete</td>
-                                                                </tr>
+
                                                                 <tr>
                                                                     <td>ZT3FA5D8N7</td>
                                                                     <td>Ethereum</td>
@@ -352,6 +316,7 @@ export default function Dashboard() {
                                                                     </button>
                                                                 </div>
                                                             ) : ( */}
+
                                                             <form onSubmit={onSubmit}>
                                                                 <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">

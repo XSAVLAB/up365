@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { dashboardAmmount } from '@/public/data/dashBoard';
 import { db, auth } from '@/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, addDoc } from 'firebase/firestore';
 import { addWithdrawalRequest } from '@/api/firestoreService';
 
 export default function WithdrawalAmount() {
-
     const [activeItem, setActiveItem] = useState(dashboardAmmount[0]);
     const [user, setUser] = useState<any>(null);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -21,6 +21,17 @@ export default function WithdrawalAmount() {
 
         return () => unsubscribe();
     }, []);
+
+    useEffect(() => {
+        if (successMessage || errorMessage) {
+            const timer = setTimeout(() => {
+                setSuccessMessage('');
+                setErrorMessage('');
+            }, 5000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage, errorMessage]);
 
     const handleClick = (itemName: any) => {
         setActiveItem(itemName);
@@ -39,17 +50,23 @@ export default function WithdrawalAmount() {
         if (user) {
             try {
                 await addWithdrawalRequest(user.uid, activeItem.amount);
+                setSuccessMessage(`Withdrawal request for $${activeItem.amount} submitted successfully.`);
+                setErrorMessage('');
             } catch (error) {
-                console.error('Error storing withdrawal request: ', error);
+                setErrorMessage('Error storing withdrawal request!');
+                setSuccessMessage('');
             }
         } else {
-            console.log('No user is logged in');
+            setErrorMessage('No user is logged in');
+            setSuccessMessage('');
         }
     };
 
     return (
         <>
             <div className="pay_method__paymethod-alitem mb-5 mb-md-6">
+                {successMessage && <div className="alert alert-success">{successMessage}</div>}
+                {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="pay_method__paymethod-items d-flex align-items-center gap-4 gap-sm-5 gap-md-6 mb-6">
                         {dashboardAmmount.map((singleAmmount) => (
@@ -60,7 +77,7 @@ export default function WithdrawalAmount() {
                                 style={getItemStyle(singleAmmount)}
                             >
                                 <div className="py-3 px-5 px-md-6 n11-bg rounded-3">
-                                    <span className="fs-ten fw-bold">{singleAmmount.amount}</span>
+                                    <span className="fs-ten fw-bold">${singleAmmount.amount}</span>
                                 </div>
                             </div>
                         ))}
