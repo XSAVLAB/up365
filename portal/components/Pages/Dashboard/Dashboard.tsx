@@ -1,90 +1,79 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { IconWallet, IconCreditCard, IconCreditCardOff, IconLogout, IconUser, IconSettings, IconBellRinging, IconHistory, } from "@tabler/icons-react";
-import { amountData } from '@/public/data/dashBoard';
+import { IconBellRinging, } from "@tabler/icons-react";
 import DepositCard from './DepositCard';
 import DepositAmount from './DepositAmount';
 import { Tab } from '@headlessui/react';
 import WithdrawalAmount from './WithdrawalAmount';
-import Link from 'next/link';
 import { dashboardTabs } from '@/public/data/dashTabs';
 import { doSignOut } from '../../../firebase/auth';
 import { User, onAuthStateChanged } from 'firebase/auth';
-import { db, auth } from '@/firebaseConfig';
-import { addDoc, collection, collectionGroup, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
-import { fetchBalanceHistory, fetchProfileData, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
+import { auth } from '@/firebaseConfig';
+import { fetchBalanceHistory, fetchProfileData, fetchUserBets, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
 
 export default function Dashboard() {
-
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
     const [user, setUser] = useState<User | null>(null);
     const [balanceHistory, setBalanceHistory] = useState<any[]>([]);
-    const [isProfileForm, setIsProfileForm] = useState(false)
-    const [isProfileLoaded, setIsProfileLoaded] = useState(false);
-
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [userBets, setUserBets] = useState<any[]>([]);
     useEffect(() => {
-
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
                 fetchBalanceHistory(currentUser.uid)
                     .then(data => setBalanceHistory(data))
                     .catch(error => console.error('Error fetching balance history:', error));
-            }
-            else {
-                setUser(null)
+                fetchProfileData(currentUser.uid)
+                    .then((profileData) => {
+                        if (profileData) {
+                            setFormProfileData(profileData);
+                        }
+                    })
+                    .catch((error) =>
+                        console.error("Error fetching profile data:", error)
+                    );
+                fetchBets(currentUser.uid);
+            } else {
+                setUser(null);
+                setUserBets([]);
             }
         });
+        const fetchBets = async (userId: string) => {
+            try {
+                const bets = await fetchUserBets(userId);
+                setUserBets(bets);
+            } catch (error) {
+                console.error('Error fetching user bets:', error);
+            }
+        };
         return () => unsubscribe();
     }, []);
+    useEffect(() => {
+        if (successMessage || errorMessage) {
+            const timer = setTimeout(() => {
+                setSuccessMessage('');
+                setErrorMessage('');
+            }, 5000);
 
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage, errorMessage]);
     // Profile
     const [formProfileData, setFormProfileData] = useState({
-        firstName: '',
-        lastName: '',
-        day: '',
-        month: '',
-        year: '',
-        phoneCode: '',
-        phoneNumber: '',
-        address: '',
-        gender: '',
-        city: '',
-        country: '',
+        firstName: "",
+        lastName: "",
+        day: "",
+        month: "",
+        year: "",
+        phoneCode: "",
+        phoneNumber: "",
+        address: "",
+        gender: "",
+        city: "",
+        country: "",
     });
-
-
-    const handleProfileClick = () => {
-        setIsProfileForm(true);
-        if (user) {
-            fetchProfileData(user.uid)
-                .then(profileData => {
-                    if (profileData) {
-                        setFormProfileData(profileData);
-                        setIsProfileLoaded(true);
-                    } else {
-                        setFormProfileData({
-                            firstName: '',
-                            lastName: '',
-                            day: '',
-                            month: '',
-                            year: '',
-                            phoneCode: '',
-                            phoneNumber: '',
-                            address: '',
-                            gender: '',
-                            city: '',
-                            country: '',
-                        });
-                        setIsProfileLoaded(false);
-                    }
-                })
-                .catch(error => console.error('Error fetching profile data:', error));
-        }
-    };
-
-
-
 
 
     // Settings
@@ -99,26 +88,39 @@ export default function Dashboard() {
         zipCode: '',
     });
 
-    // Handle Submit
     const onSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         if (user) {
             try {
-                if (isProfileForm) {
-                    await updateProfile(db, user.uid, formProfileData);
-                } else {
-                    await updateSettings(user.uid, formSettingsData);
-                }
-                console.log('Data updated successfully');
+                await updateProfile(user.uid, formProfileData);
+                setSuccessMessage("Data updated successfully");
+                setErrorMessage("");
             } catch (error) {
-                console.error('Error updating data: ', error);
+                setErrorMessage("Error updating data!");
+                setSuccessMessage("");
             }
         } else {
-            console.error('No user found');
+            setErrorMessage("No user found");
+            setSuccessMessage("");
         }
-
     };
 
+    const onSettingsSubmit = async (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        if (user) {
+            try {
+                await updateSettings(user.uid, formSettingsData);
+                setSuccessMessage("Payment details updated successfully");
+                setErrorMessage("");
+            } catch (error) {
+                setErrorMessage("Error updating payment details!");
+                setSuccessMessage("");
+            }
+        } else {
+            setErrorMessage("No user found");
+            setSuccessMessage("");
+        }
+    };
     // Logout
     const handleLogout = async () => {
         try {
@@ -130,25 +132,20 @@ export default function Dashboard() {
         }
     };
 
-
     const handleClick = (itemName: any) => {
-
         if (itemName.tabname === 'Log out') {
             handleLogout();
-        } else if (itemName.tabname === 'Profile') {
-            handleProfileClick();
-            setActiveItem(itemName);
+
         } else {
             setActiveItem(itemName);
         }
     };
+
     const getItemStyle = (itemName: any) => {
         return {
             backgroundColor: activeItem === itemName ? '#0F1B42' : '',
         };
     };
-
-
 
     return (
         <>
@@ -157,6 +154,9 @@ export default function Dashboard() {
                     <div className="row">
                         <div className="col-12 gx-0 gx-sm-4">
                             <div className="hero_area__main">
+                                {successMessage && <div className="alert alert-success">{successMessage}</div>}
+                                {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+
                                 <Tab.Group>
                                     <div className="row gy-6 gy-xxl-0 singletab">
                                         <div className="col-xxl-3">
@@ -243,48 +243,7 @@ export default function Dashboard() {
                                                                     <th className="text-nowrap">Amount</th>
                                                                     <th className="text-nowrap">Status</th>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td>2PQ8B4KYMJ</td>
-                                                                    <td>Bank / CC</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="r1-color fw-normal cpoint">Cancel</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>4TQRW5WXF4</td>
-                                                                    <td>Credit Card</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="g1-color fw-normal cpoint">Complete</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>XR97K86R7Y</td>
-                                                                    <td>tether TRC20</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="r1-color fw-normal cpoint">Cancel</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>VEJP8A5J87</td>
-                                                                    <td>Bank</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="g1-color fw-normal cpoint">Complete</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>JKNFWEJ123</td>
-                                                                    <td>Credit Card</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="r1-color fw-normal cpoint">Cancel</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>NC8S4QJ4K2</td>
-                                                                    <td>tether TRC20</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="r1-color fw-normal cpoint">Cancel</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>DGPSN7SRM4</td>
-                                                                    <td>TRON</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="g1-color fw-normal cpoint">Complete</td>
-                                                                </tr>
+
                                                                 <tr>
                                                                     <td>ZT3FA5D8N7</td>
                                                                     <td>Ethereum</td>
@@ -325,33 +284,18 @@ export default function Dashboard() {
                                                         </div>
                                                     </div>
                                                 </Tab.Panel>
-                                                {/* <Tab.Panel onClick={() => setIsProfileForm(true)}> */}
-                                                <Tab.Panel onClick={handleProfileClick}>
+                                                <Tab.Panel>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                                             <h5 className="n10-color">About You</h5>
                                                         </div>
                                                         <div className="pay_method__formarea">
-                                                            {/* {isProfileLoaded && !isProfileForm ? (
-                                                                <div>
-                                                                    <div className="mb-5">
-                                                                        <h6>First Name: {formProfileData.firstName}</h6>
-                                                                        <h6>Last Name: {formProfileData.lastName}</h6>
-                                                                        <h6>Date of Birth: {`${formProfileData.day}/${formProfileData.month}/${formProfileData.year}`}</h6>
-                                                                        <h6>Phone: {`${formProfileData.phoneCode} ${formProfileData.phoneNumber}`}</h6>
-                                                                        <h6>Address: {formProfileData.address}</h6>
-                                                                        <h6>Gender: {formProfileData.gender}</h6>
-                                                                        <h6>City: {formProfileData.city}</h6>
-                                                                        <h6>Country: {formProfileData.country}</h6>
-                                                                    </div>
-                                                                    <button className="cmn-btn py-3 px-10" onClick={() => setIsProfileForm(true)}>
-                                                                        Edit
-                                                                    </button>
-                                                                    <button className="cmn-btn py-3 px-10">
-                                                                        Delete
-                                                                    </button>
-                                                                </div>
-                                                            ) : ( */}
+                                                            {successMessage && (
+                                                                <div className="alert alert-success">{successMessage}</div>
+                                                            )}
+                                                            {errorMessage && (
+                                                                <div className="alert alert-danger">{errorMessage}</div>
+                                                            )}
                                                             <form onSubmit={onSubmit}>
                                                                 <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
@@ -362,8 +306,7 @@ export default function Dashboard() {
                                                                             name="firstName"
                                                                             placeholder="First Name"
                                                                             value={formProfileData.firstName}
-                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
-                                                                        />
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)} />
                                                                     </div>
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Last Name</label>
@@ -373,8 +316,7 @@ export default function Dashboard() {
                                                                             name="lastName"
                                                                             placeholder="Last Name"
                                                                             value={formProfileData.lastName}
-                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
-                                                                        />
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)} />
                                                                     </div>
                                                                 </div>
                                                                 <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
@@ -387,8 +329,7 @@ export default function Dashboard() {
                                                                                     name="day"
                                                                                     placeholder="12"
                                                                                     value={formProfileData.day}
-                                                                                    onChange={handleChange(formProfileData, setFormProfileData)}
-                                                                                />
+                                                                                    onChange={handleChange(formProfileData, setFormProfileData)} />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
                                                                                 <input
@@ -396,8 +337,7 @@ export default function Dashboard() {
                                                                                     name="month"
                                                                                     placeholder="09"
                                                                                     value={formProfileData.month}
-                                                                                    onChange={handleChange(formProfileData, setFormProfileData)}
-                                                                                />
+                                                                                    onChange={handleChange(formProfileData, setFormProfileData)} />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
                                                                                 <input
@@ -405,8 +345,7 @@ export default function Dashboard() {
                                                                                     name="year"
                                                                                     placeholder="1999"
                                                                                     value={formProfileData.year}
-                                                                                    onChange={handleChange(formProfileData, setFormProfileData)}
-                                                                                />
+                                                                                    onChange={handleChange(formProfileData, setFormProfileData)} />
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -419,16 +358,14 @@ export default function Dashboard() {
                                                                                 name="phoneCode"
                                                                                 placeholder="+962"
                                                                                 value={formProfileData.phoneCode}
-                                                                                onChange={handleChange(formProfileData, setFormProfileData)}
-                                                                            />
+                                                                                onChange={handleChange(formProfileData, setFormProfileData)} />
                                                                             <input
                                                                                 className="n11-bg rounded-8"
                                                                                 type="text"
                                                                                 name="phoneNumber"
                                                                                 placeholder="XX-XXX-XXXXX"
                                                                                 value={formProfileData.phoneNumber}
-                                                                                onChange={handleChange(formProfileData, setFormProfileData)}
-                                                                            />
+                                                                                onChange={handleChange(formProfileData, setFormProfileData)} />
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -441,8 +378,7 @@ export default function Dashboard() {
                                                                             name="address"
                                                                             placeholder="Address..."
                                                                             value={formProfileData.address}
-                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
-                                                                        />
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)} />
                                                                     </div>
                                                                     <div className="w-100">
                                                                         <label className="mb-3 d-block">Male & Female</label>
@@ -450,8 +386,7 @@ export default function Dashboard() {
                                                                             className="n11-bg extrastyle rounded-8 w-100 py-3 pe-5"
                                                                             name="gender"
                                                                             value={formProfileData.gender}
-                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
-                                                                        >
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)}                                                                        >
                                                                             <option className="p6-color" value="">
                                                                                 Select Gender...
                                                                             </option>
@@ -473,8 +408,7 @@ export default function Dashboard() {
                                                                             name="city"
                                                                             placeholder="City / Region..."
                                                                             value={formProfileData.city}
-                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
-                                                                        />
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)} />
                                                                     </div>
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Country</label>
@@ -492,17 +426,17 @@ export default function Dashboard() {
                                                                     Update
                                                                 </button>
                                                             </form>
-                                                            {/* )} */}
                                                         </div>
                                                     </div>
                                                 </Tab.Panel>
-                                                <Tab.Panel onClick={() => setIsProfileForm(false)}>
+
+                                                <Tab.Panel >
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                                             <h5 className="n10-color">Enter your payment details</h5>
                                                         </div>
                                                         <div className="pay_method__formarea">
-                                                            <form onSubmit={onSubmit}>
+                                                            <form onSubmit={onSettingsSubmit}>
                                                                 <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="d-flex w-100 p1-bg ps-3 rounded-8">
                                                                         <div className="d-flex align-items-center w-100">
@@ -599,6 +533,36 @@ export default function Dashboard() {
                                                     </div>
                                                 </Tab.Panel>
                                                 <Tab.Panel>
+                                                    <div className="pay_method__tabletwo">
+                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                            <table className="w-100 text-center p2-bg">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Bet ID</th>
+                                                                        <th>Match</th>
+                                                                        <th>Your Team</th>
+                                                                        <th>Odds</th>
+                                                                        <th>Bet Amount</th>
+                                                                        <th>Status</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {userBets.map((bet) => (
+                                                                        <tr key={bet.id}>
+                                                                            <td>{bet.id}</td>
+                                                                            <td>{bet.team1} Vs {bet.team2}</td>
+                                                                            <td>{bet.selectedTeam}</td>
+                                                                            <td>{bet.odds}</td>
+                                                                            <td>{bet.betAmount}</td>
+                                                                            <td>{bet.status}</td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel>
+                                                <Tab.Panel>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div
                                                             className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
@@ -688,94 +652,7 @@ export default function Dashboard() {
                                                     </div>
                                                 </Tab.Panel>
                                                 <Tab.Panel>
-                                                    {/* <div onClick={handleLogout} style={{ cursor: 'pointer' }} className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8" >
 
-                                                        <div
-                                                            className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
-                                                            <IconBellRinging width={28} height={28} className="ti ti-bell-ringing fs-four" />
-                                                            <h5 className="n10-color">Notifications settings </h5>
-                                                        </div>
-                                                        <div className="pay_method__Notiitem d-flex align-items-center gap-3 justify-content-between align-items-center pb-5 pb-md-6 mb-5 mb-md-6">
-                                                            <div className="pay_method__Notiitem-text">
-                                                                <h6 className="mb-3">Email Notifications</h6>
-                                                                <span className="fs-seven n4-color">Receive weekly email notifications.</span>
-                                                            </div>
-                                                            <div className="pay_method__Notiitem-switcher">
-                                                                <label className="switch">
-                                                                    <input type="checkbox" />
-                                                                    <div className="slider">
-                                                                        <div className="circle">
-
-                                                                        </div>
-                                                                    </div>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                        <div className="pay_method__Notiitem d-flex align-items-center gap-3 justify-content-between align-items-center pb-5 pb-md-6 mb-5 mb-md-6">
-                                                            <div className="pay_method__Notiitem-text">
-                                                                <h6 className="mb-3">Phone Notifications</h6>
-                                                                <span className="fs-seven n4-color">Receive weekly Phone notifications.</span>
-                                                            </div>
-                                                            <div className="pay_method__Notiitem-switcher">
-                                                                <label className="switch">
-                                                                    <input type="checkbox" />
-                                                                    <div className="slider">
-                                                                        <div className="circle">
-
-                                                                        </div>
-                                                                    </div>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                        <div className="pay_method__Notiitem d-flex align-items-center gap-3 justify-content-between align-items-center pb-5 pb-md-6 mb-5 mb-md-6">
-                                                            <div className="pay_method__Notiitem-text">
-                                                                <h6 className="mb-3">New tasks</h6>
-                                                                <span className="fs-seven n4-color">Receive weekly New tasks notifications.</span>
-                                                            </div>
-                                                            <div className="pay_method__Notiitem-switcher">
-                                                                <label className="switch">
-                                                                    <input type="checkbox" />
-                                                                    <div className="slider">
-                                                                        <div className="circle">
-
-                                                                        </div>
-                                                                    </div>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                        <div className="pay_method__Notiitem d-flex align-items-center gap-3 justify-content-between align-items-center pb-5 pb-md-6 mb-5 mb-md-6">
-                                                            <div className="pay_method__Notiitem-text">
-                                                                <h6 className="mb-3">Billing and payments</h6>
-                                                                <span className="fs-seven n4-color">Lorem ipsum dolor sit amet consectetur. Id.</span>
-                                                            </div>
-                                                            <div className="pay_method__Notiitem-switcher">
-                                                                <label className="switch">
-                                                                    <input type="checkbox" />
-                                                                    <div className="slider">
-                                                                        <div className="circle">
-
-                                                                        </div>
-                                                                    </div>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                        <div className="pay_method__Notiitem d-flex align-items-center gap-3 justify-content-between align-items-center border-0">
-                                                            <div className="pay_method__Notiitem-text">
-                                                                <h6 className="mb-3">Updates and announcements</h6>
-                                                                <span className="fs-seven n4-color">Lorem ipsum dolor sit amet consectetur.</span>
-                                                            </div>
-                                                            <div className="pay_method__Notiitem-switcher">
-                                                                <label className="switch">
-                                                                    <input type="checkbox" />
-                                                                    <div className="slider">
-                                                                        <div className="circle">
-
-                                                                        </div>
-                                                                    </div>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div> */}
                                                 </Tab.Panel>
                                             </Tab.Panels>
                                         </div>
@@ -790,128 +667,3 @@ export default function Dashboard() {
     )
 }
 
-
-// import { useState } from 'react'
-// import { Tab } from '@headlessui/react'
-
-// function classNames(...classes) {
-//   return classes.filter(Boolean).join(' ')
-// }
-
-// export default function Example() {
-//   let [categories] = useState({
-//     Recent: [
-//       {
-//         id: 1,
-//         title: 'Does drinking coffee make you smarter?',
-//         date: '5h ago',
-//         commentCount: 5,
-//         shareCount: 2,
-//       },
-//       {
-//         id: 2,
-//         title: "So you've bought coffee... now what?",
-//         date: '2h ago',
-//         commentCount: 3,
-//         shareCount: 2,
-//       },
-//     ],
-//     Popular: [
-//       {
-//         id: 1,
-//         title: 'Is tech making coffee better or worse?',
-//         date: 'Jan 7',
-//         commentCount: 29,
-//         shareCount: 16,
-//       },
-//       {
-//         id: 2,
-//         title: 'The most innovative things happening in coffee',
-//         date: 'Mar 19',
-//         commentCount: 24,
-//         shareCount: 12,
-//       },
-//     ],
-//     Trending: [
-//       {
-//         id: 1,
-//         title: 'Ask Me Anything: 10 answers to your questions about coffee',
-//         date: '2d ago',
-//         commentCount: 9,
-//         shareCount: 5,
-//       },
-//       {
-//         id: 2,
-//         title: "The worst advice we've ever heard about coffee",
-//         date: '4d ago',
-//         commentCount: 1,
-//         shareCount: 2,
-//       },
-//     ],
-//   })
-
-//   return (
-//     <div className="w-full max-w-md px-2 py-16 sm:px-0">
-//       <Tab.Group>
-//         <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
-//           {Object.keys(categories).map((category) => (
-//             <Tab
-//               key={category}
-//               className={({ selected }) =>
-//                 classNames(
-//                   'w-full rounded-lg py-2.5 text-sm font-medium leading-5',
-//                   'ring-white/60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
-//                   selected
-//                     ? 'bg-white text-blue-700 shadow'
-//                     : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
-//                 )
-//               }
-//             >
-//               {category}
-//             </Tab>
-//           ))}
-//         </Tab.List>
-//         <Tab.Panels className="mt-2">
-//           {Object.values(categories).map((posts, idx) => (
-//             <Tab.Panel
-//               key={idx}
-//               className={classNames(
-//                 'rounded-xl bg-white p-3',
-//                 'ring-white/60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'
-//               )}
-//             >
-//               <ul>
-//                 {posts.map((post) => (
-//                   <li
-//                     key={post.id}
-//                     className="relative rounded-md p-3 hover:bg-gray-100"
-//                   >
-//                     <h3 className="text-sm font-medium leading-5">
-//                       {post.title}
-//                     </h3>
-
-//                     <ul className="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
-//                       <li>{post.date}</li>
-//                       <li>&middot;</li>
-//                       <li>{post.commentCount} comments</li>
-//                       <li>&middot;</li>
-//                       <li>{post.shareCount} shares</li>
-//                     </ul>
-
-//                     <a
-//                       href="#"
-//                       className={classNames(
-//                         'absolute inset-0 rounded-md',
-//                         'ring-blue-400 focus:z-10 focus:outline-none focus:ring-2'
-//                       )}
-//                     />
-//                   </li>
-//                 ))}
-//               </ul>
-//             </Tab.Panel>
-//           ))}
-//         </Tab.Panels>
-//       </Tab.Group>
-//     </div>
-//   )
-// }

@@ -7,6 +7,8 @@ import {
   collection,
   getDocs,
   addDoc,
+  query,
+  where,
 } from "firebase/firestore";
 
 export const handleChange = (profileData, setProfileData) => (e) => {
@@ -60,6 +62,17 @@ export const fetchProfileData = async (userId) => {
   }
 };
 
+// Update Profile
+export const updateProfile = async (userId, profileData) => {
+  try {
+    const userDocRef = doc(db, "users", userId);
+    await setDoc(userDocRef, profileData, { merge: true });
+    console.log("Profile data stored in Firestore");
+  } catch (error) {
+    console.error("Error updating profile: ", error);
+    throw error;
+  }
+};
 // Create Profile
 export const createProfile = async (userId, profileData) => {
   try {
@@ -67,18 +80,6 @@ export const createProfile = async (userId, profileData) => {
     await setDoc(userDocRef, profileData);
   } catch (error) {
     console.error("Error creating profile: ", error);
-    throw error;
-  }
-};
-
-// Update Profile
-export const updateProfile = async (db, userId, profileData) => {
-  try {
-    const userDocRef = doc(db, "users", userId);
-    await setDoc(userDocRef, profileData, { merge: true });
-    console.log("Profile data stored in Firestore");
-  } catch (error) {
-    console.error("Error updating profile: ", error);
     throw error;
   }
 };
@@ -163,15 +164,98 @@ export const fetchUserWallet = async (userId) => {
   }
 };
 
-// Fetch match data from Firestore
-export const fetchMatchData = async () => {
+// Fetch active series match data from Firestore
+export const fetchActiveSeriesMatches = async () => {
   try {
-    const matchDataCollection = collection(db, "matchData");
-    const matchDataSnapshot = await getDocs(matchDataCollection);
-    const matchData = matchDataSnapshot.docs.map((doc) => doc.data());
+    const matchDataCollection = collection(db, "cricketData");
+    const q = query(matchDataCollection, where("active", "==", true));
+    const matchDataSnapshot = await getDocs(q);
+    const matchData = matchDataSnapshot.docs.flatMap(
+      (doc) => doc.data().matches
+    );
     return matchData;
   } catch (error) {
     console.error("Error fetching match data: ", error);
+    throw error;
+  }
+};
+
+// Fetch user's bets
+export const fetchUserBets = async (userId) => {
+  try {
+    const betsCollectionRef = collection(db, "bets");
+    const q = query(betsCollectionRef, where("userId", "==", userId));
+    const betsSnapshot = await getDocs(q);
+    const betsData = betsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return betsData;
+  } catch (error) {
+    console.error("Error fetching user bets: ", error);
+    throw error;
+  }
+};
+
+// Fetch User Balance (for use in FooterCard component)
+export const fetchUserBalance = async (userId) => {
+  try {
+    const userDocRef = doc(db, "users", userId);
+    const docSnap = await getDoc(userDocRef);
+    if (docSnap.exists()) {
+      const userData = docSnap.data();
+      return userData.wallet;
+    } else {
+      throw new Error("No wallet found for user");
+    }
+  } catch (error) {
+    console.error("Error fetching balance: ", error);
+    throw error;
+  }
+};
+
+// Place a Bet (for use in FooterCard component)
+export const placeBet = async (betData) => {
+  try {
+    const {
+      userId,
+      betAmount,
+      possibleWin,
+      selectedTeam,
+      t1,
+      t2,
+      t1odds,
+      t2odds,
+      matchId,
+      currentBalance,
+    } = betData;
+    if (betAmount > currentBalance) {
+      throw new Error("Insufficient balance");
+    }
+
+    const betDocRef = await addDoc(collection(db, "bets"), {
+      userId,
+      team1: t1,
+      team2: t2,
+      betAmount,
+      odds: selectedTeam === "t1" ? t1odds.toString() : t2odds.toString(),
+      possibleWin,
+      selectedTeam: selectedTeam === "t1" ? t1 : t2,
+      timestamp: new Date().toISOString(),
+      status: "pending",
+      matchId,
+      settled: false,
+    });
+
+    await updateDoc(doc(db, "bets", betDocRef.id), { id: betDocRef.id });
+
+    await updateDoc(doc(db, "users", userId), {
+      wallet: (currentBalance - betAmount).toString(),
+    });
+
+    return `Bet of $${betAmount} placed on ${selectedTeam === "t1" ? t1 : t2}`;
+  } catch (error) {
+    console.error("Error placing bet: ", error);
     throw error;
   }
 };

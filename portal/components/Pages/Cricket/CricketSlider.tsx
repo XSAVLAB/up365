@@ -5,14 +5,15 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import { IconCricket } from "@tabler/icons-react";
-import { fetchMatchData } from "../../../api/firestoreService";
-export default function TopSlider() {
+import { fetchActiveSeriesMatches } from "../../../api/firestoreService";
+
+export default function CricketSlider() {
     const [matches, setMatches] = useState<any[]>([]);
 
     useEffect(() => {
         const getMatchData = async () => {
             try {
-                const matchData = await fetchMatchData();
+                const matchData = await fetchActiveSeriesMatches();
                 setMatches(matchData);
             } catch (error) {
                 console.error('Error fetching cricket matches: ', error);

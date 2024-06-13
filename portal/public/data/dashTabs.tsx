@@ -1,4 +1,4 @@
-import { IconBellRinging, IconCreditCard, IconCreditCardOff, IconHistory, IconLogout, IconSettings, IconUser, IconWallet } from "@tabler/icons-react";
+import { IconBellRinging, IconCreditCard, IconCreditCardOff, IconHistory, IconLogout, IconMoneybag, IconReportMoney, IconSettings, IconUser, IconWallet } from "@tabler/icons-react";
 import React from "react";
 
 export const dashboardTabs = [
@@ -38,12 +38,18 @@ export const dashboardTabs = [
   },
   {
     id: 7,
+    tabname: "Bets",
+    icon: <IconReportMoney
+      className="ti ti-bell-ringing fs-five n5-color" />,
+  },
+  {
+    id: 8,
     tabname: "Notifications",
     icon: <IconBellRinging
       className="ti ti-bell-ringing fs-five n5-color" />,
   },
   {
-    id: 8,
+    id: 9,
     tabname: "Log out",
     icon: <IconLogout
       className="ti ti-logout fs-five n5-color" />,
