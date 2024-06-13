@@ -181,7 +181,7 @@ export const fetchApprovedWithdrawals = async () => {
 // Fetch series data
 export const fetchSeries = async () => {
   try {
-    const seriesCollectionRef = collection(db, "cricketDataNew");
+    const seriesCollectionRef = collection(db, "cricketData");
     const seriesSnapshot = await getDocs(seriesCollectionRef);
     const seriesData = seriesSnapshot.docs.map((doc) => ({
       id: doc.id,
@@ -197,7 +197,7 @@ export const fetchSeries = async () => {
 // Toggle series active status
 export const toggleSeriesActive = async (seriesName, activeStatus) => {
   try {
-    const seriesDocRef = doc(db, "cricketDataNew", seriesName);
+    const seriesDocRef = doc(db, "cricketData", seriesName);
     await updateDoc(seriesDocRef, { active: activeStatus });
   } catch (error) {
     console.error("Error toggling series active status: ", error);

@@ -13,9 +13,8 @@ import { auth } from '@/firebaseConfig';
 export default function HeaderTwo() {
     const [isCardExpanded, setIsCardExpanded] = useState(false);
     const [isMiddleExpanded, setIsMiddleExpanded] = useState(false);
-    const [walletBalance, setWalletBalance] = useState(null); // State to hold the wallet balance
-    const [user, setUser] = useState(null); // State to hold the user
-
+    const [walletBalance, setWalletBalance] = useState(null);
+    const [user, setUser] = useState(null); 
     const toggleCard = () => {
         setIsCardExpanded(!isCardExpanded);
     };
