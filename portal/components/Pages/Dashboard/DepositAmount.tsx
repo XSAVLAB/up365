@@ -198,8 +198,8 @@ export default function DepositAmount() {
                                         key={singleData.id}
                                     >
                                         <div className="py-3 px-5 px-md-6 n11-bg rounded-3">
-                                            <span className="fs-ten fw-bold mb-2">{singleData.amount}</span>
-                                            <span className="fs-seven d-block">{singleData.bonus}</span>
+                                            <span className="fs-ten fw-bold mb-2">${singleData.amount}</span>
+                                            {/* <span className="fs-seven d-block">{singleData.bonus}</span> */}
                                         </div>
                                     </div>
                                 ))}
