@@ -9,13 +9,14 @@ import { dashboardTabs } from '@/public/data/dashTabs';
 import { doSignOut } from '../../../firebase/auth';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchBalanceHistory, fetchProfileData, fetchUserBets, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
+import { fetchBalanceHistory, fetchProfileData, fetchUserBets, fetchUserWallet, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
 
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
     const [user, setUser] = useState<User | null>(null);
     const [balanceHistory, setBalanceHistory] = useState<any[]>([]);
     const [successMessage, setSuccessMessage] = useState('');
+    const [walletBalance, setWalletBalance] = useState('0');
     const [errorMessage, setErrorMessage] = useState('');
     const [userBets, setUserBets] = useState<any[]>([]);
     useEffect(() => {
@@ -34,6 +35,9 @@ export default function Dashboard() {
                     .catch((error) =>
                         console.error("Error fetching profile data:", error)
                     );
+                fetchUserWallet(currentUser.uid)
+                    .then(data => setWalletBalance(data))
+                    .catch(error => console.error('Error fetching wallet balance: ', error));
                 fetchBets(currentUser.uid);
             } else {
                 setUser(null);
@@ -179,123 +183,12 @@ export default function Dashboard() {
                                         <div className="col-xxl-9">
                                             <Tab.Panels className="tabcontents">
                                                 <Tab.Panel>
-                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
-                                                        <div
-                                                            className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
-                                                            <i className="ti ti-credit-card fs-four g1-color"></i>
-                                                            <h5 className="n10-color">Payment methods</h5>
-                                                        </div>
-                                                        <div className="pay_method__paymethod-alitem">
-                                                            <div className="row gx-4 gy-4">
-                                                                <DepositCard />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <DepositAmount />
-                                                </Tab.Panel>
-                                                <Tab.Panel>
-                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
-                                                        <div
-                                                            className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
-                                                            <i className="ti ti-credit-card fs-four g1-color"></i>
-                                                            <h5 className="n10-color">Payment methods</h5>
-                                                        </div>
-                                                        <div className="pay_method__paymethod-alitem">
-                                                            <div className="row gx-4 gy-4">
-                                                                <DepositCard />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
-                                                        <div className="pay_method__paymethod-title mb-5 mb-md-6">
-                                                            <h5 className="n10-color">Choose or enter your withdrawal amount</h5>
-                                                        </div>
-                                                        <div
-                                                            className="pay_method__amount d-flex align-content-center justify-content-between py-3 px-5 px-md-6 mb-6 mb-md-8 flex-wrap gap-3">
-                                                            <div className="pay_method__amount-actual">
-                                                                <span className="fs-seven mb-3">Actual balance</span>
-                                                                <div className="d-flex align-items-center gap-3">
-                                                                    <span className="fw-bol">$ 7.000</span>
-                                                                    <i className="ti ti-refresh fs-seven cpoint"></i>
-                                                                </div>
-                                                            </div>
-                                                            <span className="v-line lgx d-none d-sm-block"></span>
-                                                            <div className="pay_method__amount-sports">
-                                                                <span className="fs-seven mb-3">Bonus No Sports</span>
-                                                                <span className="fw-bol d-block">$ 0.00</span>
-                                                            </div>
-                                                            <span className="v-line lgx d-none d-sm-block"></span>
-                                                            <div className="pay_method__amount-sports">
-                                                                <span className="fs-seven mb-3">Bonus in casino</span>
-                                                                <span className="fw-bol d-block">$ 0.00</span>
-                                                            </div>
-                                                        </div>
-                                                        <WithdrawalAmount />
-                                                    </div>
-                                                </Tab.Panel>
-                                                <Tab.Panel>
-                                                    <div className="pay_method__table">
-                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
-                                                            <table className="w-100 text-center p2-bg">
-                                                                <tr>
-                                                                    <th className="text-nowrap">Transaction ID</th>
-                                                                    <th className="text-nowrap">Payment Methods</th>
-                                                                    <th className="text-nowrap">Amount</th>
-                                                                    <th className="text-nowrap">Status</th>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>ZT3FA5D8N7</td>
-                                                                    <td>Ethereum</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="g1-color fw-normal cpoint">Complete</td>
-                                                                </tr>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </Tab.Panel>
-                                                <Tab.Panel>
-                                                    <div className="pay_method__tabletwo">
-                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
-                                                            <table className="w-100 text-center p2-bg">
-                                                                <thead>
-                                                                    <tr>
-                                                                        {/* <th className="text-nowrap">Transaction ID</th> */}
-                                                                        <th className="text-nowrap">Date</th>
-                                                                        <th className="text-nowrap">Transaction Type</th>
-                                                                        <th className="text-nowrap">Amount/Balance</th>
-                                                                        <th className="text-nowrap">Status</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {balanceHistory.map((entry) => (
-                                                                        <tr key={entry.id}>
-                                                                            {/* <td className="text-nowrap">{entry.id}</td> */}
-                                                                            <td className="text-nowrap">{new Date(entry.timestamp.seconds * 1000).toLocaleString()}</td>
-                                                                            <td className="text-nowrap">{entry.type}</td>
-                                                                            <td className="text-nowrap">{entry.amount}</td>
-                                                                            <td className={`${entry.status === 'Complete' ? 'g1-color' : 'r1-color'} fw-normal cpoint text-nowrap`}>
-                                                                                {entry.status}
-                                                                            </td>
-                                                                        </tr>
-                                                                    ))}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </Tab.Panel>
-                                                <Tab.Panel>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                                             <h5 className="n10-color">About You</h5>
                                                         </div>
                                                         <div className="pay_method__formarea">
-                                                            {successMessage && (
-                                                                <div className="alert alert-success">{successMessage}</div>
-                                                            )}
-                                                            {errorMessage && (
-                                                                <div className="alert alert-danger">{errorMessage}</div>
-                                                            )}
+
                                                             <form onSubmit={onSubmit}>
                                                                 <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
@@ -429,6 +322,113 @@ export default function Dashboard() {
                                                         </div>
                                                     </div>
                                                 </Tab.Panel>
+                                                <Tab.Panel>
+                                                    {/* <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
+                                                        <div
+                                                            className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
+                                                            <i className="ti ti-credit-card fs-four g1-color"></i>
+                                                            <h5 className="n10-color">Payment methods</h5>
+                                                        </div>
+                                                        <div className="pay_method__paymethod-alitem">
+                                                            <div className="row gx-4 gy-4">
+                                                                <DepositCard />
+                                                            </div>
+                                                        </div>
+                                                    </div> */}
+                                                    <DepositAmount />
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    {/* <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
+                                                        <div
+                                                            className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
+                                                            <i className="ti ti-credit-card fs-four g1-color"></i>
+                                                            <h5 className="n10-color">Payment methods</h5>
+                                                        </div>
+                                                        <div className="pay_method__paymethod-alitem">
+                                                            <div className="row gx-4 gy-4">
+                                                                <DepositCard />
+                                                            </div>
+                                                        </div>
+                                                    </div> */}
+                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                        <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                                                            <h5 className="n10-color">Choose or enter your withdrawal amount</h5>
+                                                        </div>
+                                                        <div
+                                                            className="pay_method__amount d-flex align-content-center justify-content-between py-3 px-5 px-md-6 mb-6 mb-md-8 flex-wrap gap-3">
+                                                            <div className="pay_method__amount-actual">
+                                                                <span className="fs-seven mb-3">Available balance</span>
+                                                                <div className="d-flex align-items-center gap-3">
+                                                                    <span className="fw-bol">$ {walletBalance}</span>
+                                                                    <i className="ti ti-refresh fs-seven cpoint"></i>
+                                                                </div>
+                                                            </div>
+                                                            <span className="v-line lgx d-none d-sm-block"></span>
+                                                            <div className="pay_method__amount-sports">
+                                                                <span className="fs-seven mb-3">Bonus No Sports</span>
+                                                                <span className="fw-bol d-block">$ 0.00</span>
+                                                            </div>
+                                                            <span className="v-line lgx d-none d-sm-block"></span>
+                                                            <div className="pay_method__amount-sports">
+                                                                <span className="fs-seven mb-3">Bonus in casino</span>
+                                                                <span className="fw-bol d-block">$ 0.00</span>
+                                                            </div>
+                                                        </div>
+                                                        <WithdrawalAmount />
+                                                    </div>
+                                                </Tab.Panel>
+                                                {/* <Tab.Panel>
+                                                    <div className="pay_method__table">
+                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                            <table className="w-100 text-center p2-bg">
+                                                                <tr>
+                                                                    <th className="text-nowrap">Transaction ID</th>
+                                                                    <th className="text-nowrap">Payment Methods</th>
+                                                                    <th className="text-nowrap">Amount</th>
+                                                                    <th className="text-nowrap">Status</th>
+                                                                </tr>
+
+                                                                <tr>
+                                                                    <td>ZT3FA5D8N7</td>
+                                                                    <td>Ethereum</td>
+                                                                    <td>5,591 USD</td>
+                                                                    <td className="g1-color fw-normal cpoint">Complete</td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel> */}
+                                                <Tab.Panel>
+                                                    <div className="pay_method__tabletwo">
+                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                            <table className="w-100 text-center p2-bg">
+                                                                <thead>
+                                                                    <tr>
+                                                                        {/* <th className="text-nowrap">Transaction ID</th> */}
+                                                                        <th className="text-nowrap">Date</th>
+                                                                        <th className="text-nowrap">Transaction Type</th>
+                                                                        <th className="text-nowrap">Amount/Balance</th>
+                                                                        <th className="text-nowrap">Status</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {balanceHistory.map((entry) => (
+                                                                        <tr key={entry.id}>
+                                                                            {/* <td className="text-nowrap">{entry.id}</td> */}
+                                                                            <td className="text-nowrap">{new Date(entry.timestamp.seconds * 1000).toLocaleString()}</td>
+                                                                            <td className="text-nowrap">{entry.type}</td>
+                                                                            <td className="text-nowrap">{entry.amount}</td>
+                                                                            <td className={`${entry.status === 'Complete' ? 'g1-color' : 'r1-color'} fw-normal cpoint text-nowrap`}>
+                                                                                {entry.status}
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel>
+
 
                                                 <Tab.Panel >
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
@@ -538,23 +538,23 @@ export default function Dashboard() {
                                                             <table className="w-100 text-center p2-bg">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th>Bet ID</th>
                                                                         <th>Match</th>
                                                                         <th>Your Team</th>
                                                                         <th>Odds</th>
                                                                         <th>Bet Amount</th>
                                                                         <th>Status</th>
+                                                                        <th>Bet ID</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     {userBets.map((bet) => (
                                                                         <tr key={bet.id}>
-                                                                            <td>{bet.id}</td>
                                                                             <td>{bet.team1} Vs {bet.team2}</td>
                                                                             <td>{bet.selectedTeam}</td>
                                                                             <td>{bet.odds}</td>
                                                                             <td>{bet.betAmount}</td>
                                                                             <td>{bet.status}</td>
+                                                                            <td>{bet.id}</td>
                                                                         </tr>
                                                                     ))}
                                                                 </tbody>
@@ -562,7 +562,7 @@ export default function Dashboard() {
                                                         </div>
                                                     </div>
                                                 </Tab.Panel>
-                                                <Tab.Panel>
+                                                {/* <Tab.Panel>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div
                                                             className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
@@ -650,9 +650,8 @@ export default function Dashboard() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </Tab.Panel>
+                                                </Tab.Panel> */}
                                                 <Tab.Panel>
-
                                                 </Tab.Panel>
                                             </Tab.Panels>
                                         </div>

@@ -45,10 +45,10 @@ export default function SideNav() {
                     </li>
                 ))}
             </ul>
-            <hr className="py-0 my-5" />
+            {/* <hr className="py-0 my-5" />
             <h5 className="mb-4 mb-md-6">Other sports</h5>
             <ul className="aside_namelist d-flex flex-column gap-2 mb-15">
-                {/* {otherSportsData.map((otherSingle) => (
+                {otherSportsData.map((otherSingle) => (
                     <li
                         className={`d-flex align-items-center justify-content-between px-3 py-2 rounded-3 gap-5  ${path == otherSingle.href && 'n11-bg'}`} key={otherSingle.id}>
                         <Link href={otherSingle.href} className="d-flex align-items-center gap-2"><Image
@@ -59,8 +59,8 @@ export default function SideNav() {
                             </button>
                         }
                     </li>
-                ))} */}
-            </ul>
+                ))}
+            </ul> */}
         </>
     )
 }

@@ -62,7 +62,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (isCardExpanded && !event.target.closest(".fixed_footer")) {
+            if (isCardExpanded && !(event.target as HTMLElement).closest(".fixed_footer")) {
                 setIsCardExpanded(false);
             }
         };
@@ -121,8 +121,6 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
     const t1odds = 1.50;
     const t2odds = 2.50;
 
-
-
     useEffect(() => {
         const selectedOdds = selectedTeam === 't1' ? t1odds : t2odds;
         if (betAmount && !isNaN(Number(betAmount))) {
@@ -137,20 +135,25 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
     };
 
     const handleBet = async () => {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (!user) {
+            setMessage('Please Login to Place a bet');
+            return;
+        }
+        if (!selectedTeam) {
+            setMessage('Please select your team.');
+            return;
+        }
+
         if (betAmount && !isNaN(Number(betAmount)) && selectedTeam) {
             const bet = Number(betAmount);
             const currentBalance = Number(balance);
             if (bet > currentBalance) {
-                setMessage('Insufficient balance');
+                setMessage('Insufficient balance! Please add funds.');
             } else {
                 try {
-                    const auth = getAuth();
-                    const user = auth.currentUser;
-                    if (!user) {
-                        console.error('User not authenticated');
-                        return;
-                    }
-
                     const db = getFirestore();
                     const betData: Bet = {
                         id: '',
@@ -218,8 +221,6 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
 
         fetchBets();
     }, []);
-
-
 
     return (
         <>
@@ -327,7 +328,6 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
                     {message && <div className="alert alert-info mt-3">{message}</div>}
                 </div>
             </div>
-
         </>
     );
 }

@@ -26,7 +26,7 @@ export default function Login() {
                 if (userData?.role === 'admin') {
                     router.push('/admin');
                 } else {
-                    router.push('/dashboard');
+                    router.push('/');
                 }
             })
             .catch((error) => {
@@ -44,7 +44,7 @@ export default function Login() {
             .then((result) => {
                 const user = result.user;
                 console.log(user);
-                router.push('/'); // Redirect to the root URL
+                router.push('/');
             }).catch((error) => {
                 console.error(error);
             });
@@ -56,7 +56,7 @@ export default function Login() {
             .then((result) => {
                 const user = result.user;
                 console.log(user);
-                router.push('/'); // Redirect to the root URL
+                router.push('/');
             }).catch((error) => {
                 console.error(error);
             });
@@ -68,7 +68,7 @@ export default function Login() {
             .then((result) => {
                 const user = result.user;
                 console.log(user);
-                router.push('/'); // Redirect to the root URL
+                router.push('/');
             }).catch((error) => {
                 console.error(error);
             });
@@ -95,7 +95,7 @@ export default function Login() {
                 <div className="row justify-content-between align-items-center">
                     <div className="col-6">
                         <div className="login_section__thumb d-none d-lg-block">
-                            <Image className="w-100" width={720} height={900} src="/images/login.png" alt="Image" />
+                            <Image className="w-80 h-80" width={620} height={620} src="/images/icct20.png" alt="Image" />
                         </div>
                     </div>
                     <div className="col-lg-6 col-xl-5">
@@ -104,8 +104,6 @@ export default function Login() {
                                 <div className="col-xxl-10">
                                     <div className="pb-10 pt-8 mb-7 mt-12 mt-lg-0 px-4 px-sm-10">
                                         <h3 className="mb-6 mb-md-8">Login</h3>
-                                        <p className="mb-10 mb-md-15">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
-                                            aliquet justo magna.</p>
                                         <div className="login_section__form">
                                             {message && <p className="message">{message}</p>}
                                             <form onSubmit={handleLogin}>
@@ -133,7 +131,7 @@ export default function Login() {
                                                         onChange={(e) => setPassword(e.target.value)}
                                                     />
                                                 </div>
-                                                <button className="cmn-btn px-5 py-3 mb-6 w-100" type="submit">Sign Up Now</button>
+                                                <button className="cmn-btn px-5 py-3 mb-6 w-100" type="submit">Login</button>
                                             </form>
                                         </div>
                                         <div className="login_section__socialmedia text-center mb-6">
