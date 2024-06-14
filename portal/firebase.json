@@ -9,33 +9,5 @@
     "frameworksBackend": {
       "region": "us-central1"
     }
-  },
-  "functions": [
-    {
-      "source": ".",
-      "runtime": "nodejs16",
-      "trigger": {
-        "event": "google.firebase.database.ref.written",
-        "resource": "projects/{projectId}/databases/(default)/refs/{databaseId}/{databaseId}",
-        "service": "firebase.database.ref.written"
-      },
-      "entryPoint": "functions/index.js",
-      "timeout": "540s",
-      "availableMemoryMb": 256,
-      "minInstances": 1,
-      "maxInstances": 100,
-      "environmentVariables": {},
-      "deployment": {},
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "*.local"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run build"
-      ]
-    }
-  ]
+  }
 }
