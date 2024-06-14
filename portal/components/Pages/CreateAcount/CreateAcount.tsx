@@ -7,12 +7,12 @@ import { useAuth } from '../../../contexts/authContext'
 import { useRouter } from 'next/navigation';
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
 import { doCreateUserWithEmailAndPassword, doSignInWithGoogle } from '../../../firebase/auth'
-import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import { createProfile } from '../../../api/firestoreService'
 
-const CreateAcount = () => {
-
-    const [name, setName] = useState('');
-    const [wallet, setWallet] = useState('0');
+const CreateAccount = () => {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [phoneNumber, setphoneNumber] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -28,13 +28,15 @@ const CreateAcount = () => {
             const userCredential = await doCreateUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
 
-            const db = getFirestore();
-            await setDoc(doc(db, "users", user.uid), {
-                name,
+            const profileData = {
+                firstName,
+                lastName,
+                phoneNumber,
                 email,
-                wallet,
+                wallet: '1000',
                 role: "user"
-            });
+            };
+            await createProfile(user.uid, profileData);
 
             router.push('/dashboard');
         } catch (e) {
@@ -50,24 +52,22 @@ const CreateAcount = () => {
             const userCredential = await doSignInWithGoogle();
             const user = userCredential.user;
 
-            const db = getFirestore();
-            const userDoc = doc(db, "users", user.uid);
-            const docSnap = await getDoc(userDoc);
-
-            if (!docSnap.exists()) {
-                await setDoc(userDoc, {
-                    name: user.displayName || '',
-                    email: user.email,
-                    wallet,
-                    role: "user"
-                });
-            }
+            const profileData = {
+                firstName: user.displayName?.split(' ')[0] || '',
+                lastName: user.displayName?.split(' ')[1] || '',
+                phoneNumber: '',
+                email: user.email,
+                wallet: '1000',
+                role: "user"
+            };
+            await createProfile(user.uid, profileData);
 
             window.location.replace('/dashboard');
         } catch (e) {
             console.log(e);
         }
     };
+
     return (
         <section className="login_section pt-120 p3-bg">
             {userLoggedIn && (<Navigate to={'/dashboard'} replace={true} />)}
@@ -89,22 +89,65 @@ const CreateAcount = () => {
 
                                             <form onSubmit={onSubmit}>
                                                 <div className="mb-5 mb-md-6">
-                                                    <input className="n11-bg" name="Input-2" data-name="Input 2" placeholder="Name"
-                                                        type="text" id="Input-2" data-listener-added_da55015d="true" />
+                                                    <input
+                                                        className="n11-bg"
+                                                        name="firstName"
+                                                        placeholder="First Name"
+                                                        type="text"
+                                                        required
+                                                        value={firstName}
+                                                        onChange={(e) => setFirstName(e.target.value)}
+                                                    />
                                                 </div>
                                                 <div className="mb-5 mb-md-6">
-                                                    <input className="n11-bg" name="Input-1" data-name="Input 1" placeholder="Email"
-                                                        type="email" id="Input" value={email} onChange={(e) => { setEmail(e.target.value) }} />
+                                                    <input
+                                                        className="n11-bg"
+                                                        name="lastName"
+                                                        placeholder="Last Name"
+                                                        type="text"
+                                                        required
+                                                        value={lastName}
+                                                        onChange={(e) => setLastName(e.target.value)}
+                                                    />
                                                 </div>
                                                 <div className="mb-5 mb-md-6">
-                                                    <input className="n11-bg" name="Input-3" data-name="Input 3" placeholder="Password"
-                                                        type="password" id="Input-3" value={password} onChange={(e) => { setPassword(e.target.value) }} />
+                                                    <input
+                                                        className="n11-bg"
+                                                        name="phoneNumber"
+                                                        placeholder="Mobile Number"
+                                                        type="text"
+                                                        required
+                                                        value={phoneNumber}
+                                                        onChange={(e) => setphoneNumber(e.target.value)}
+                                                    />
+                                                </div>
+                                                <div className="mb-5 mb-md-6">
+                                                    <input
+                                                        className="n11-bg"
+                                                        name="email"
+                                                        placeholder="Email"
+                                                        type="email"
+                                                        required
+                                                        value={email}
+                                                        onChange={(e) => setEmail(e.target.value)}
+                                                    />
+                                                </div>
+                                                <div className="mb-5 mb-md-6">
+                                                    <input
+                                                        className="n11-bg"
+                                                        name="password"
+                                                        placeholder="Password"
+                                                        type="password"
+                                                        required
+                                                        value={password}
+                                                        onChange={(e) => setPassword(e.target.value)}
+                                                    />
                                                 </div>
                                                 <div className="d-flex align-items-center flex-wrap flex-sm-nowrap gap-2 mb-6">
-                                                    <input type="checkbox" required />
+                                                    <input type="checkbox" checked required />
                                                     <span>I agree to all statements with <Link href="#">Terms of Use</Link></span>
                                                 </div>
-                                                <button className="cmn-btn px-5 py-3 mb-6 w-100" type="submit">Sign Up Now</button>
+                                                <button className="cmn-btn px-5 py-3 mb-6 w-100" type="submit">Sign Up</button>
                                             </form>
                                         </div>
                                         <div className="login_section__socialmedia text-center mb-6">
@@ -116,14 +159,15 @@ const CreateAcount = () => {
                                                 <Link href="#" className="n11-bg px-3 py-2 rounded-5">
                                                     <IconBrandTwitterFilled className="ti ti-brand-twitter-filled fs-four" />
                                                 </Link>
-                                                <Link href="#" onClick={(e) => { onGoogleSignIn(e) }} className="n11-bg px-3 py-2 rounded-5"><IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" /></Link>
+                                                <Link href="#" onClick={(e) => { onGoogleSignIn(e) }} className="n11-bg px-3 py-2 rounded-5">
+                                                    <IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" />
+                                                </Link>
                                             </div>
                                         </div>
                                         <span className="d-center gap-1">Already a member? <Link className="g1-color" href="/login">Login</Link></span>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -132,4 +176,4 @@ const CreateAcount = () => {
     )
 }
 
-export default CreateAcount
+export default CreateAccount
