@@ -12,44 +12,44 @@ export const dashboardTabs = [
     tabname: "Withdrawal",
     icon: <IconCreditCard className="ti ti-credit-card fs-five n5-color" />,
   },
+  // {
+  //   id: 3,
+  //   tabname: "Cancel withdrawal",
+  //   icon: <IconCreditCardOff
+  //     className="ti ti-credit-card-off fs-five n5-color" />,
+  // },
   {
     id: 3,
-    tabname: "Cancel withdrawal",
-    icon: <IconCreditCardOff
-      className="ti ti-credit-card-off fs-five n5-color" />,
-  },
-  {
-    id: 4,
     tabname: "Balance History",
     icon: <IconHistory
       className="ti ti-history fs-five n5-color" />,
   },
   {
-    id: 5,
+    id: 4,
     tabname: "Profile",
     icon: <IconUser
       className="ti ti-user fs-five n5-color" />,
   },
   {
-    id: 6,
+    id: 5,
     tabname: "Settings",
     icon: <IconSettings
       className="ti ti-settings fs-five n5-color" />,
   },
   {
-    id: 7,
+    id: 6,
     tabname: "Bets",
     icon: <IconReportMoney
       className="ti ti-bell-ringing fs-five n5-color" />,
   },
+  // {
+  //   id: 7,
+  //   tabname: "Notifications",
+  //   icon: <IconBellRinging
+  //     className="ti ti-bell-ringing fs-five n5-color" />,
+  // },
   {
-    id: 8,
-    tabname: "Notifications",
-    icon: <IconBellRinging
-      className="ti ti-bell-ringing fs-five n5-color" />,
-  },
-  {
-    id: 9,
+    id: 7,
     tabname: "Log out",
     icon: <IconLogout
       className="ti ti-logout fs-five n5-color" />,

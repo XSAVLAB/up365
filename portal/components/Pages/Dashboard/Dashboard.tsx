@@ -9,13 +9,14 @@ import { dashboardTabs } from '@/public/data/dashTabs';
 import { doSignOut } from '../../../firebase/auth';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchBalanceHistory, fetchProfileData, fetchUserBets, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
+import { fetchBalanceHistory, fetchProfileData, fetchUserBets, fetchUserWallet, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
 
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
     const [user, setUser] = useState<User | null>(null);
     const [balanceHistory, setBalanceHistory] = useState<any[]>([]);
     const [successMessage, setSuccessMessage] = useState('');
+    const [walletBalance, setWalletBalance] = useState('0');
     const [errorMessage, setErrorMessage] = useState('');
     const [userBets, setUserBets] = useState<any[]>([]);
     useEffect(() => {
@@ -34,6 +35,9 @@ export default function Dashboard() {
                     .catch((error) =>
                         console.error("Error fetching profile data:", error)
                     );
+                fetchUserWallet(currentUser.uid)
+                    .then(data => setWalletBalance(data))
+                    .catch(error => console.error('Error fetching wallet balance: ', error));
                 fetchBets(currentUser.uid);
             } else {
                 setUser(null);
@@ -179,7 +183,7 @@ export default function Dashboard() {
                                         <div className="col-xxl-9">
                                             <Tab.Panels className="tabcontents">
                                                 <Tab.Panel>
-                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
+                                                    {/* <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
                                                         <div
                                                             className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
                                                             <i className="ti ti-credit-card fs-four g1-color"></i>
@@ -190,11 +194,11 @@ export default function Dashboard() {
                                                                 <DepositCard />
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div> */}
                                                     <DepositAmount />
                                                 </Tab.Panel>
                                                 <Tab.Panel>
-                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
+                                                    {/* <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
                                                         <div
                                                             className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
                                                             <i className="ti ti-credit-card fs-four g1-color"></i>
@@ -205,7 +209,7 @@ export default function Dashboard() {
                                                                 <DepositCard />
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div> */}
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                                             <h5 className="n10-color">Choose or enter your withdrawal amount</h5>
@@ -215,7 +219,7 @@ export default function Dashboard() {
                                                             <div className="pay_method__amount-actual">
                                                                 <span className="fs-seven mb-3">Actual balance</span>
                                                                 <div className="d-flex align-items-center gap-3">
-                                                                    <span className="fw-bol">$ 7.000</span>
+                                                                    <span className="fw-bol">$ {walletBalance}</span>
                                                                     <i className="ti ti-refresh fs-seven cpoint"></i>
                                                                 </div>
                                                             </div>
@@ -233,7 +237,7 @@ export default function Dashboard() {
                                                         <WithdrawalAmount />
                                                     </div>
                                                 </Tab.Panel>
-                                                <Tab.Panel>
+                                                {/* <Tab.Panel>
                                                     <div className="pay_method__table">
                                                         <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
                                                             <table className="w-100 text-center p2-bg">
@@ -253,7 +257,7 @@ export default function Dashboard() {
                                                             </table>
                                                         </div>
                                                     </div>
-                                                </Tab.Panel>
+                                                </Tab.Panel> */}
                                                 <Tab.Panel>
                                                     <div className="pay_method__tabletwo">
                                                         <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
@@ -538,23 +542,23 @@ export default function Dashboard() {
                                                             <table className="w-100 text-center p2-bg">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th>Bet ID</th>
                                                                         <th>Match</th>
                                                                         <th>Your Team</th>
                                                                         <th>Odds</th>
                                                                         <th>Bet Amount</th>
                                                                         <th>Status</th>
+                                                                        <th>Bet ID</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     {userBets.map((bet) => (
                                                                         <tr key={bet.id}>
-                                                                            <td>{bet.id}</td>
                                                                             <td>{bet.team1} Vs {bet.team2}</td>
                                                                             <td>{bet.selectedTeam}</td>
                                                                             <td>{bet.odds}</td>
                                                                             <td>{bet.betAmount}</td>
                                                                             <td>{bet.status}</td>
+                                                                            <td>{bet.id}</td>
                                                                         </tr>
                                                                     ))}
                                                                 </tbody>
@@ -562,7 +566,7 @@ export default function Dashboard() {
                                                         </div>
                                                     </div>
                                                 </Tab.Panel>
-                                                <Tab.Panel>
+                                                {/* <Tab.Panel>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div
                                                             className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
@@ -650,9 +654,8 @@ export default function Dashboard() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </Tab.Panel>
+                                                </Tab.Panel> */}
                                                 <Tab.Panel>
-
                                                 </Tab.Panel>
                                             </Tab.Panels>
                                         </div>
