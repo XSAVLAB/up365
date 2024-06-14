@@ -38,7 +38,7 @@ const CreateAccount = () => {
             };
             await createProfile(user.uid, profileData);
 
-            router.push('/dashboard');
+            router.push('/');
         } catch (e) {
             setMessage('User Already Registered! Please Log in');
             console.log(e);
@@ -62,7 +62,7 @@ const CreateAccount = () => {
             };
             await createProfile(user.uid, profileData);
 
-            window.location.replace('/dashboard');
+            window.location.replace('/');
         } catch (e) {
             console.log(e);
         }
@@ -70,7 +70,7 @@ const CreateAccount = () => {
 
     return (
         <section className="login_section pt-120 p3-bg">
-            {userLoggedIn && (<Navigate to={'/dashboard'} replace={true} />)}
+            {userLoggedIn && (<Navigate to={'/'} replace={true} />)}
             <div className="container-fluid">
                 <div className="row justify-content-between align-items-center">
                     <div className="col-6">

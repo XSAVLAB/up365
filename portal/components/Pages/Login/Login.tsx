@@ -26,7 +26,7 @@ export default function Login() {
                 if (userData?.role === 'admin') {
                     router.push('/admin');
                 } else {
-                    router.push('/dashboard');
+                    router.push('/');
                 }
             })
             .catch((error) => {
