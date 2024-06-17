@@ -2,13 +2,13 @@
 import { IconCricket } from "@tabler/icons-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import FooterCard from '../../Shared/FooterCard';
 import { fetchActiveSeriesMatches } from '../../../api/firestoreService';
+import BettingModal from '../../Shared/BettingModal';
 
 export default function TopCricket() {
   const [matches, setMatches] = useState<any[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<any>(null);
-  const [isCardExpanded, setIsCardExpanded] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const getMatchData = async () => {
@@ -23,7 +23,6 @@ export default function TopCricket() {
 
     getMatchData();
 
-    // Update sorting every hour
     const interval = setInterval(() => {
       setMatches((prevMatches) => sortMatches(prevMatches));
     }, 600000);
@@ -33,11 +32,9 @@ export default function TopCricket() {
 
   const sortMatches = (matches: any[]) => {
     const now = new Date().getTime();
-
     return matches.sort((a: any, b: any) => {
       const dateA = new Date(a.dateTimeGMT).getTime();
       const dateB = new Date(b.dateTimeGMT).getTime();
-
       if (dateA > now && dateB > now) {
         return dateA - dateB;
       } else if (dateA < now && dateB < now) {
@@ -52,7 +49,7 @@ export default function TopCricket() {
 
   const handleMatchClick = (match: any) => {
     setSelectedMatch(match);
-    setIsCardExpanded(true);
+    setIsModalOpen(true);
   };
 
   return (
@@ -230,12 +227,12 @@ export default function TopCricket() {
         </div>
       </div>
       {selectedMatch &&
-        <FooterCard
+        <BettingModal
           match={selectedMatch}
-          isCardExpanded={isCardExpanded}
-          setIsCardExpanded={setIsCardExpanded}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
         />
-      } {/* Render FooterCard with selected match */}
+      } {/* Render BettingModal with selected match */}
     </section>
   );
 }
