@@ -1,5 +1,6 @@
 import { db } from "../firebaseConfig";
 import {
+  getFirestore,
   doc,
   setDoc,
   deleteDoc,
@@ -180,22 +181,22 @@ export const fetchActiveSeriesMatches = async () => {
   }
 };
 
-// Fetch user's bets
-export const fetchUserBets = async (userId) => {
-  try {
-    const betsCollectionRef = collection(db, "bets");
-    const q = query(betsCollectionRef, where("userId", "==", userId));
-    const betsSnapshot = await getDocs(q);
-    const betsData = betsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    return betsData;
-  } catch (error) {
-    console.error("Error fetching user bets: ", error);
-    throw error;
-  }
-};
+// // Fetch user's bets
+// export const fetchUserBets = async (userId) => {
+//   try {
+//     const betsCollectionRef = collection(db, "bets");
+//     const q = query(betsCollectionRef, where("userId", "==", userId));
+//     const betsSnapshot = await getDocs(q);
+//     const betsData = betsSnapshot.docs.map((doc) => ({
+//       id: doc.id,
+//       ...doc.data(),
+//     }));
+//     return betsData;
+//   } catch (error) {
+//     console.error("Error fetching user bets: ", error);
+//     throw error;
+//   }
+// };
 
 // Fetch User Balance (for use in FooterCard component)
 export const fetchUserBalance = async (userId) => {
@@ -258,4 +259,38 @@ export const placeBet = async (betData) => {
     console.error("Error placing bet: ", error);
     throw error;
   }
+};
+
+// Function to add a bet
+export const addBet = async (betData) => {
+  const db = getFirestore();
+  const betRef = await addDoc(collection(db, "bets"), betData);
+  await updateDoc(betRef, {
+    id: betRef.id,
+  });
+  return betRef.id;
+};
+
+// Function to update user wallet
+export const updateUserWallet = async (userId, newBalance) => {
+  const db = getFirestore();
+  const userWalletRef = doc(db, "users", userId);
+  await updateDoc(userWalletRef, {
+    wallet: newBalance.toString(),
+  });
+};
+
+// Function to fetch user bets
+export const fetchUserBets = async (userId) => {
+  const db = getFirestore();
+  const q = query(
+    collection(db, "bets"),
+    where("userId", "==", userId),
+    where("settled", "==", false)
+  );
+  const betsSnapshot = await getDocs(q);
+  return betsSnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 };

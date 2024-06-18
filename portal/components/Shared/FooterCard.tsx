@@ -5,7 +5,6 @@ import { Tab } from '@headlessui/react';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, addDoc, getDoc, doc, updateDoc, getDocs, query, where } from 'firebase/firestore';
 
-// Define types
 interface Match {
     id: string;
     dateTimeGMT: string;
@@ -34,6 +33,9 @@ interface Bet {
     matchId: string;
     status: string;
     settled: boolean;
+    betType: string;
+    blockNumber: number;
+    tableType: string;
 }
 
 interface User {
@@ -47,9 +49,11 @@ interface FooterCardProps {
     selectedTeam: string;
     selectedOdds: string;
     betType: string;
+    blockNumber: number; // New prop for block number
+    tableType: string; // New prop for table type
 }
 
-export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, selectedTeam, selectedOdds, betType }: FooterCardProps) {
+export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, selectedTeam, selectedOdds, betType, blockNumber, tableType }: FooterCardProps) {
     const [betAmount, setBetAmount] = useState('');
     const [possibleWin, setPossibleWin] = useState('0');
     const [balance, setBalance] = useState('0');
@@ -148,7 +152,10 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                         timestamp: new Date().toISOString(),
                         status: 'pending',
                         matchId: match.id,
-                        settled: false
+                        settled: false,
+                        betType: betType,
+                        blockNumber: blockNumber, // Include block number
+                        tableType: tableType // Include table type
                     };
 
                     const betRef = await addDoc(collection(db, 'bets'), betData);
@@ -273,7 +280,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                         <button className="btn btn-outline-secondary" type="button" onClick={handleMaxBet}>Max</button>
                     </div>
                     <div className="grid grid-cols-5 gap-2 mb-3">
-                        {['50', '100', '250', '500', '1000', '2000'].map(amount => (
+                        {['50', '100', '250', '500', '1000', '2000', '5000'].map(amount => (
                             <button
                                 key={amount}
                                 className="btn btn-outline-secondary w-full"

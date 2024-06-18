@@ -12,11 +12,15 @@ const BettingModal: React.FC<BettingModalProps> = ({ match, isModalOpen, setIsMo
     const [selectedTeam, setSelectedTeam] = useState('');
     const [selectedOdds, setSelectedOdds] = useState('');
     const [betType, setBetType] = useState('');
+    const [blockNumber, setBlockNumber] = useState(0); // New state for block number
+    const [tableType, setTableType] = useState(''); // New state for table type
 
-    const handleOddsClick = (team: string, odds: string, type: string) => {
+    const handleOddsClick = (team: string, odds: string, type: string, block: number, table: string) => {
         setSelectedTeam(team);
         setSelectedOdds(odds);
         setBetType(type);
+        setBlockNumber(block); // Set the block number
+        setTableType(table); // Set the table type
         setIsCardExpanded(true);
     };
 
@@ -43,21 +47,21 @@ const BettingModal: React.FC<BettingModalProps> = ({ match, isModalOpen, setIsMo
                             <tbody>
                                 <tr>
                                     <td>{match.t1}</td>
-                                    <td className="back" onClick={() => handleOddsClick('t1', '1.56', 'back')}>1.56</td>
-                                    <td className="back" onClick={() => handleOddsClick('t1', '1.57', 'back')}>1.57</td>
-                                    <td className="back" onClick={() => handleOddsClick('t1', '1.58', 'back')}>1.58</td>
-                                    <td className="lay" onClick={() => handleOddsClick('t1', '1.59', 'lay')}>1.59</td>
-                                    <td className="lay" onClick={() => handleOddsClick('t1', '1.60', 'lay')}>1.60</td>
-                                    <td className="lay" onClick={() => handleOddsClick('t1', '1.61', 'lay')}>1.61</td>
+                                    <td className="back" onClick={() => handleOddsClick('t1', '1.56', 'back', 1, 'detailed')}>1.56</td>
+                                    <td className="back" onClick={() => handleOddsClick('t1', '1.57', 'back', 2, 'detailed')}>1.57</td>
+                                    <td className="back" onClick={() => handleOddsClick('t1', '1.58', 'back', 3, 'detailed')}>1.58</td>
+                                    <td className="lay" onClick={() => handleOddsClick('t1', '1.59', 'lay', 1, 'detailed')}>1.59</td>
+                                    <td className="lay" onClick={() => handleOddsClick('t1', '1.60', 'lay', 2, 'detailed')}>1.60</td>
+                                    <td className="lay" onClick={() => handleOddsClick('t1', '1.61', 'lay', 3, 'detailed')}>1.61</td>
                                 </tr>
                                 <tr>
                                     <td>{match.t2}</td>
-                                    <td className="back" onClick={() => handleOddsClick('t2', '2.64', 'back')}>2.64</td>
-                                    <td className="back" onClick={() => handleOddsClick('t2', '2.66', 'back')}>2.66</td>
-                                    <td className="back" onClick={() => handleOddsClick('t2', '2.68', 'back')}>2.68</td>
-                                    <td className="lay" onClick={() => handleOddsClick('t2', '2.72', 'lay')}>2.72</td>
-                                    <td className="lay" onClick={() => handleOddsClick('t2', '2.74', 'lay')}>2.74</td>
-                                    <td className="lay" onClick={() => handleOddsClick('t2', '2.76', 'lay')}>2.76</td>
+                                    <td className="back" onClick={() => handleOddsClick('t2', '2.64', 'back', 1, 'detailed')}>2.64</td>
+                                    <td className="back" onClick={() => handleOddsClick('t2', '2.66', 'back', 2, 'detailed')}>2.66</td>
+                                    <td className="back" onClick={() => handleOddsClick('t2', '2.68', 'back', 3, 'detailed')}>2.68</td>
+                                    <td className="lay" onClick={() => handleOddsClick('t2', '2.72', 'lay', 1, 'detailed')}>2.72</td>
+                                    <td className="lay" onClick={() => handleOddsClick('t2', '2.74', 'lay', 2, 'detailed')}>2.74</td>
+                                    <td className="lay" onClick={() => handleOddsClick('t2', '2.76', 'lay', 3, 'detailed')}>2.76</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -74,13 +78,13 @@ const BettingModal: React.FC<BettingModalProps> = ({ match, isModalOpen, setIsMo
                             <tbody>
                                 <tr>
                                     <td>{match.t1}</td>
-                                    <td className="back" onClick={() => handleOddsClick('t1', '1.58', 'back')}>1.58</td>
-                                    <td className="lay" onClick={() => handleOddsClick('t1', '1.59', 'lay')}>1.59</td>
+                                    <td className="back" onClick={() => handleOddsClick('t1', '1.58', 'back', 1, 'simple')}>1.58</td>
+                                    <td className="lay" onClick={() => handleOddsClick('t1', '1.59', 'lay', 1, 'simple')}>1.59</td>
                                 </tr>
                                 <tr>
                                     <td>{match.t2}</td>
-                                    <td className="back" onClick={() => handleOddsClick('t2', '2.68', 'back')}>2.68</td>
-                                    <td className="lay" onClick={() => handleOddsClick('t2', '2.72', 'lay')}>2.72</td>
+                                    <td className="back" onClick={() => handleOddsClick('t2', '2.68', 'back', 1, 'simple')}>2.68</td>
+                                    <td className="lay" onClick={() => handleOddsClick('t2', '2.72', 'lay', 1, 'simple')}>2.72</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -97,7 +101,7 @@ const BettingModal: React.FC<BettingModalProps> = ({ match, isModalOpen, setIsMo
                         display: flex;
                         justify-content: center;
                         align-items: center;
-                        z-index: 1000; /* Increased z-index */
+                        z-index: 1000;
                     }
                     .modal-content {
                         background: rgb(8, 15, 37);
@@ -106,7 +110,7 @@ const BettingModal: React.FC<BettingModalProps> = ({ match, isModalOpen, setIsMo
                         width: 90%;
                         max-width: 600px;
                         position: relative;
-                        z-index: 1001; /* Ensure it's above the overlay */
+                        z-index: 1001;
                     }
                     .close-button {
                         background: none;
@@ -127,7 +131,7 @@ const BettingModal: React.FC<BettingModalProps> = ({ match, isModalOpen, setIsMo
                     th, td {
                         padding: 8px;
                         text-align: center;
-                        cursor: pointer; /* Added cursor pointer */
+                        cursor: pointer;
                     }
                     .back {
                         background-color: #5993bc;
@@ -144,6 +148,8 @@ const BettingModal: React.FC<BettingModalProps> = ({ match, isModalOpen, setIsMo
                 selectedTeam={selectedTeam}
                 selectedOdds={selectedOdds}
                 betType={betType}
+                blockNumber={blockNumber} // Pass block number
+                tableType={tableType} // Pass table type
             />
         </>
     );
