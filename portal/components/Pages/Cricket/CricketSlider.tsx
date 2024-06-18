@@ -6,9 +6,12 @@ import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import { IconCricket } from "@tabler/icons-react";
 import { fetchActiveSeriesMatches } from "../../../api/firestoreService";
+import BettingModal from "../../Shared/BettingModal"; // Import the BettingModal
 
 export default function CricketSlider() {
     const [matches, setMatches] = useState<any[]>([]);
+    const [selectedMatch, setSelectedMatch] = useState<any | null>(null); // State for selected match
+    const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
 
     useEffect(() => {
         const getMatchData = async () => {
@@ -22,6 +25,11 @@ export default function CricketSlider() {
 
         getMatchData();
     }, []);
+
+    const handleMatchClick = (match: any) => {
+        setSelectedMatch(match);
+        setIsModalOpen(true);
+    };
 
     return (
         <>
@@ -70,7 +78,7 @@ export default function CricketSlider() {
                                                     }}>
                                                     {matches && matches.map((match: any) => (
                                                         <SwiperSlide key={match.id}>
-                                                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
+                                                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6" onClick={() => handleMatchClick(match)}>
                                                                 <div className="hero_area__topslider-cardtop d-flex align-items-center justify-content-between mb-4 mb-md-6">
                                                                     <div className="d-flex align-items-center gap-2">
                                                                         <IconCricket className="n5-color" />
@@ -125,11 +133,9 @@ export default function CricketSlider() {
                                                                 </div>
                                                             </div>
                                                         </SwiperSlide>
-
                                                     ))}
                                                 </Swiper>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -138,6 +144,13 @@ export default function CricketSlider() {
                     </div>
                 </div>
             </section>
+            {selectedMatch && (
+                <BettingModal
+                    match={selectedMatch}
+                    isModalOpen={isModalOpen}
+                    setIsModalOpen={setIsModalOpen}
+                />
+            )}
         </>
     );
 }

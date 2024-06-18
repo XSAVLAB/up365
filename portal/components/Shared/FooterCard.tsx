@@ -1,13 +1,10 @@
-"use client";
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
-import { IconX, IconArrowBadgeUpFilled, IconTrash, IconSettings } from "@tabler/icons-react";
+import { IconArrowBadgeUpFilled } from "@tabler/icons-react";
 import { Tab } from '@headlessui/react';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, addDoc, getDoc, doc, updateDoc, getDocs, query, where, DocumentSnapshot, DocumentData } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDoc, doc, updateDoc, getDocs, query, where } from 'firebase/firestore';
 
-// Define types
 interface Match {
     id: string;
     dateTimeGMT: string;
@@ -36,6 +33,9 @@ interface Bet {
     matchId: string;
     status: string;
     settled: boolean;
+    betType: string;
+    blockNumber: number;
+    tableType: string;
 }
 
 interface User {
@@ -46,13 +46,17 @@ interface FooterCardProps {
     match: Match;
     isCardExpanded: boolean;
     setIsCardExpanded: (expanded: boolean) => void;
+    selectedTeam: string;
+    selectedOdds: string;
+    betType: string;
+    blockNumber: number; // New prop for block number
+    tableType: string; // New prop for table type
 }
 
-export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }: FooterCardProps) {
+export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, selectedTeam, selectedOdds, betType, blockNumber, tableType }: FooterCardProps) {
     const [betAmount, setBetAmount] = useState('');
     const [possibleWin, setPossibleWin] = useState('0');
     const [balance, setBalance] = useState('0');
-    const [selectedTeam, setSelectedTeam] = useState('');
     const [message, setMessage] = useState('');
     const [bets, setBets] = useState<Bet[]>([]);
 
@@ -70,7 +74,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
         return () => {
             document.body.removeEventListener("click", handleClickOutside);
         };
-    }, [isCardExpanded]);
+    }, [isCardExpanded, setIsCardExpanded]);
 
     useEffect(() => {
         const fetchBalance = async () => {
@@ -98,40 +102,21 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
         fetchBalance();
     }, []);
 
-    const items = ['Single'];
-    const [activeItem, setActiveItem] = useState(items[0]);
-    const handleClick = (itemName: string) => {
-        setActiveItem(itemName);
-    };
-    const getItemStyle = (itemName: string) => {
-        return {
-            backgroundColor: activeItem === itemName ? '#0F1B42' : '#0A1436',
-            cursor: 'pointer',
-        };
-    };
-
-    const {
-        t1img = '/images/default-team.png',
-        t1 = 'Team 1',
-        t2img = '/images/default-team.png',
-        t2 = 'Team 2',
-        id: matchId
-    } = match || {};
-
-    const t1odds = 1.50;
-    const t2odds = 2.50;
-
     useEffect(() => {
-        const selectedOdds = selectedTeam === 't1' ? t1odds : t2odds;
+        const selectedOddsFloat = parseFloat(selectedOdds);
         if (betAmount && !isNaN(Number(betAmount))) {
-            setPossibleWin((Number(betAmount) * selectedOdds).toFixed(2));
+            setPossibleWin(((Number(betAmount) * selectedOddsFloat) - Number(betAmount)).toFixed(2));
         } else {
             setPossibleWin('0');
         }
-    }, [betAmount, selectedTeam, t1odds, t2odds]);
+    }, [betAmount, selectedOdds]);
 
     const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setBetAmount(e.target.value);
+    };
+
+    const handleBetAmountButtonClick = (amount: string) => {
+        setBetAmount(amount);
     };
 
     const handleBet = async () => {
@@ -158,16 +143,19 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
                     const betData: Bet = {
                         id: '',
                         userId: user.uid,
-                        team1: t1,
-                        team2: t2,
+                        team1: match.t1,
+                        team2: match.t2,
                         betAmount: betAmount,
-                        odds: selectedTeam === 't1' ? t1odds.toString() : t2odds.toString(),
+                        odds: selectedOdds,
                         possibleWin: possibleWin,
-                        selectedTeam: selectedTeam === 't1' ? t1 : t2,
+                        selectedTeam: selectedTeam === 't1' ? match.t1 : match.t2,
                         timestamp: new Date().toISOString(),
                         status: 'pending',
-                        matchId: matchId,
-                        settled: false
+                        matchId: match.id,
+                        settled: false,
+                        betType: betType,
+                        blockNumber: blockNumber, // Include block number
+                        tableType: tableType // Include table type
                     };
 
                     const betRef = await addDoc(collection(db, 'bets'), betData);
@@ -181,7 +169,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
                     });
 
                     setBalance((currentBalance - bet).toString());
-                    setMessage(`Bet of $${betAmount} placed on ${selectedTeam === 't1' ? t1 : t2}`);
+                    setMessage(`Bet of $${betAmount} placed on ${selectedTeam === 't1' ? match.t1 : match.t2}`);
                 } catch (error) {
                     console.error('Error placing bet: ', error);
                 }
@@ -238,75 +226,46 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
                 </div>
                 <div className="fixed_footer__card-body px-4">
                     <Tab.Group>
-                        <Tab.List className="row">
-                            {items.map(item => (
-                                <Tab as="div" key={item} className="col-4">
-                                    {({ selected }) => (
-                                        <button
-                                            onClick={() => handleClick(item)}
-                                            style={getItemStyle(item)}
-                                            className="w-100 py-3 text-white border-0"
-                                        >
-                                            {item}
-                                        </button>
-                                    )}
-                                </Tab>
-                            ))}
-                        </Tab.List>
                         <Tab.Panels>
                             <Tab.Panel>
-                                <div className="fixed_footer__card p-3">
-                                    <div className="row align-items-center justify-content-between">
-                                        <div className="col-auto">
-                                            <div className="row align-items-center">
-                                                <div className="col-auto">
-                                                    <Image src={t1img} alt="Team 1" width={30} height={30} />
-                                                </div>
-                                                <div className="col">
-                                                    <span className="fixed_footer__card-name">{t1}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-auto">
-                                            <button
-                                                className={`fixed_footer__card-choice ${selectedTeam === 't1' ? 'active' : ''}`}
-                                                onClick={() => setSelectedTeam('t1')}
-                                                style={{
-                                                    backgroundColor: selectedTeam === 't1' ? 'green' : 'gray',
-                                                    color: selectedTeam === 't1' ? 'white' : 'black'
-                                                }}
-                                            >
-                                                {t1odds}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="fixed_footer__card p-3">
-                                    <div className="row align-items-center justify-content-between">
-                                        <div className="col-auto">
-                                            <div className="row align-items-center">
-                                                <div className="col-auto">
-                                                    <Image src={t2img} alt="Team 2" width={30} height={30} />
-                                                </div>
-                                                <div className="col">
-                                                    <span className="fixed_footer__card-name">{t2}</span>
+                                {selectedTeam === 't1' && (
+                                    <div className="fixed_footer__card p-3 mb-3 bg-green-200 border rounded-lg">
+                                        <div className="row align-items-center justify-content-between">
+                                            <div className="col-auto">
+                                                <div className="row align-items-center">
+                                                    <div className="col-auto">
+                                                        <Image src={match.t1img} alt="Team 1" width={30} height={30} />
+                                                    </div>
+                                                    <div className="col">
+                                                        <span className="fixed_footer__card-name">{match.t1}</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="col-auto">
-                                            <button
-                                                className={`fixed_footer__card-choice ${selectedTeam === 't2' ? 'active' : ''}`}
-                                                onClick={() => setSelectedTeam('t2')}
-                                                style={{
-                                                    backgroundColor: selectedTeam === 't2' ? 'green' : 'gray',
-                                                    color: selectedTeam === 't2' ? 'white' : 'black'
-                                                }}
-                                            >
-                                                {t2odds}
-                                            </button>
+                                            <div className="col-auto">
+                                                <span className="fixed_footer__card-odds">{selectedOdds}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
+                                {selectedTeam === 't2' && (
+                                    <div className="fixed_footer__card p-3 mb-3 bg-green-200 border rounded-lg">
+                                        <div className="row align-items-center justify-content-between">
+                                            <div className="col-auto">
+                                                <div className="row align-items-center">
+                                                    <div className="col-auto">
+                                                        <Image src={match.t2img} alt="Team 2" width={30} height={30} />
+                                                    </div>
+                                                    <div className="col">
+                                                        <span className="fixed_footer__card-name">{match.t2}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-auto">
+                                                <span className="fixed_footer__card-odds">{selectedOdds}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </Tab.Panel>
                         </Tab.Panels>
                     </Tab.Group>
@@ -320,6 +279,17 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
                         <input type="text" className="form-control" value={betAmount} onChange={handleBetAmountChange} />
                         <button className="btn btn-outline-secondary" type="button" onClick={handleMaxBet}>Max</button>
                     </div>
+                    <div className="grid grid-cols-5 gap-2 mb-3">
+                        {['50', '100', '250', '500', '1000', '2000', '5000'].map(amount => (
+                            <button
+                                key={amount}
+                                className="btn btn-outline-secondary w-full"
+                                onClick={() => handleBetAmountButtonClick(amount)}
+                            >
+                                ${amount}
+                            </button>
+                        ))}
+                    </div>
                     <div className="d-flex justify-content-between align-items-center mb-3">
                         <span className="d-block">Possible win:</span>
                         <span className="d-block"><b>${possibleWin}</b></span>
@@ -328,6 +298,14 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded }:
                     {message && <div className="alert alert-info mt-3">{message}</div>}
                 </div>
             </div>
+            <style jsx>{`
+                .fixed_footer__card-odds {
+                    font-weight: bold;
+                }
+                .fixed_footer__card {
+                    transition: background-color 0.3s;
+                }
+            `}</style>
         </>
     );
 }
