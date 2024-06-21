@@ -8,8 +8,8 @@ export default function page() {
     <>
       <HeaderMain />
       <TopSoccer />
-      <SoccerLive />
-      <UpCmingSoccer />
+      {/* <SoccerLive /> */}
+      {/* <UpCmingSoccer /> */}
     </>
   )
 }

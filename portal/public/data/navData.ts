@@ -1,10 +1,16 @@
 export const popularData = [
-  // {
-  //   id: 57940,
-  //   image: "/images/icon/soccer-icon.png",
-  //   linkText: "Soccer",
-  //   href: "/soccer",
-  // },
+  {
+    id: 9058,
+    image: "/images/icon/cricket.png",
+    linkText: "Cricket",
+    href: "/cricket",
+  },
+  {
+    id: 57940,
+    image: "/images/icon/soccer-icon.png",
+    linkText: "Soccer",
+    href: "/soccer",
+  },
   // {
   //   id: 13736,
   //   image: "/images/icon/tennis.png",
@@ -17,12 +23,6 @@ export const popularData = [
   //   linkText: "Basketball",
   //   href: "/basketball",
   // },
-  {
-    id: 9058,
-    image: "/images/icon/cricket.png",
-    linkText: "Cricket",
-    href: "/cricket",
-  },
   // {
   //   id: 41066,
   //   image: "/images/icon/ecricket.png",
@@ -196,11 +196,11 @@ export const naviTemData = [
     linkText: "Cricket",
     href: "/cricket",
   },
-  // {
-  //   id: 151272,
-  //   linkText: "Sports",
-  //   href: "/soccer",
-  // },
+  {
+    id: 151272,
+    linkText: "Soccer",
+    href: "/soccer",
+  },
   // {
   //   id: 155534,
   //   linkText: "eSports",

@@ -1,7 +1,28 @@
+'use client'
 import Image from "next/image";
 import { soccerMatch } from "@/public/data/tabOne";
+import { fetchFootballMatches } from "@/api/firestoreService";
+import { useEffect, useState } from "react";
 
 export default function TopSoccer() {
+
+  const [matches, setMatches] = useState<any[]>([]);
+
+  useEffect(() => {
+    const getMatchData = async () => {
+      try {
+        const matchData = await fetchFootballMatches();
+        console.log("Football match data:")
+        console.log(matchData)
+        setMatches(matchData);
+      } catch (error) {
+        console.error("Error fetching data! " + error)
+      }
+    }
+
+    getMatchData();
+  }, []);
+
   return (
     <section className="top_matches">
       <div className="container-fluid">
@@ -15,26 +36,11 @@ export default function TopSoccer() {
                       height={32} alt="Icon" />
                     <h3>Top Soccer</h3>
                   </div>
+
                   <div className="top_matches__content">
-                    {soccerMatch.map(
+                    {matches.map(
                       ({
-                        id,
-                        football,
-                        titletwo,
-                        times,
-                        updown,
-                        tShart,
-                        x2,
-                        douchance,
-                        ttl,
-                        clubone,
-                        clubtwo,
-                        clubNameOne,
-                        clubNameTwo,
-                        chart,
-                        star,
-                        draw,
-                        point,
+                        id, area, awayTeam, competition, group, homeTeam, lastUpdated, matchday, referees, score, season, status, utcDate,
                       }) => (
                         <div
                           className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4"
@@ -44,28 +50,29 @@ export default function TopSoccer() {
                               <div className="top_matches__clubname">
                                 <div className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4 ">
                                   <div className="d-flex align-items-center gap-1">
-                                    <Image src={football}
+                                    <Image src={competition.emblem}
                                       width={16}
                                       height={16}
                                       alt="Icon"
                                     />{" "}
                                     <span className="fs-eight cpoint">
-                                      {titletwo}
+                                      {competition.name}
                                     </span>
                                   </div>
                                   <div className="d-flex align-items-center gap-4 pe-xl-15 flex-nowrap flex-xl-wrap">
                                     <span className="fs-eight cpoint">
-                                      {times}
+                                      {new Date(utcDate).toLocaleString()}
+
                                     </span>
                                     <div className="d-flex align-items-center gap-1">
                                       <Image
-                                        src={updown}
+                                        src={"/images/icon/updwon.png"}
                                         width={16}
                                         height={16}
                                         alt="Icon"
                                       />
                                       <Image
-                                        src={tShart}
+                                        src={"/images/icon/t-shart.png"}
                                         width={16}
                                         height={16}
                                         alt="Icon"
@@ -77,40 +84,49 @@ export default function TopSoccer() {
                                   <div>
                                     <div className="d-flex align-items-center gap-2 mb-4">
                                       <Image
-                                        src={clubone}
+                                        src={homeTeam.crest}
                                         width={24}
                                         height={24}
                                         alt="Icon"
                                       />{" "}
                                       <span className="fs-seven cpoint">
-                                        {clubNameOne}
+                                        {homeTeam.name}
                                       </span>
                                     </div>
                                     <div className="d-flex align-items-center gap-2">
                                       <Image
-                                        src={clubtwo}
+                                        src={awayTeam.crest}
                                         width={24}
                                         height={24}
                                         alt="Icon"
                                       />{" "}
                                       <span className="fs-seven cpoint">
-                                        {clubNameTwo}
+                                        {awayTeam.name}
                                       </span>
                                     </div>
+                                  </div>
+                                  <div className="d-flex align-items-center gap-4 position-relative pe-xl-15">
+                                    <div className="d-flex align-items-center flex-column gap-1">
+                                      <span className="top_matches__cmncard-countcercle  rounded-17 fs-seven">
+                                        {score.fullTime.home}:{score.fullTime.away}
+                                      </span>
+
+                                    </div>
+
                                   </div>
                                   <div className="d-flex align-items-center gap-4 position-relative pe-xl-15">
                                     <span className="v-line lg d-none d-xl-block"></span>
                                     <div className="d-flex flex-column gap-5">
                                       <Image
                                         className="cpoint"
-                                        src={chart}
+                                        src={"/images/icon/line-chart.png"}
                                         width={16}
                                         height={16}
                                         alt="Icon"
                                       />
                                       <Image
                                         className="cpoint"
-                                        src={star}
+                                        src={"/images/icon/star2.png"}
                                         width={16}
                                         height={16}
                                         alt="Icon"
@@ -128,17 +144,17 @@ export default function TopSoccer() {
                                       <tr className="text-center">
                                         <th scope="col">
                                           <span className="fs-eight">
-                                            {x2}
+                                            1x2
                                           </span>
                                         </th>
                                         <th scope="col">
                                           <span className="fs-eight">
-                                            {douchance}
+                                            Double chance
                                           </span>
                                         </th>
                                         <th scope="col">
                                           <span className="fs-eight">
-                                            {ttl}
+                                            Total
                                           </span>
                                         </th>
                                       </tr>
@@ -149,54 +165,26 @@ export default function TopSoccer() {
                                           <div className="top_matches__innercount d-flex align-items-center gap-2 ">
                                             <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
                                               <span className="fs-seven d-block mb-2">
-                                                {draw}
+                                                draw
                                               </span>
                                               <span className="fw-bold d-block">
-                                                {point}
+                                                2.7
                                               </span>
                                             </div>
                                             <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
                                               <span className="fs-seven d-block mb-2">
-                                                {draw}
+                                                draw
                                               </span>
                                               <span className="fw-bold d-block">
-                                                {point}
+                                                2.5
                                               </span>
                                             </div>
                                             <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
                                               <span className="fs-seven d-block mb-2">
-                                                {draw}
+                                                draw
                                               </span>
                                               <span className="fw-bold d-block">
-                                                {point}
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </td>
-                                        <td className="pt-4">
-                                          <div className="top_matches__innercount d-flex align-items-center gap-2 ">
-                                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                                              <span className="fs-seven d-block mb-2">
-                                                {draw}
-                                              </span>
-                                              <span className="fw-bold d-block">
-                                                {point}
-                                              </span>
-                                            </div>
-                                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                                              <span className="fs-seven d-block mb-2">
-                                                {draw}
-                                              </span>
-                                              <span className="fw-bold d-block">
-                                                {point}
-                                              </span>
-                                            </div>
-                                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                                              <span className="fs-seven d-block mb-2">
-                                                {draw}
-                                              </span>
-                                              <span className="fw-bold d-block">
-                                                {point}
+                                                1.1
                                               </span>
                                             </div>
                                           </div>
@@ -205,26 +193,54 @@ export default function TopSoccer() {
                                           <div className="top_matches__innercount d-flex align-items-center gap-2 ">
                                             <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
                                               <span className="fs-seven d-block mb-2">
-                                                {draw}
+                                                draw
                                               </span>
                                               <span className="fw-bold d-block">
-                                                {point}
+                                                1.7
                                               </span>
                                             </div>
                                             <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
                                               <span className="fs-seven d-block mb-2">
-                                                {draw}
+                                                draw
                                               </span>
                                               <span className="fw-bold d-block">
-                                                {point}
+                                                3.6
                                               </span>
                                             </div>
                                             <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
                                               <span className="fs-seven d-block mb-2">
-                                                {draw}
+                                                draw
                                               </span>
                                               <span className="fw-bold d-block">
-                                                {point}
+                                                4.4
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td className="pt-4">
+                                          <div className="top_matches__innercount d-flex align-items-center gap-2 ">
+                                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
+                                              <span className="fs-seven d-block mb-2">
+                                                draw
+                                              </span>
+                                              <span className="fw-bold d-block">
+                                                3.3
+                                              </span>
+                                            </div>
+                                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
+                                              <span className="fs-seven d-block mb-2">
+                                                draw
+                                              </span>
+                                              <span className="fw-bold d-block">
+                                                2.5
+                                              </span>
+                                            </div>
+                                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
+                                              <span className="fs-seven d-block mb-2">
+                                                draw
+                                              </span>
+                                              <span className="fw-bold d-block">
+                                                1.5
                                               </span>
                                             </div>
                                           </div>
@@ -237,6 +253,7 @@ export default function TopSoccer() {
                             </div>
                           </div>
                         </div>
+
                       )
                     )}
                   </div>
@@ -246,6 +263,6 @@ export default function TopSoccer() {
           </div>
         </div>
       </div>
-    </section>
+    </section >
   )
 }

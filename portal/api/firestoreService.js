@@ -180,23 +180,21 @@ export const fetchActiveSeriesMatches = async () => {
     throw error;
   }
 };
-
-// // Fetch user's bets
-// export const fetchUserBets = async (userId) => {
-//   try {
-//     const betsCollectionRef = collection(db, "bets");
-//     const q = query(betsCollectionRef, where("userId", "==", userId));
-//     const betsSnapshot = await getDocs(q);
-//     const betsData = betsSnapshot.docs.map((doc) => ({
-//       id: doc.id,
-//       ...doc.data(),
-//     }));
-//     return betsData;
-//   } catch (error) {
-//     console.error("Error fetching user bets: ", error);
-//     throw error;
-//   }
-// };
+// Fetch active series match data from Firestore
+export const fetchFootballMatches = async () => {
+  try {
+    const matchDataCollection = collection(db, "footballData");
+    // const q = query(matchDataCollection, where("active", "==", true));
+    const matchDataSnapshot = await getDocs(matchDataCollection);
+    const matchData = matchDataSnapshot.docs.flatMap(
+      (doc) => doc.data().matches
+    );
+    return matchData;
+  } catch (error) {
+    console.error("Error fetching match data: ", error);
+    throw error;
+  }
+};
 
 // Fetch User Balance (for use in FooterCard component)
 export const fetchUserBalance = async (userId) => {
