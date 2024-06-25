@@ -68,7 +68,7 @@ export default function DepositAmount() {
                     amount: formDepositData.amount,
                     status: 'pending',
                 });
-                setSuccessMessage(`Withdrawal request for $${activeItem.amount} submitted successfully.`);
+                setSuccessMessage(`Deposit request for $${activeItem.amount} submitted successfully.`);
                 setErrorMessage('');
             } catch (error) {
                 setErrorMessage('Error storing deposit details!');

@@ -7,8 +7,8 @@ import FooterCard from "@/components/Shared/FooterCard";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Up365 Gaming",
-  description: "Betting App",
+  title: "UP365 - Sports Betting Platform",
+  description: "Made with actualities",
 };
 
 export default function RootLayout({
