@@ -2,7 +2,7 @@
 import { IconCricket } from "@tabler/icons-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { fetchActiveSeriesMatches } from '../../../api/firestoreService';
+import { fetchCricketMatches } from '../../../api/firestoreService';
 import BettingModal from '../../Shared/BettingModal';
 
 export default function TopCricket() {
@@ -13,7 +13,7 @@ export default function TopCricket() {
   useEffect(() => {
     const getMatchData = async () => {
       try {
-        const matchData = await fetchActiveSeriesMatches();
+        const matchData = await fetchCricketMatches();
         const sortedMatches = sortMatches(matchData);
         setMatches(sortedMatches);
       } catch (error) {
@@ -47,7 +47,16 @@ export default function TopCricket() {
     });
   };
 
-  const handleMatchClick = (match: any) => {
+  const handleMatchClick = (seriesName: any, dateTime: any, team1: any, team2: any, team1Img: any, team2Img: any) => {
+    const match = {
+      matchType: "cricket",
+      seriesName,
+      dateTime,
+      team1,
+      team2,
+      team1Img,
+      team2Img
+    };
     setSelectedMatch(match);
     setIsModalOpen(true);
   };
@@ -69,7 +78,7 @@ export default function TopCricket() {
                       <div
                         key={match.id}
                         className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4"
-                        onClick={() => handleMatchClick(match)}
+                        onClick={() => handleMatchClick(match.series, match.dateTimeGMT, match.t1, match.t2, match.t1img, match.t2img)}
                       >
                         <div className="row gx-0 gy-xl-0 gy-7">
                           <div className="col-xl-5 col-xxl-4">
@@ -232,7 +241,7 @@ export default function TopCricket() {
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
         />
-      } {/* Render BettingModal with selected match */}
+      }
     </section>
   );
 }

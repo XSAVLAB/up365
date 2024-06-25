@@ -8,7 +8,7 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-// Function to fetch cricket data from the API
+// Fetch cricket data from the API
 async function fetchCricketData() {
   const API_KEY = "2dc77f32-82dc-4048-9b54-50baa8ab8ef8";
   const url = `https://api.cricapi.com/v1/cricScore?apikey=${API_KEY}`;
@@ -21,7 +21,7 @@ async function fetchCricketData() {
   }
 }
 
-// Function to group matches by series
+// Group cricket matches by series
 function groupMatchesBySeries(matches) {
   return matches.reduce((acc, match) => {
     const seriesName = match.series;
@@ -33,22 +33,53 @@ function groupMatchesBySeries(matches) {
   }, {});
 }
 
-// Function to store matches in Firestore
-async function storeMatchesInFirestore(seriesMatches) {
+// Store cricket matches in Firestore
+async function storeCricketMatchesInFirestore(seriesMatches) {
   const batch = db.batch();
   for (const [seriesName, matches] of Object.entries(seriesMatches)) {
     const seriesDocRef = db.collection("cricketData").doc(seriesName);
     batch.set(seriesDocRef, { matches }, { merge: true });
   }
   await batch.commit();
-  console.log("Matches stored in Firestore successfully");
+  console.log("Cricket matches stored in Firestore successfully");
 }
 
+// Fetch FIFA World Cup Qualifying data from the API
+async function fetchFootballData() {
+  const API_KEY = "55e69f1de8854bf3990a08e105adb700";
+  const competitionId = 2000; // Replace with actual competition ID for FIFA World Cup Qualifying
+  const url = `https://api.football-data.org/v4/competitions/${competitionId}/matches`;
+  try {
+    const response = await axios.get(url, {
+      headers: { "X-Auth-Token": API_KEY },
+    });
+    return response.data.matches;
+  } catch (error) {
+    console.error("Error fetching FIFA World Cup Qualifying data:", error);
+    throw error;
+  }
+}
+
+// Store football matches in Firestore
+async function storeFootballMatchesInFirestore(matches) {
+  const batch = db.batch();
+  const docRef = db.collection("footballData").doc("FIFAWorldCupQualifying");
+  batch.set(docRef, { matches }, { merge: true });
+  await batch.commit();
+  console.log("Football matches stored in Firestore successfully");
+}
+
+// Main function to update both cricket and football data
 async function updateMatches() {
   try {
-    const matches = await fetchCricketData();
-    const seriesMatches = groupMatchesBySeries(matches);
-    await storeMatchesInFirestore(seriesMatches);
+    // Update cricket matches
+    const cricketMatches = await fetchCricketData();
+    const seriesMatches = groupMatchesBySeries(cricketMatches);
+    await storeCricketMatchesInFirestore(seriesMatches);
+
+    // Update football matches
+    const footballMatches = await fetchFootballData();
+    await storeFootballMatchesInFirestore(footballMatches);
   } catch (error) {
     console.error("Error updating matches:", error);
   }

@@ -6,18 +6,13 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, addDoc, getDoc, doc, updateDoc, getDocs, query, where } from 'firebase/firestore';
 
 interface Match {
-    id: string;
-    dateTimeGMT: string;
+    seriesName: string;
+    dateTime: string;
+    team1: string;
+    team2: string;
+    team1Img: string;
+    team2Img: string;
     matchType: string;
-    status: string;
-    ms: string;
-    t1: string;
-    t2: string;
-    t1s: string;
-    t2s: string;
-    t1img: string;
-    t2img: string;
-    series: string;
 }
 
 interface Bet {
@@ -30,12 +25,13 @@ interface Bet {
     possibleWin: string;
     selectedTeam: string;
     timestamp: string;
-    matchId: string;
     status: string;
     settled: boolean;
     betType: string;
     blockNumber: number;
     tableType: string;
+    seriesName: string;
+    matchType: string;
 }
 
 interface User {
@@ -49,8 +45,8 @@ interface FooterCardProps {
     selectedTeam: string;
     selectedOdds: string;
     betType: string;
-    blockNumber: number; // New prop for block number
-    tableType: string; // New prop for table type
+    blockNumber: number;
+    tableType: string;
 }
 
 export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, selectedTeam, selectedOdds, betType, blockNumber, tableType }: FooterCardProps) {
@@ -143,19 +139,20 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                     const betData: Bet = {
                         id: '',
                         userId: user.uid,
-                        team1: match.t1,
-                        team2: match.t2,
+                        team1: match.team1,
+                        team2: match.team2,
                         betAmount: betAmount,
                         odds: selectedOdds,
                         possibleWin: possibleWin,
-                        selectedTeam: selectedTeam === 't1' ? match.t1 : match.t2,
+                        selectedTeam: selectedTeam === 'team1' ? match.team1 : match.team2,
                         timestamp: new Date().toISOString(),
                         status: 'pending',
-                        matchId: match.id,
                         settled: false,
                         betType: betType,
-                        blockNumber: blockNumber, // Include block number
-                        tableType: tableType // Include table type
+                        blockNumber: blockNumber,
+                        tableType: tableType,
+                        seriesName: match.seriesName,
+                        matchType: match.matchType
                     };
 
                     const betRef = await addDoc(collection(db, 'bets'), betData);
@@ -169,7 +166,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                     });
 
                     setBalance((currentBalance - bet).toString());
-                    setMessage(`Bet of $${betAmount} placed on ${selectedTeam === 't1' ? match.t1 : match.t2}`);
+                    setMessage(`Bet of $${betAmount} placed on ${selectedTeam === 'team1' ? match.team1 : match.team2}`);
                 } catch (error) {
                     console.error('Error placing bet: ', error);
                 }
@@ -228,16 +225,16 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                     <Tab.Group>
                         <Tab.Panels>
                             <Tab.Panel>
-                                {selectedTeam === 't1' && (
+                                {selectedTeam === 'team1' && (
                                     <div className="fixed_footer__card p-3 mb-3 bg-green-200 border rounded-lg">
                                         <div className="row align-items-center justify-content-between">
                                             <div className="col-auto">
                                                 <div className="row align-items-center">
                                                     <div className="col-auto">
-                                                        <Image src={match.t1img} alt="Team 1" width={30} height={30} />
+                                                        <Image src={match.team1Img} alt="" width={30} height={30} />
                                                     </div>
                                                     <div className="col">
-                                                        <span className="fixed_footer__card-name">{match.t1}</span>
+                                                        <span className="fixed_footer__card-name">{match.team1}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -247,16 +244,16 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                                         </div>
                                     </div>
                                 )}
-                                {selectedTeam === 't2' && (
+                                {selectedTeam === 'team2' && (
                                     <div className="fixed_footer__card p-3 mb-3 bg-green-200 border rounded-lg">
                                         <div className="row align-items-center justify-content-between">
                                             <div className="col-auto">
                                                 <div className="row align-items-center">
                                                     <div className="col-auto">
-                                                        <Image src={match.t2img} alt="Team 2" width={30} height={30} />
+                                                        <Image src={match.team2Img} alt="" width={30} height={30} />
                                                     </div>
                                                     <div className="col">
-                                                        <span className="fixed_footer__card-name">{match.t2}</span>
+                                                        <span className="fixed_footer__card-name bold">{match.team2}</span>
                                                     </div>
                                                 </div>
                                             </div>

@@ -5,28 +5,61 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import { IconCricket } from "@tabler/icons-react";
-import { fetchActiveSeriesMatches } from "../../../api/firestoreService";
-import BettingModal from "../../Shared/BettingModal"; // Import the BettingModal
+import { fetchCricketMatches } from "../../../api/firestoreService";
+import BettingModal from "../../Shared/BettingModal";
 
 export default function CricketSlider() {
     const [matches, setMatches] = useState<any[]>([]);
-    const [selectedMatch, setSelectedMatch] = useState<any | null>(null); // State for selected match
-    const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+    const [selectedMatch, setSelectedMatch] = useState<any>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const getMatchData = async () => {
             try {
-                const matchData = await fetchActiveSeriesMatches();
-                setMatches(matchData);
+                const matchData = await fetchCricketMatches();
+                const sortedMatches = sortMatches(matchData);
+                setMatches(sortedMatches);
             } catch (error) {
                 console.error('Error fetching cricket matches: ', error);
             }
         };
 
         getMatchData();
+
+        const interval = setInterval(() => {
+            setMatches((prevMatches) => sortMatches(prevMatches));
+        }, 600000);
+
+        return () => clearInterval(interval);
     }, []);
 
-    const handleMatchClick = (match: any) => {
+    const sortMatches = (matches: any[]) => {
+        const now = new Date().getTime();
+        return matches.sort((a: any, b: any) => {
+            const dateA = new Date(a.dateTimeGMT).getTime();
+            const dateB = new Date(b.dateTimeGMT).getTime();
+            if (dateA > now && dateB > now) {
+                return dateA - dateB;
+            } else if (dateA < now && dateB < now) {
+                return dateB - dateA;
+            } else if (dateA > now) {
+                return -1;
+            } else {
+                return 1;
+            }
+        });
+    };
+
+    const handleMatchClick = (seriesName: any, dateTime: any, team1: any, team2: any, team1Img: any, team2Img: any) => {
+        const match = {
+            matchType: "cricket",
+            seriesName,
+            dateTime,
+            team1,
+            team2,
+            team1Img,
+            team2Img
+        };
         setSelectedMatch(match);
         setIsModalOpen(true);
     };
@@ -48,6 +81,9 @@ export default function CricketSlider() {
                                                     speed={5000}
                                                     autoplay={{
                                                         delay: 0,
+                                                        disableOnInteraction: false,
+                                                        pauseOnMouseEnter: true,
+
                                                     }}
                                                     slidesPerView="auto"
                                                     modules={[Autoplay]}
@@ -78,7 +114,7 @@ export default function CricketSlider() {
                                                     }}>
                                                     {matches && matches.map((match: any) => (
                                                         <SwiperSlide key={match.id}>
-                                                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6" onClick={() => handleMatchClick(match)}>
+                                                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6" onClick={() => handleMatchClick(match.series, match.dateTimeGMT, match.t1, match.t2, match.t1img, match.t2img)}>
                                                                 <div className="hero_area__topslider-cardtop d-flex align-items-center justify-content-between mb-4 mb-md-6">
                                                                     <div className="d-flex align-items-center gap-2">
                                                                         <IconCricket className="n5-color" />
