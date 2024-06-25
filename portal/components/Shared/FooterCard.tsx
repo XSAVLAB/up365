@@ -3,7 +3,8 @@ import Image from 'next/image';
 import { IconArrowBadgeUpFilled } from "@tabler/icons-react";
 import { Tab } from '@headlessui/react';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, addDoc, getDoc, doc, updateDoc, getDocs, query, where } from 'firebase/firestore';
+import { fetchUserWallet, placeBet, fetchUserBets } from '../../api/firestoreService';
+import { stat } from 'fs';
 
 interface Match {
     seriesName: string;
@@ -78,15 +79,8 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                 const auth = getAuth();
                 const user = auth.currentUser;
                 if (user) {
-                    const db = getFirestore();
-                    const docRef = doc(db, 'users', user.uid);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        const userData = docSnap.data() as User;
-                        setBalance(userData.wallet);
-                    } else {
-                        console.error('No wallet found for user');
-                    }
+                    const wallet = await fetchUserWallet(user.uid);
+                    setBalance(wallet);
                 } else {
                     console.error('User not authenticated');
                 }
@@ -135,38 +129,28 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                 setMessage('Insufficient balance! Please add funds.');
             } else {
                 try {
-                    const db = getFirestore();
-                    const betData: Bet = {
+                    const betData = {
                         id: '',
                         userId: user.uid,
+                        betAmount,
+                        possibleWin,
+                        selectedTeam,
                         team1: match.team1,
                         team2: match.team2,
-                        betAmount: betAmount,
-                        odds: selectedOdds,
-                        possibleWin: possibleWin,
-                        selectedTeam: selectedTeam === 'team1' ? match.team1 : match.team2,
-                        timestamp: new Date().toISOString(),
                         status: 'pending',
-                        settled: false,
-                        betType: betType,
-                        blockNumber: blockNumber,
-                        tableType: tableType,
+                        selectedOdds,
+                        matchId: match.seriesName,
+                        currentBalance,
+                        betType,
+                        blockNumber,
+                        tableType,
                         seriesName: match.seriesName,
                         matchType: match.matchType
                     };
 
-                    const betRef = await addDoc(collection(db, 'bets'), betData);
-                    await updateDoc(betRef, {
-                        id: betRef.id
-                    });
-
-                    const userWalletRef = doc(db, 'users', user.uid);
-                    await updateDoc(userWalletRef, {
-                        wallet: (currentBalance - bet).toString()
-                    });
-
+                    const betMessage = await placeBet(betData);
                     setBalance((currentBalance - bet).toString());
-                    setMessage(`Bet of $${betAmount} placed on ${selectedTeam === 'team1' ? match.team1 : match.team2}`);
+                    setMessage(betMessage);
                 } catch (error) {
                     console.error('Error placing bet: ', error);
                 }
@@ -190,15 +174,8 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                     return;
                 }
 
-                const db = getFirestore();
-                const q = query(collection(db, 'bets'), where('userId', '==', user.uid), where('settled', '==', false));
-                const betsSnapshot = await getDocs(q);
-                const userBets = betsSnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...(doc.data() as Bet)
-                }));
-
-                setBets(userBets);
+                const userBets = await fetchUserBets(user.uid);
+                setBets(userBets as Bet[]);
             } catch (error) {
                 console.error('Error fetching bets: ', error);
             }

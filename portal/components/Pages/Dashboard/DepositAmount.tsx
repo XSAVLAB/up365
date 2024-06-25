@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { amountData } from '@/public/data/dashBoard';
 import { db, auth } from '@/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { updateUserCardDetails, addTransaction, handleChange } from '@/api/firestoreService';
+import { updateUserCardDetails, addDepositRequest, handleChange } from '@/api/firestoreService';
 
 export default function DepositAmount() {
     const [activeItem, setActiveItem] = useState(amountData[0]);
@@ -64,7 +64,7 @@ export default function DepositAmount() {
         if (user) {
             try {
                 await updateUserCardDetails(user.uid, formDepositData);
-                await addTransaction(user.uid, {
+                await addDepositRequest(user.uid, {
                     amount: formDepositData.amount,
                     status: 'pending',
                 });

@@ -3,6 +3,7 @@ import {
   getFirestore,
   doc,
   setDoc,
+  updateDoc,
   deleteDoc,
   getDoc,
   collection,
@@ -12,6 +13,8 @@ import {
   where,
 } from "firebase/firestore";
 
+//==============================Utility Section================================//
+
 export const handleChange = (profileData, setProfileData) => (e) => {
   const { name, value } = e.target;
   setProfileData((prevData) => ({
@@ -20,32 +23,7 @@ export const handleChange = (profileData, setProfileData) => (e) => {
   }));
 };
 
-// Fetch balance history
-export const fetchBalanceHistory = async (userId) => {
-  try {
-    const transactionsCollectionRef = collection(db, "transactions");
-    const withdrawalsCollectionRef = collection(db, "withdrawals");
-
-    const transactionsSnapshot = await getDocs(transactionsCollectionRef);
-    const withdrawalsSnapshot = await getDocs(withdrawalsCollectionRef);
-
-    const transactionsData = transactionsSnapshot.docs
-      .filter((doc) => doc.data().userId === userId)
-      .map((doc) => ({ id: doc.id, type: "Deposit", ...doc.data() }));
-
-    const withdrawalsData = withdrawalsSnapshot.docs
-      .filter((doc) => doc.data().userId === userId)
-      .map((doc) => ({ id: doc.id, type: "Withdrawal", ...doc.data() }));
-
-    const combinedData = [...transactionsData, ...withdrawalsData];
-    return combinedData;
-  } catch (error) {
-    console.error("Error fetching balance history: ", error);
-    throw error;
-  }
-};
-
-// Profile management functions:
+//========================Profile Management Section===========================//
 
 // Fetch Profile Data
 export const fetchProfileData = async (userId) => {
@@ -74,6 +52,7 @@ export const updateProfile = async (userId, profileData) => {
     throw error;
   }
 };
+
 // Create Profile
 export const createProfile = async (userId, profileData) => {
   try {
@@ -85,7 +64,7 @@ export const createProfile = async (userId, profileData) => {
   }
 };
 
-// Settings management functions:
+//============================Transaction Section==============================//
 
 // Update Settings
 export const updateSettings = async (userId, settingsData) => {
@@ -101,8 +80,6 @@ export const updateSettings = async (userId, settingsData) => {
   }
 };
 
-// Settings management functions:
-
 // Update Card Details
 export const updateUserCardDetails = async (userId, cardDetails) => {
   try {
@@ -115,10 +92,10 @@ export const updateUserCardDetails = async (userId, cardDetails) => {
   }
 };
 
-// Transactions
-export const addTransaction = async (userId, transactionData) => {
+// Deposits
+export const addDepositRequest = async (userId, transactionData) => {
   try {
-    const transactionCollectionRef = collection(db, "transactions");
+    const transactionCollectionRef = collection(db, "deposits");
     await addDoc(transactionCollectionRef, {
       ...transactionData,
       userId,
@@ -141,7 +118,6 @@ export const addWithdrawalRequest = async (userId, amount) => {
       status: "pending",
       timestamp: new Date(),
     });
-
     console.log("Withdrawal request stored in Firestore");
   } catch (error) {
     console.error("Error storing withdrawal request: ", error);
@@ -165,7 +141,42 @@ export const fetchUserWallet = async (userId) => {
   }
 };
 
-// Fetch active series match data from Firestore
+// Function to update user wallet
+export const updateUserWallet = async (userId, newBalance) => {
+  const userWalletRef = doc(db, "users", userId);
+  await updateDoc(userWalletRef, {
+    wallet: newBalance.toString(),
+  });
+};
+
+// Fetch balance history
+export const fetchBalanceHistory = async (userId) => {
+  try {
+    const transactionsCollectionRef = collection(db, "transactions");
+    const withdrawalsCollectionRef = collection(db, "withdrawals");
+
+    const transactionsSnapshot = await getDocs(transactionsCollectionRef);
+    const withdrawalsSnapshot = await getDocs(withdrawalsCollectionRef);
+
+    const transactionsData = transactionsSnapshot.docs
+      .filter((doc) => doc.data().userId === userId)
+      .map((doc) => ({ id: doc.id, type: "Deposit", ...doc.data() }));
+
+    const withdrawalsData = withdrawalsSnapshot.docs
+      .filter((doc) => doc.data().userId === userId)
+      .map((doc) => ({ id: doc.id, type: "Withdrawal", ...doc.data() }));
+
+    const combinedData = [...transactionsData, ...withdrawalsData];
+    return combinedData;
+  } catch (error) {
+    console.error("Error fetching balance history: ", error);
+    throw error;
+  }
+};
+
+//===============================Match Section=================================//
+
+// Fetch Cricket Matches
 export const fetchCricketMatches = async () => {
   try {
     const matchDataCollection = collection(db, "cricketData");
@@ -180,11 +191,11 @@ export const fetchCricketMatches = async () => {
     throw error;
   }
 };
-// Fetch active series match data from Firestore
+
+// Fetch Football Matches
 export const fetchFootballMatches = async () => {
   try {
     const matchDataCollection = collection(db, "footballData");
-    // const q = query(matchDataCollection, where("active", "==", true));
     const matchDataSnapshot = await getDocs(matchDataCollection);
     const matchData = matchDataSnapshot.docs.flatMap(
       (doc) => doc.data().matches
@@ -195,25 +206,8 @@ export const fetchFootballMatches = async () => {
     throw error;
   }
 };
-
-// Fetch User Balance (for use in FooterCard component)
-export const fetchUserBalance = async (userId) => {
-  try {
-    const userDocRef = doc(db, "users", userId);
-    const docSnap = await getDoc(userDocRef);
-    if (docSnap.exists()) {
-      const userData = docSnap.data();
-      return userData.wallet;
-    } else {
-      throw new Error("No wallet found for user");
-    }
-  } catch (error) {
-    console.error("Error fetching balance: ", error);
-    throw error;
-  }
-};
-
-// Place a Bet (for use in FooterCard component)
+//================================Bets Section=================================//
+// Place a Bet
 export const placeBet = async (betData) => {
   try {
     const {
@@ -221,29 +215,39 @@ export const placeBet = async (betData) => {
       betAmount,
       possibleWin,
       selectedTeam,
-      t1,
-      t2,
-      t1odds,
-      t2odds,
+      team1,
+      team2,
+      selectedOdds,
       matchId,
       currentBalance,
+      betType,
+      blockNumber,
+      tableType,
+      seriesName,
+      matchType,
     } = betData;
+
     if (betAmount > currentBalance) {
       throw new Error("Insufficient balance");
     }
 
     const betDocRef = await addDoc(collection(db, "bets"), {
       userId,
-      team1: t1,
-      team2: t2,
+      team1: team1,
+      team2: team2,
       betAmount,
-      odds: selectedTeam === "t1" ? t1odds.toString() : t2odds.toString(),
+      odds: selectedOdds,
       possibleWin,
-      selectedTeam: selectedTeam === "t1" ? t1 : t2,
+      selectedTeam: selectedTeam === "team1" ? team1 : team2,
       timestamp: new Date().toISOString(),
       status: "pending",
       matchId,
       settled: false,
+      betType,
+      blockNumber,
+      tableType,
+      seriesName,
+      matchType,
     });
 
     await updateDoc(doc(db, "bets", betDocRef.id), { id: betDocRef.id });
@@ -252,30 +256,13 @@ export const placeBet = async (betData) => {
       wallet: (currentBalance - betAmount).toString(),
     });
 
-    return `Bet of $${betAmount} placed on ${selectedTeam === "t1" ? t1 : t2}`;
+    return `Bet of $${betAmount} placed on ${
+      selectedTeam === "team1" ? team1 : team2
+    }`;
   } catch (error) {
     console.error("Error placing bet: ", error);
     throw error;
   }
-};
-
-// Function to add a bet
-export const addBet = async (betData) => {
-  const db = getFirestore();
-  const betRef = await addDoc(collection(db, "bets"), betData);
-  await updateDoc(betRef, {
-    id: betRef.id,
-  });
-  return betRef.id;
-};
-
-// Function to update user wallet
-export const updateUserWallet = async (userId, newBalance) => {
-  const db = getFirestore();
-  const userWalletRef = doc(db, "users", userId);
-  await updateDoc(userWalletRef, {
-    wallet: newBalance.toString(),
-  });
 };
 
 // Function to fetch user bets
