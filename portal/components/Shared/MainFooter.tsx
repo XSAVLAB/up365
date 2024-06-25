@@ -23,6 +23,10 @@ export default function MainFooter() {
                                                 <IconArrowBadgeRight className="fs-five rtawin" />
                                                 <Link className="fs-ten n4-color" href="/cricket">Cricket</Link>
                                             </li>
+                                            <li className="iconstyle d-flex align-items-center">
+                                                <IconArrowBadgeRight className="fs-five rtawin" />
+                                                <Link className="fs-ten n4-color" href="/soccer">Football</Link>
+                                            </li>
                                             {/* <li className="iconstyle d-flex align-items-center">
                                                 <IconArrowBadgeRight className="fs-five rtawin" />
                                                 <Link className="fs-ten n4-color" href="#">Sports</Link>
@@ -30,10 +34,6 @@ export default function MainFooter() {
                                             {/* <li className="iconstyle d-flex align-items-center">
                                                 <IconArrowBadgeRight className="fs-five rtawin" />
                                                 <Link className="fs-ten n4-color" href="#">Virtuals</Link>
-                                            </li>
-                                            <li className="iconstyle d-flex align-items-center">
-                                                <IconArrowBadgeRight className="fs-five rtawin" />
-                                                <Link className="fs-ten n4-color" href="#">Football</Link>
                                             </li>
                                             <li className="iconstyle d-flex align-items-center">
                                                 <IconArrowBadgeRight className="fs-five rtawin" />

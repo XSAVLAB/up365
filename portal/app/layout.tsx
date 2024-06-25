@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Up365 Gaming",
-  description: "Made with nextjs bootstrap 5 & Sass",
+  description: "Betting App",
 };
 
 export default function RootLayout({

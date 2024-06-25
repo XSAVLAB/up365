@@ -166,7 +166,7 @@ export const fetchUserWallet = async (userId) => {
 };
 
 // Fetch active series match data from Firestore
-export const fetchActiveSeriesMatches = async () => {
+export const fetchCricketMatches = async () => {
   try {
     const matchDataCollection = collection(db, "cricketData");
     const q = query(matchDataCollection, where("active", "==", true));
