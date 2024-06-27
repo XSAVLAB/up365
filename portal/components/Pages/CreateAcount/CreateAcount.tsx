@@ -38,7 +38,7 @@ const CreateAccount = () => {
             };
             await createProfile(user.uid, profileData);
 
-            router.push('/');
+            router.push('/home');
         } catch (e) {
             setMessage('User Already Registered! Please Log in');
             console.log(e);
@@ -62,7 +62,7 @@ const CreateAccount = () => {
             };
             await createProfile(user.uid, profileData);
 
-            window.location.replace('/');
+            window.location.replace('/home');
         } catch (e) {
             console.log(e);
         }

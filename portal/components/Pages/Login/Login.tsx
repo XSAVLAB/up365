@@ -26,7 +26,7 @@ export default function Login() {
                 if (userData?.role === 'admin') {
                     router.push('/admin');
                 } else {
-                    router.push('/');
+                    router.push('/home');
                 }
             })
             .catch((error) => {
@@ -44,7 +44,7 @@ export default function Login() {
             .then((result) => {
                 const user = result.user;
                 console.log(user);
-                router.push('/');
+                router.push('/home');
             }).catch((error) => {
                 console.error(error);
             });
@@ -56,7 +56,7 @@ export default function Login() {
             .then((result) => {
                 const user = result.user;
                 console.log(user);
-                router.push('/');
+                router.push('/home');
             }).catch((error) => {
                 console.error(error);
             });
@@ -68,7 +68,7 @@ export default function Login() {
             .then((result) => {
                 const user = result.user;
                 console.log(user);
-                router.push('/');
+                router.push('/home');
             }).catch((error) => {
                 console.error(error);
             });
