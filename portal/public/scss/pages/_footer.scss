@@ -1,87 +1,119 @@
 // Footer section starts
-.footer_section {
-    &__main {
-        margin: 0 300px 0 303px;
 
-        @include maxQuery(1899) {
-            margin: 0 200px 0 303px;
-        }
+.custom-footer {
+    width: 100%;
+    margin-left: 6rem;
+    padding: 2rem 1rem;
+    background-color: #000616;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-        @include maxQuery(1699) {
-            margin: 0 80px 0 303px;
-        }
+.custom-footer-logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
 
-        @include maxQuery(1499) {
-            margin: 0 0 0 303px;
-        }
+.custom-footer-logo {
+    height: 6rem;
+    width: 12rem;
+    
+    cursor: pointer;
+    border-radius: 0.5rem;
+}
 
-        @include maxQuery(991) {
-            margin: 0;
-        }
-    }
+.custom-footer-description {
+    text-align: center;
+    max-width: 800px;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
 
-    &__community {
-        &-sitem {
-            @include box(60);
+.custom-footer-social {
+    text-align: center;
+    margin-bottom: 2rem;
+}
 
-            @include maxQuery(991) {
-                @include box(50);
-            }
-            background-color: rgb(var(--n11));
-            .footericon {
-                color: #1FBCEE;
-                width: 31px;
-                height: 31px;
-                @include maxQuery(991) {
-                    width: 28px;
-                    height: 28px;
-                }
-            }
+.custom-footer-social-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-style: italic;
+    margin-bottom: 1rem;
+}
 
-            .bitcoin {
-                color: #FCB400;
-                width: 31px;
-                height: 31px;
-                @include maxQuery(991) {
-                    width: 28px;
-                    height: 28px;
-                }
-            }
-        }
-    }
+.custom-footer-social-icons {
+    display: flex;
 
-    .brand-slider .swiper-wrapper {
-        -webkit-transition-timing-function: linear !important;
-        -o-transition-timing-function: linear !important;
-        transition-timing-function: linear !important;
-    }
+    justify-content: center;
+    gap: 5rem;
+}
 
-    .iconstyle {
-        transition: 0.5s linear;
-        overflow: hidden;
+.custom-footer-social-icons a {
+    transition: transform 0.3s;
+    color: white;
+}
 
-        .rtawin {
-            transform: translateX(-50px);
-            transition: 0.5s linear;
-            opacity: 0;
-        }
+.custom-footer-social-icons a:hover {
+    transform: scale(1.5);
+}
 
-        a {
-            margin-left: -17px;
-            transition: 0.5s linear;
-        }
+.custom-footer-payments {
+    width: 80%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-left: 10rem;
+    margin-right: 10rem;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
 
-        &:hover {
-            .rtawin {
-                transform: translateX(0);
-                opacity: 1;
-            }
+.custom-footer-payment-icon {
+    width: 8rem;
+    background-color: white;
+    height: 4rem;
+    border-radius: 0.5rem;
+    transition: transform 0.3s;
+}
 
-            a {
-                margin-left: 0;
-            }
-        }
-    }
+.custom-footer-payment-icon:hover {
+    transform: scale(1.25);
+}
+
+.custom-footer-links {
+    width: 70%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+    margin-left: 10rem;
+    margin-right: 10rem;
+}
+
+.custom-footer-link-group {
+    margin: 1rem;
+}
+
+.custom-footer-link-title {
+    font-style: italic;
+    font-weight: bold;
+    text-decoration: underline;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.custom-footer-link-item {
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.custom-footer-copyright {
+    text-align: center;
+    margin-top: 1rem;
 }
 
 // Footer section ends

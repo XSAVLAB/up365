@@ -18,6 +18,13 @@ function MainBodyScroller() {
     router.push("/login");
   };
 
+  const navigateCricketPage = () => {
+    router.push("/cricket");
+  }
+  const navigateFootballPage = () => {
+    router.push("/soccer");
+  }
+
   return (
     <nav className="main-body-scroller">
       <div className="container">
@@ -34,11 +41,11 @@ function MainBodyScroller() {
             <GiCoins size={25} />
             <span>Casino</span>
           </div>
-          <div className="nav-item" onClick={navigateLoginPage}>
+          <div className="nav-item" onClick={navigateCricketPage}>
             <IconCricket size={25} />
             <span>Cricket</span>
           </div>
-          <div className="nav-item" onClick={navigateLoginPage}>
+          <div className="nav-item" onClick={navigateFootballPage}>
             <IconBallFootball size={25} />
             <span>Football</span>
           </div>
