@@ -5,6 +5,7 @@ import {
   setDoc,
   deleteDoc,
   getDoc,
+  updateDoc,
   collection,
   getDocs,
   addDoc,
@@ -151,7 +152,9 @@ export const addWithdrawalRequest = async (userId, amount) => {
 
 // Fetch user wallet by user ID
 export const fetchUserWallet = async (userId) => {
+  console.log("userId", userId);
   try {
+    console.log("userId", userId);
     const userDocRef = doc(db, "users", userId);
     const userDoc = await getDoc(userDocRef);
     if (userDoc.exists()) {
@@ -291,4 +294,71 @@ export const fetchUserBets = async (userId) => {
     id: doc.id,
     ...doc.data(),
   }));
+};
+
+//==========================Games Section=============================//
+// Update Lottery Bets
+export const submitLotteryBet = async (
+  userID,
+  betNumber,
+  betAmount,
+  gameType,
+  ballColor,
+  settled
+) => {
+  try {
+    const betData = {
+      userID,
+      betNumber,
+      betAmount,
+      gameType,
+      ballColor,
+      settled,
+      timestamp: new Date(),
+    };
+    await addDoc(collection(db, "gameBets"), betData);
+    return { status: "Bet Placed" };
+  } catch (error) {
+    console.error("Error placing bet: ", error);
+    throw new Error("Bet placement failed");
+  }
+};
+
+// Fetch Lottery Bets
+export const fetchLotteryBets = async (userId, gameType) => {
+  try {
+    const db = getFirestore();
+    const q = query(
+      collection(db, "gameBets"),
+      where("userID", "==", userId),
+      where("gameType", "==", gameType)
+    );
+    const betsSnapshot = await getDocs(q);
+    return betsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error("Error fetching user bets: ", error);
+    throw error;
+  }
+};
+
+// Fetch all lottery bets
+export const fetchAllLotteryBets = async (userId) => {
+  try {
+    const db = getFirestore();
+
+    const betsSnapshot = await getDocs(
+      collection(db, "gameBets"),
+      where("userID", "==", userId)
+    );
+    return betsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error("Error fetching all bets: ", error);
+    throw error;
+  }
 };

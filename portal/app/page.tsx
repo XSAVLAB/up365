@@ -10,8 +10,6 @@ export default function page() {
       {/* <HeaderMain />
       <TopSlider />
       <TopCricket /> */}
-      {/* <CricketLive /> */}
-      {/* <UpCmingCricket /> */}
     </>
   )
 }

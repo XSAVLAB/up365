@@ -5,14 +5,12 @@ export const popularData=[
     id: 12288,
     image: "/images/icon/cricket.png",
     linkText: "Games",
-    href: "#",
     
   },
   {
     id: 12299,
     image: "/images/icon/soccer-icon.png",
     linkText: "Sports",
-    href: "#",
     
   },
 ]
@@ -22,21 +20,21 @@ export const gameData=[
     id: 13388,
     image: "/images/icon/cricket.png",
     linkText: "Single Digit Lottery",
-    href: "/cricket",
+    href: "/single-digit-lottery",
     
   },
   {
     id: 13399,
     image: "/images/icon/soccer-icon.png",
     linkText: "Double Digit Lottery",
-    href: "/cricket",
+    href: "/double-digit-lottery",
   
   },
   {
     id:13377,
     image: "/images/icon/soccer-icon.png",
     linkText: "Triple Digit Lottery",
-    href: "/cricket",
+    href: "/triple-digit-lottery",
   },
   {
     id:13366,
