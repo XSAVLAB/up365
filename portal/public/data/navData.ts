@@ -40,6 +40,7 @@ export const gameData=[
     id:13366,
     image: "/images/icon/soccer-icon.png",
     linkText: "Color Ball Lottery",
+    href: "/colorball-game",
   }
 ]
 

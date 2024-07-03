@@ -10,6 +10,7 @@ import {
   getDocs,
   addDoc,
   query,
+  increment,
   where,
 } from "firebase/firestore";
 
@@ -360,5 +361,153 @@ export const fetchAllLotteryBets = async (userId) => {
   } catch (error) {
     console.error("Error fetching all bets: ", error);
     throw error;
+  }
+};
+
+// Settle Lottery Bets
+export const settleLotteryBets = async (gameType) => {
+  try {
+    const db = getFirestore();
+    const gameBetsRef = collection(db, "gameBets");
+    const unsettledBetsQuery = query(
+      gameBetsRef,
+      where("settled", "==", false),
+      where("gameType", "==", gameType)
+    );
+    const snapshot = await getDocs(unsettledBetsQuery);
+    const bets = [];
+    const betCount = {};
+    snapshot.forEach((betDoc) => {
+      const betData = betDoc.data();
+      bets.push({ id: betDoc.id, ...betData });
+      betCount[betData.betNumber] = (betCount[betData.betNumber] || 0) + 1;
+    });
+    if (bets.length > 0) {
+      let winningNumber = null;
+      let minBets = Infinity;
+      for (const number in betCount) {
+        if (betCount[number] < minBets) {
+          minBets = betCount[number];
+          winningNumber = parseInt(number, 10);
+        }
+      }
+      if (Object.keys(betCount).length === 1) {
+        winningNumber = null;
+      }
+      bets.forEach(async (bet) => {
+        const betRef = doc(db, "gameBets", bet.id);
+        const userRef = doc(db, "users", bet.userID);
+        if (bet.betNumber === winningNumber) {
+          const reward = bet.betAmount * 1.5;
+          const userDoc = await getDoc(userRef);
+          const userWallet = userDoc.data().wallet;
+          const updatedWallet = (parseInt(userWallet) + reward).toString();
+          await updateDoc(userRef, { wallet: updatedWallet });
+          await updateDoc(betRef, {
+            rewardAmount: reward,
+            settled: true,
+            winningNumber,
+          });
+        } else {
+          await updateDoc(betRef, {
+            settled: true,
+            winningNumber,
+            rewardAmount: 0,
+          });
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Error settling bets: ", error);
+  }
+};
+
+// Settle color ball bets
+
+export const settleColorBallBets = async () => {
+  try {
+    const db = getFirestore();
+    const gameBetsRef = collection(db, "gameBets");
+    const unsettledBetsQuery = query(
+      gameBetsRef,
+      where("settled", "==", false),
+      where("gameType", "==", "Color Ball Game")
+    );
+    const snapshot = await getDocs(unsettledBetsQuery);
+    const bets = [];
+    const betCount = {};
+
+    snapshot.forEach((betDoc) => {
+      const betData = betDoc.data();
+      const combo = `${betData.ballColor}-${betData.betNumber}`;
+      bets.push({ id: betDoc.id, ...betData });
+      if (!betCount[combo]) {
+        betCount[combo] = { count: 0, firstTimestamp: betData.timestamp };
+      }
+      betCount[combo].count += 1;
+      if (betData.timestamp < betCount[combo].firstTimestamp) {
+        betCount[combo].firstTimestamp = betData.timestamp;
+      }
+    });
+
+    if (bets.length > 0) {
+      let winningCombination = null;
+      let minBets = Infinity;
+
+      for (const combo in betCount) {
+        if (
+          betCount[combo].count < minBets ||
+          (betCount[combo].count === minBets &&
+            betCount[combo].firstTimestamp <
+              betCount[winningCombination].firstTimestamp)
+        ) {
+          minBets = betCount[combo].count;
+          winningCombination = combo;
+        }
+      }
+
+      if (Object.keys(betCount).length === 1) {
+        winningCombination = null;
+      }
+
+      const [winningColor, winningNumber] = winningCombination
+        ? winningCombination.split("-")
+        : [null, null];
+
+      bets.forEach(async (bet) => {
+        const betRef = doc(db, "gameBets", bet.id);
+        const userRef = doc(db, "users", bet.userID);
+
+        if (
+          bet.ballColor === winningColor &&
+          bet.betNumber === parseInt(winningNumber, 10)
+        ) {
+          const reward = bet.betAmount * 1.5;
+          const userDoc = await getDoc(userRef);
+          const userWallet = userDoc.data().wallet;
+          const updatedWallet = (parseInt(userWallet) + reward).toString();
+          await updateDoc(userRef, { wallet: updatedWallet });
+          await updateDoc(betRef, {
+            rewardAmount: reward,
+            settled: true,
+            winningColor,
+            winningNumber: parseInt(winningNumber, 10),
+          });
+        } else if (
+          (gameBetsRef,
+          where("settled", "==", false),
+          where("gameType", "==", "Color Ball Game"))
+        ) {
+          await updateDoc(betRef, {
+            settled: true,
+            winningColor,
+            winningNumber: parseInt(winningNumber, 10),
+            rewardAmount: 0,
+          });
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Error settling bets: ", error);
   }
 };

@@ -6,9 +6,9 @@ import { MdArrowDropDownCircle } from 'react-icons/md';
 import { useService } from '../../hooks/useService';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchUserBalance, submitLotteryBet, updateUserWallet } from '../../../api/firestoreService';
+import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets, fetchProfileData } from '../../../api/firestoreService';
 
-const gameTimer = 300;
+const gameTimer = 300; // 5 minutes in seconds
 
 function formatTimer(seconds: number) {
     const hours = Math.floor((seconds % (3600 * 24)) / 3600);
@@ -20,12 +20,28 @@ function formatTimer(seconds: number) {
     return `${hoursStr}:${minutesStr}:${secondsStr}`;
 }
 
+function calculateTimeToNextInterval() {
+    const now = new Date();
+    const nextInterval = new Date(now);
+    nextInterval.setSeconds(0);
+    nextInterval.setMilliseconds(0);
+
+    if (now.getMinutes() % 5 === 0 && now.getSeconds() === 0) {
+        return gameTimer;
+    } else {
+        const minutes = now.getMinutes() + (5 - (now.getMinutes() % 5));
+        nextInterval.setMinutes(minutes);
+        return Math.floor((nextInterval.getTime() - now.getTime()) / 1000);
+    }
+}
+
 function Form() {
     const [user, setUser] = useState<User | null>(null);
+    const [profile, setProfile] = useState<any>(null);
     const [walletBalance, setWalletBalance] = useState('0');
     const service = useService();
-    const [countdownTimer, setCountdownTimer] = useState(0);
-    const [cooldown, setCooldown] = useState(10);
+    const [countdownTimer, setCountdownTimer] = useState(calculateTimeToNextInterval());
+    const [cooldown, setCooldown] = useState(0);
     const [showRules, setShowRules] = useState(false);
     const [counter, setCounter] = useState(1);
     let [betCount, setBetCount] = useState(0);
@@ -37,6 +53,7 @@ function Form() {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
+                fetchProfileData(currentUser.uid).then(data => setProfile(data));
                 fetchUserBalance(currentUser.uid)
                     .then(data => setWalletBalance(data))
                     .catch(error => console.error('Error fetching wallet balance: ', error));
@@ -64,7 +81,7 @@ function Form() {
                 alert('Failed to place bet. Please try again.');
             }
         } else {
-            alert('Please select a number between 10 to 99. \nMinimum Bet Amount = 100.');
+            alert('Please select a number between 10 to 99, a bet amount greater than 99.');
         }
     }
 
@@ -80,9 +97,10 @@ function Form() {
     useEffect(() => {
         const interval = setInterval(() => {
             if (countdownTimer === 0) {
+                settleLotteryBets('Double Digit Lottery');
                 setCounter((prevCounter) => prevCounter + 1);
                 setBetCount(0);
-                setCountdownTimer(gameTimer);
+                setCountdownTimer(calculateTimeToNextInterval());
                 setCooldown(10);
             } else if (cooldown !== 0) {
                 setCooldown((prevCooldown) => prevCooldown - 1);
@@ -99,12 +117,11 @@ function Form() {
         <div className="form-container">
             <div className="form-info">
                 <div className={`info-box ${countdownTimer === 0 ? 'text-white' : 'text-green-500'}`}>
-                    <div>Game Timer</div>
                     <div className='info-timer'><IoMdClock size={30} className='mr-2' />{formatTimer(countdownTimer)}</div>
                 </div>
 
                 <div className="info-box">
-                    <BiUserCircle size={30} className='mr-2' />{user?.uid}
+                    <BiUserCircle size={30} className='mr-2' />{profile?.firstName} {profile?.lastName}
                 </div>
                 <div className="info-box">
                     <BiSolidWalletAlt size={30} />

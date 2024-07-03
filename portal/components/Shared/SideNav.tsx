@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
 
 export default function SideNav() {
     const path = usePathname();
-    const [activeCategory, setActiveCategory] = useState("Sports");
+    const [activeCategory, setActiveCategory] = useState("Games");
 
     return (
         <>
