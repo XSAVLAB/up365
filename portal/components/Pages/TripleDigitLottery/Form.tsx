@@ -68,7 +68,7 @@ function Form() {
         e.preventDefault();
         if (betAmount > Number(walletBalance) || Number(walletBalance) === 0) {
             alert('Insufficient Wallet Balance.\nPlease Recharge Your Wallet...');
-        } else if (number > -1 && number < 10 && betAmount > 99) {
+        } else if (number > 100 && number < 1000 && betAmount > 99) {
             setBetCount((prevCount) => prevCount + 1);
             try {
                 const response = await submitLotteryBet(user?.uid, number, betAmount, 'Triple Digit Lottery', null, false);
@@ -81,7 +81,7 @@ function Form() {
                 alert('Failed to place bet. Please try again.');
             }
         } else {
-            alert('Please select a number between 0 to 9, a bet amount greater than 99.');
+            alert('Please select a number between 100 to 999, a bet amount greater than 99.');
         }
     }
 
