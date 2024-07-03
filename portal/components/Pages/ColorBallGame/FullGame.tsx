@@ -12,7 +12,7 @@ function Game() {
     return (
         <div className=' text-white font-bold'>
             <Form />
-            {/* <GameTable /> */}
+            <GameTable />
             <BetsTable />
             <History />
         </div>

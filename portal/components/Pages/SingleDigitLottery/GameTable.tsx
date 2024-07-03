@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { MdOutlineArrowDropDownCircle } from 'react-icons/md';
 import { fetchWinningBets } from '../../../api/firestoreService';
 
-function BetsTable() {
+function GameTable() {
   const [winningBets, setWinningBets] = useState<any[]>([]);
   const [showBets, setShowBets] = useState(false);
 
@@ -64,4 +64,4 @@ function BetsTable() {
   );
 }
 
-export default BetsTable;
+export default GameTable;
