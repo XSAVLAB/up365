@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { MdOutlineArrowDropDownCircle } from 'react-icons/md';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchAllLotteryBets } from '../../api/firestoreService';
+import { fetchAllLotteryBets } from '../../../api/firestoreService';
 
 
 function AllLotteryBets() {
@@ -20,8 +20,9 @@ function AllLotteryBets() {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
+                console.log('User:', currentUser);
                 try {
-                    const fetchedBets = await fetchAllLotteryBets(currentUser.uid);
+                    const fetchedBets = await fetchAllLotteryBets(currentUser.uid, 'Color Ball Game');
                     setMyBetsTable(fetchedBets);
                     if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
                 } catch (error) {

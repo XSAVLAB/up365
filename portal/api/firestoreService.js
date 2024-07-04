@@ -347,13 +347,14 @@ export const fetchLotteryBets = async (userId) => {
 };
 
 // Fetch all lottery bets
-export const fetchAllLotteryBets = async (userId) => {
+export const fetchAllLotteryBets = async (userId, gameType) => {
   try {
     const db = getFirestore();
 
     const betsSnapshot = await getDocs(
       collection(db, "gameBets"),
-      where("userID", "==", userId)
+      where("userID", "==", userId),
+      where("gameType", "==", gameType)
     );
     return betsSnapshot.docs.map((doc) => ({
       id: doc.id,

@@ -1,6 +1,6 @@
+import AllLotteryBets from '@/components/Pages/TripleDigitLottery/AllLotteryBets';
 import TripleDigitLottery from '@/components/Pages/TripleDigitLottery/TripleDigitLottery';
 import ActiveLotterBets from '@/components/Shared/ActiveLotteryBets';
-import AllLotteryBets from '@/components/Shared/AllLotteryBets';
 import HeaderMain from '@/components/Shared/HeaderMain';
 import LotterResult from '@/components/Shared/LotteryResult';
 
