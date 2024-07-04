@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { IoMdClock } from "react-icons/io";
 import { BiSolidWalletAlt, BiUserCircle } from 'react-icons/bi';
 import { MdArrowDropDownCircle } from 'react-icons/md';
-import { useService } from '../../hooks/useService';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets, fetchProfileData } from '../../../api/firestoreService';
@@ -35,11 +34,10 @@ function calculateTimeToNextInterval() {
     }
 }
 
-function Form() {
+function TripleDigitLottery() {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<any>(null);
     const [walletBalance, setWalletBalance] = useState('0');
-    const service = useService();
     const [countdownTimer, setCountdownTimer] = useState(calculateTimeToNextInterval());
     const [cooldown, setCooldown] = useState(0);
     const [showRules, setShowRules] = useState(false);
@@ -68,10 +66,10 @@ function Form() {
         e.preventDefault();
         if (betAmount > Number(walletBalance) || Number(walletBalance) === 0) {
             alert('Insufficient Wallet Balance.\nPlease Recharge Your Wallet...');
-        } else if (number > 9 && number < 100 && betAmount > 99) {
+        } else if (number > 100 && number < 1000 && betAmount > 99) {
             setBetCount((prevCount) => prevCount + 1);
             try {
-                const response = await submitLotteryBet(user?.uid, number, betAmount, 'Double Digit Lottery', null, false);
+                const response = await submitLotteryBet(user?.uid, number, betAmount, 'Triple Digit Lottery', null, false);
                 if (response.status === "Bet Placed") {
                     updateUserWallet(user?.uid, Number(walletBalance) - betAmount);
                     setWalletBalance(String(Number(walletBalance) - betAmount));
@@ -81,7 +79,7 @@ function Form() {
                 alert('Failed to place bet. Please try again.');
             }
         } else {
-            alert('Please select a number between 10 to 99, a bet amount greater than 99.');
+            alert('Please select a number between 100 to 999, a bet amount greater than 99.');
         }
     }
 
@@ -89,6 +87,9 @@ function Form() {
         setShowRules(!showRules);
     }
 
+    const handleNumberClick = (value: string) => {
+        setNumber(parseInt(value, 10));
+    }
 
     const handleBetClick = (value: string) => {
         setBetAmount(parseInt(value, 10));
@@ -97,7 +98,7 @@ function Form() {
     useEffect(() => {
         const interval = setInterval(() => {
             if (countdownTimer === 0) {
-                settleLotteryBets('Double Digit Lottery');
+                settleLotteryBets('Triple Digit Lottery');
                 setCounter((prevCounter) => prevCounter + 1);
                 setBetCount(0);
                 setCountdownTimer(calculateTimeToNextInterval());
@@ -127,12 +128,8 @@ function Form() {
                     <BiSolidWalletAlt size={30} />
                     {walletBalance}
                 </div>
-                <div className="info-box">
-                    <div>Reward Rs. </div>
-                    <div>{rewardAmount}</div>
-                </div>
             </div>
-            <div className='form-game-name'>Double Digit Lottery</div>
+            <div className='form-game-name'>Triple Digit Lottery</div>
             <div className="form-bets">
                 <div className="form-bets-header">Place Your Bets</div>
                 <div className="form-bets-content">
@@ -140,7 +137,7 @@ function Form() {
                         <div>Bet Number</div>
                         <div>
                             <input type='number' onChange={(e) => setNumber(parseInt(e.target.value, 10))}
-                                value={number} placeholder='10 to 99'
+                                value={number} placeholder='100 to 999'
                                 className='bet-input' />
                         </div>
                     </div>
@@ -177,7 +174,7 @@ function Form() {
                     <div onClick={handleShowRules} className='rules-button'>Rules <MdArrowDropDownCircle size={20} className='ml-4' /></div>
                     {showRules && (
                         <div className="rules-content">
-                            <div>1. Select a Number from 0 to 9</div>
+                            <div>1. Select a Number from 100 to 999</div>
                             <div>2. Minimum Bet Amount is 100</div>
                         </div>
                     )}
@@ -187,4 +184,4 @@ function Form() {
     );
 }
 
-export default Form;
+export default TripleDigitLottery;

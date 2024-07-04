@@ -109,7 +109,7 @@ const ResultGamesColorComponent = () => {
         ];
 
         if (game === 0) {
-            return resultsStoreData; 
+            return resultsStoreData;
         } else {
             const filteredData = resultsStoreData.filter((row) => row.GameName === gameNames[game - 1]);
             return filteredData;

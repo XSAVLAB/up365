@@ -27,7 +27,7 @@ export default function Login() {
                 if (userData?.role === 'admin') {
                     router.push('/admin');
                 } else {
-                    router.push('/home');
+                    router.push('/');
                 }
             })
             .catch((error) => {
@@ -53,7 +53,7 @@ export default function Login() {
                 if (userData.role === 'admin') {
                     router.push('/admin');
                 } else {
-                    router.push('/home');
+                    router.push('/');
                 }
             } else {
                 const profileData = {
@@ -65,7 +65,7 @@ export default function Login() {
                     role: "user"
                 };
                 await createProfile(user.uid, profileData);
-                router.push('/home');
+                router.push('/');
             }
         } catch (e) {
             console.log(e);
@@ -78,7 +78,7 @@ export default function Login() {
             .then((result) => {
                 const user = result.user;
                 console.log(user);
-                router.push('/home');
+                router.push('/');
             }).catch((error) => {
                 console.error(error);
             });
@@ -90,7 +90,7 @@ export default function Login() {
             .then((result) => {
                 const user = result.user;
                 console.log(user);
-                router.push('/home');
+                router.push('/');
             }).catch((error) => {
                 console.error(error);
             });

@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { IconAdjustmentsHorizontal, IconX } from "@tabler/icons-react";
-import Language from './Language';
+// import Language from './Language';
 import SideNav from './SideNav';
 import NavItem from './NavItem';
 
@@ -60,9 +60,9 @@ export default function HeaderMain() {
                             </li>
                         </ul>
                     </div>
-                    
+
                     <div className="right-area custom-pos position-relative d-flex gap-0 gap-lg-7 align-items-center me-5 me-xl-10">
-                        <Language />
+                        {/* <Language /> */}
                         <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2 me-5 me-lg-0 d-none d-sm-block">Log In</Link>
                         <Link href="/create-acount" className="cmn-btn d-none px-xxl-11 d-sm-block d-lg-none d-xl-block">Sign Up</Link>
                     </div>

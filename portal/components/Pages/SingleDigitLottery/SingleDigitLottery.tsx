@@ -3,12 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { IoMdClock } from "react-icons/io";
 import { BiSolidWalletAlt, BiUserCircle } from 'react-icons/bi';
 import { MdArrowDropDownCircle } from 'react-icons/md';
-import { useService } from '../../hooks/useService';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets, fetchProfileData } from '../../../api/firestoreService';
 
-const gameTimer = 300; // 5 minutes in seconds
+const gameTimer = 300;
 
 function formatTimer(seconds: number) {
     const hours = Math.floor((seconds % (3600 * 24)) / 3600);
@@ -35,11 +34,10 @@ function calculateTimeToNextInterval() {
     }
 }
 
-function Form() {
+function SingleDigitLottery() {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<any>(null);
     const [walletBalance, setWalletBalance] = useState('0');
-    const service = useService();
     const [countdownTimer, setCountdownTimer] = useState(calculateTimeToNextInterval());
     const [cooldown, setCooldown] = useState(0);
     const [showRules, setShowRules] = useState(false);
@@ -130,10 +128,6 @@ function Form() {
                     <BiSolidWalletAlt size={30} />
                     {walletBalance}
                 </div>
-                <div className="info-box">
-                    <div>Reward</div>
-                    <div>Rs.{rewardAmount}</div>
-                </div>
             </div>
             <div className='form-game-name'>Single Digit Lottery</div>
             <div className="form-bets">
@@ -201,4 +195,4 @@ function Form() {
     );
 }
 
-export default Form;
+export default SingleDigitLottery;

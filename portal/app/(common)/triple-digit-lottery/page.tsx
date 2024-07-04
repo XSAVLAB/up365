@@ -1,11 +1,17 @@
+import TripleDigitLottery from '@/components/Pages/TripleDigitLottery/TripleDigitLottery';
+import ActiveLotterBets from '@/components/Shared/ActiveLotteryBets';
+import AllLotteryBets from '@/components/Shared/AllLotteryBets';
 import HeaderMain from '@/components/Shared/HeaderMain';
-import FullGame from '@/components/Pages/TripleDigitLottery/FullGame';
+import LotterResult from '@/components/Shared/LotteryResult';
 
 export default function page() {
     return (
         <>
             <HeaderMain />
-            <FullGame />
+            <TripleDigitLottery />
+            <LotterResult />
+            <ActiveLotterBets />
+            <AllLotteryBets />
         </>
     )
 }

@@ -1,11 +1,17 @@
+import ColorBallGame from '@/components/Pages/ColorBallGame/ColorBallGame';
+import ActiveLotterBets from '@/components/Shared/ActiveLotteryBets';
+import AllLotteryBets from '@/components/Shared/AllLotteryBets';
 import HeaderMain from '@/components/Shared/HeaderMain';
-import FullGame from '@/components/Pages/ColorBallGame/FullGame';
+import LotterResult from '@/components/Shared/LotteryResult';
 
 export default function page() {
     return (
         <>
             <HeaderMain />
-            <FullGame />
+            <ColorBallGame />
+            <LotterResult />
+            <ActiveLotterBets />
+            <AllLotteryBets />
         </>
     )
 }

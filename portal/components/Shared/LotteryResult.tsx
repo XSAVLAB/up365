@@ -1,9 +1,10 @@
+'use client'
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { MdOutlineArrowDropDownCircle } from 'react-icons/md';
-import { fetchWinningBets } from '../../../api/firestoreService';
+import { fetchWinningBets } from '../../api/firestoreService';
 
-function GameTable() {
+function LotterResult() {
   const [winningBets, setWinningBets] = useState<any[]>([]);
   const [showBets, setShowBets] = useState(false);
 
@@ -64,4 +65,4 @@ function GameTable() {
   );
 }
 
-export default GameTable;
+export default LotterResult;
