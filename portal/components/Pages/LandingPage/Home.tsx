@@ -1,26 +1,34 @@
 "use client"
-import React from 'react';
+import React, { useRef } from 'react';
 import Navbar from './Navbar';
-import MarqueeText from './MarqueeText';
+// import MarqueeText from './MarqueeText';
 import Slider from './GamesSlider'
-// import GamesCards from '../Games/GamesCards'
 import ResultGamesColorComponent from './ResultPageGamesColorChange'
 import LandingPageImagesMarquee from './ImagesMarquee'
 import MainBodyScroller from './MainBodyScroller'
-import { BsWhatsapp } from 'react-icons/bs';
 import { useRouter } from 'next/navigation';
+import GamesCards from './GameCards';
 
-function Home() {
+const Home: React.FC = () => {
     const router = useRouter();
-    const handleHelpClick = () => { router.push('/'); };
+    const gamesRef = useRef<HTMLDivElement>(null);
+
+    const scrollToGames = () => {
+        gamesRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // const handleHelpClick = () => { router.push('/'); };
+
     return (
         <div className=''>
             <Navbar />
             {/* <MarqueeText /> */}
-            <MainBodyScroller />
+            <MainBodyScroller scrollToGames={scrollToGames} />
             <LandingPageImagesMarquee />
             <Slider />
-            {/* <GamesCards /> */}
+            <div ref={gamesRef}>
+                <GamesCards />
+            </div>
             <ResultGamesColorComponent />
             <div className='w-full bg-white h-full'>
                 <hr className='border-t-2 border-gray-200' />

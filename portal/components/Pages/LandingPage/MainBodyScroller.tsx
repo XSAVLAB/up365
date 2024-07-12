@@ -9,10 +9,17 @@ import { useRouter } from "next/navigation";
 import './styles.css'; // Import the custom CSS file
 import { IconBallFootball, IconCricket } from "@tabler/icons-react";
 
-function MainBodyScroller() {
+interface MainBodyScrollerProps {
+  scrollToGames: () => void;
+}
+
+const MainBodyScroller: React.FC<MainBodyScrollerProps> = ({ scrollToGames }) => {
   const router = useRouter();
-  const navigateGamesPage = () => {
+  const navigateHomePage = () => {
     router.push("/");
+  };
+  const navigateGamesPage = () => {
+    scrollToGames();
   };
   const navigateLoginPage = () => {
     router.push("/login");
@@ -29,7 +36,7 @@ function MainBodyScroller() {
     <nav className="main-body-scroller">
       <div className="container">
         <div className="nav-items">
-          <div className="nav-item" onClick={navigateGamesPage}>
+          <div className="nav-item" onClick={navigateHomePage}>
             <AiFillHome size={25} />
             <span>Home</span>
           </div>
