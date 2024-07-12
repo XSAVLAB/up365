@@ -6,7 +6,7 @@ import { dashboardTabs } from '@/public/data/adminTabs';
 import { doSignOut } from '../../../../firebase/auth';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchAllUsers, deleteUser, fetchUserRole, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive } from '../../../../api/firestoreAdminService';
+import { fetchAllUsers, deleteUser, fetchUserRole, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus } from '../../../../api/firestoreAdminService';
 import EditUserForm from '../UserManagement/EditUserForm';
 import History from '../Dashboard/History';
 
@@ -24,6 +24,8 @@ interface User {
     phoneCode: string;
     phoneNumber: string;
     address: string;
+    isBlocked?: boolean;
+    blockComment?: string;
 }
 
 interface Transaction {
@@ -31,6 +33,7 @@ interface Transaction {
     userId: string;
     amount: string;
     status: string;
+    timestamp: string;
 }
 
 interface Withdrawal {
@@ -38,6 +41,7 @@ interface Withdrawal {
     userId: string;
     amount: string;
     status: string;
+    timestamp: string;
 }
 
 export default function Dashboard() {
@@ -191,6 +195,40 @@ export default function Dashboard() {
         }
     };
 
+    const handleBlockUser = async (userId: string) => {
+        const comment = prompt("Please enter a comment for blocking this user:");
+        if (comment !== null) {
+            try {
+                await updateUserBlockStatus(userId, true, comment);
+                setUserDetails(userDetails.map((user) => user.id === userId ? { ...user, isBlocked: true, blockComment: comment } : user));
+            } catch (error) {
+                console.error('Error blocking user:', error);
+            }
+        }
+    };
+
+    const handleUnblockUser = async (userId: string) => {
+        try {
+            await updateUserBlockStatus(userId, false);
+            setUserDetails(userDetails.map((user) => user.id === userId ? { ...user, isBlocked: false, blockComment: '' } : user));
+        } catch (error) {
+            console.error('Error unblocking user:', error);
+        }
+    };
+
+    const getStatusStyle = (status: string) => {
+        switch (status) {
+            case 'approved':
+                return { color: 'green' };
+            case 'rejected':
+                return { color: 'red' };
+            case 'pending':
+                return { color: 'yellow' };
+            default:
+                return {};
+        }
+    };
+
     if (!isAdmin) {
         return <div>Loading...</div>;
     }
@@ -234,17 +272,19 @@ export default function Dashboard() {
                                                                     <thead>
                                                                         <tr>
                                                                             <th>Name</th>
-                                                                            <th>Email Id</th>
-                                                                            <th>Wallet Balance</th>
+                                                                            <th>Wallet</th>
                                                                             <th>Edit</th>
                                                                             <th>Delete</th>
+                                                                            <th>Block/Unblock</th>
+                                                                            <th>Comment</th>
+                                                                            <th>Email</th>
+                                                                            <th>Phone</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         {userDetails.map((entry) => (
                                                                             <tr key={entry.id}>
                                                                                 <td>{entry.firstName} {entry.lastName}</td>
-                                                                                <td>{entry.email}</td>
                                                                                 <td>{entry.wallet}</td>
                                                                                 <td>
                                                                                     <button onClick={() => handleEditUser(entry)} className="btn btn-primary">Edit</button>
@@ -252,6 +292,16 @@ export default function Dashboard() {
                                                                                 <td>
                                                                                     <button onClick={() => handleDeleteUser(entry.id)} className="btn btn-danger">Delete</button>
                                                                                 </td>
+                                                                                <td>
+                                                                                    {entry.isBlocked ? (
+                                                                                        <button onClick={() => handleUnblockUser(entry.id)} className="btn btn-success">Unblock</button>
+                                                                                    ) : (
+                                                                                        <button onClick={() => handleBlockUser(entry.id)} className="btn btn-danger">Block</button>
+                                                                                    )}
+                                                                                </td>
+                                                                                <td>{entry.blockComment || 'N/A'}</td>
+                                                                                <td>{entry.email}</td>
+                                                                                <td>{entry.phoneCode} {entry.phoneNumber}</td>
                                                                             </tr>
                                                                         ))}
                                                                     </tbody>
@@ -266,20 +316,21 @@ export default function Dashboard() {
                                                             <table className="w-100 text-center p2-bg">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th>User ID</th>
+                                                                        <th>Timestamp</th>
                                                                         <th>Amount</th>
                                                                         <th>Status</th>
                                                                         <th>Approve</th>
                                                                         <th>Reject</th>
+                                                                        <th>User ID</th>
                                                                         <th>Transaction ID</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     {transactions.map((transaction) => (
                                                                         <tr key={transaction.id}>
-                                                                            <td>{transaction.userId}</td>
+                                                                            <td>{transaction.timestamp}</td>
                                                                             <td>{transaction.amount}</td>
-                                                                            <td>{transaction.status}</td>
+                                                                            <td style={getStatusStyle(transaction.status)}>{transaction.status}</td>
                                                                             <td>
                                                                                 <button onClick={() => handleUpdateTransaction(transaction.id, transaction.userId, transaction.amount, 'approved')} className="btn btn-success" disabled={transaction.status !== 'pending'}>
                                                                                     Approve
@@ -290,6 +341,7 @@ export default function Dashboard() {
                                                                                     Reject
                                                                                 </button>
                                                                             </td>
+                                                                            <td>{transaction.userId}</td>
                                                                             <td>{transaction.id}</td>
                                                                         </tr>
                                                                     ))}
@@ -304,20 +356,21 @@ export default function Dashboard() {
                                                             <table className="w-100 text-center p2-bg">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th>User ID</th>
+                                                                        <th>Timestamp</th>
                                                                         <th>Amount</th>
                                                                         <th>Status</th>
                                                                         <th>Approve</th>
                                                                         <th>Reject</th>
+                                                                        <th>User ID</th>
                                                                         <th>Withdrawal ID</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     {withdrawals.map((withdrawal) => (
                                                                         <tr key={withdrawal.id}>
-                                                                            <td>{withdrawal.userId}</td>
+                                                                            <td>{withdrawal.timestamp}</td>
                                                                             <td>{withdrawal.amount}</td>
-                                                                            <td>{withdrawal.status}</td>
+                                                                            <td style={getStatusStyle(withdrawal.status)}>{withdrawal.status}</td>
                                                                             <td>
                                                                                 <button onClick={() => handleUpdateWithdrawal(withdrawal.id, withdrawal.userId, withdrawal.amount, 'approved')} className="btn btn-success" disabled={withdrawal.status !== 'pending'}>
                                                                                     Approve
@@ -328,6 +381,7 @@ export default function Dashboard() {
                                                                                     Reject
                                                                                 </button>
                                                                             </td>
+                                                                            <td>{withdrawal.userId}</td>
                                                                             <td>{withdrawal.id}</td>
                                                                         </tr>
                                                                     ))}

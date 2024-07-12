@@ -9,6 +9,7 @@ interface Transaction {
     userId: string;
     amount: string;
     status: string;
+    timestamp: string; // Add timestamp
 }
 
 interface Withdrawal {
@@ -16,8 +17,8 @@ interface Withdrawal {
     userId: string;
     amount: string;
     status: string;
+    timestamp: string; // Add timestamp
 }
-
 export default function History() {
     const [approvedTransactions, setApprovedTransactions] = useState<Transaction[]>([]);
     const [approvedWithdrawals, setApprovedWithdrawals] = useState<Withdrawal[]>([]);
@@ -44,13 +45,15 @@ export default function History() {
                 'User ID': transaction.userId,
                 'Deposit': transaction.amount,
                 'Withdraw': '',
-                'Status': transaction.status
+                'Status': transaction.status,
+                'Timestamp': transaction.timestamp // Add timestamp
             })),
             ...approvedWithdrawals.map(withdrawal => ({
                 'User ID': withdrawal.userId,
                 'Deposit': '',
                 'Withdraw': withdrawal.amount,
-                'Status': withdrawal.status
+                'Status': withdrawal.status,
+                'Timestamp': withdrawal.timestamp // Add timestamp
             }))
         ];
 
@@ -58,7 +61,8 @@ export default function History() {
             'User ID',
             'Deposit',
             'Withdraw',
-            'Status'
+            'Status',
+            'Timestamp' // Add timestamp header
         ];
 
         const workbook = XLSX.utils.book_new();
@@ -71,7 +75,8 @@ export default function History() {
             { wch: 15 },
             { wch: 15 },
             { wch: 15 },
-            { wch: 15 }
+            { wch: 15 },
+            { wch: 20 } // Add column width for timestamp
         ];
 
         worksheet['!cols'] = columnWidths;
@@ -84,6 +89,7 @@ export default function History() {
         saveAs(dataBlob, 'ApprovedData.xlsx');
     };
 
+
     return (
         <div className="pay_method__tabletwo">
             <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
@@ -91,28 +97,30 @@ export default function History() {
                 <table className="w-100 text-center p2-bg">
                     <thead>
                         <tr>
-                            <th>User ID</th>
+                            <th>Timestamp</th>
                             <th>Deposit</th>
                             <th>Withdraw</th>
                             <th>Status</th>
+                            <th>User ID</th>
                         </tr>
                     </thead>
                     <tbody>
                         {approvedTransactions.map((transaction) => (
                             <tr key={transaction.id}>
-                                <td>{transaction.userId}</td>
+                                <td>{transaction.timestamp}</td>
                                 <td>{transaction.amount}</td>
                                 <td>-</td>
-
                                 <td>{transaction.status}</td>
+                                <td>{transaction.userId}</td>
                             </tr>
                         ))}
                         {approvedWithdrawals.map((withdrawal) => (
                             <tr key={withdrawal.id}>
-                                <td>{withdrawal.userId}</td>
+                                <td>{withdrawal.timestamp}</td>
                                 <td>-</td>
                                 <td>{withdrawal.amount}</td>
                                 <td>{withdrawal.status}</td>
+                                <td>{withdrawal.userId}</td>
                             </tr>
                         ))}
                     </tbody>

@@ -3,22 +3,52 @@ import HeaderMain from '@/components/Shared/HeaderMain';
 import TopCricket from '@/components/Pages/Cricket/TopCricket';
 import TopSlider from '@/components/Pages/Cricket/CricketSlider';
 import Home from '@/components/Pages/LandingPage/Home';
-import { User, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/firebaseConfig';
+import { User, onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth, db } from '@/firebaseConfig';
 import { useEffect, useState } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 
-export default function page() {
+export default function Page() {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
   useEffect(() => {
+    const checkUserStatus = async (currentUser: User) => {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        const userData = userDoc.data();
+        if (userData?.isBlocked) {
+          await signOut(auth);
+          setUser(null);
+          router.push('/login');
+        } else {
+          setUser(currentUser);
+        }
+      } catch (error) {
+        console.error('Error checking user status:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        setUser(currentUser);
+        checkUserStatus(currentUser);
       } else {
         setUser(null);
+        setIsLoading(false);
       }
     });
+
     return () => unsubscribe();
-  }, []);
+  }, [router]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       {user ? (
@@ -30,7 +60,6 @@ export default function page() {
       ) : (
         <Home />
       )}
-
     </>
-  )
+  );
 }

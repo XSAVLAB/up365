@@ -23,11 +23,14 @@ export default function Login() {
                 const user = userCredential.user;
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 const userData = userDoc.data();
-
-                if (userData?.role === 'admin') {
-                    router.push('/admin');
+                if (userData?.isBlocked === false) {
+                    if (userData?.role === 'admin') {
+                        router.push('/admin');
+                    } else {
+                        router.push('/');
+                    }
                 } else {
-                    router.push('/');
+                    setMessage('You are suspended from the system');
                 }
             })
             .catch((error) => {
@@ -48,24 +51,27 @@ export default function Login() {
 
             const userDoc = await getDoc(doc(db, "users", user.uid));
             const userData = userDoc.data();
-
-            if (userData) {
-                if (userData.role === 'admin') {
-                    router.push('/admin');
+            if (userData?.isBlocked === false) {
+                if (userData) {
+                    if (userData.role === 'admin') {
+                        router.push('/admin');
+                    } else {
+                        router.push('/');
+                    }
                 } else {
+                    const profileData = {
+                        firstName: user.displayName?.split(' ')[0] || '',
+                        lastName: user.displayName?.split(' ')[1] || '',
+                        phoneNumber: '',
+                        email: user.email,
+                        wallet: '1000',
+                        role: "user"
+                    };
+                    await createProfile(user.uid, profileData);
                     router.push('/');
                 }
             } else {
-                const profileData = {
-                    firstName: user.displayName?.split(' ')[0] || '',
-                    lastName: user.displayName?.split(' ')[1] || '',
-                    phoneNumber: '',
-                    email: user.email,
-                    wallet: '1000',
-                    role: "user"
-                };
-                await createProfile(user.uid, profileData);
-                router.push('/');
+                setMessage('You are suspended from the system');
             }
         } catch (e) {
             console.log(e);

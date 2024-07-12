@@ -34,7 +34,8 @@ const CreateAccount = () => {
                 phoneNumber,
                 email,
                 wallet: '1000',
-                role: "user"
+                role: "user",
+                isBlocked: false
             };
             await createProfile(user.uid, profileData);
 
@@ -58,7 +59,8 @@ const CreateAccount = () => {
                 phoneNumber: '',
                 email: user.email,
                 wallet: '1000',
-                role: "user"
+                role: "user",
+                isBlocked: false
             };
             await createProfile(user.uid, profileData);
 

@@ -124,7 +124,7 @@ export const addTransaction = async (userId, transactionData) => {
     await addDoc(transactionCollectionRef, {
       ...transactionData,
       userId,
-      timestamp: new Date(),
+      timestamp: new Date().toLocaleString(),
     });
     console.log("Transaction added to Firestore");
   } catch (error) {
@@ -141,7 +141,7 @@ export const addWithdrawalRequest = async (userId, amount) => {
       userId,
       amount,
       status: "pending",
-      timestamp: new Date(),
+      timestamp: new Date().toLocaleString(),
     });
 
     console.log("Withdrawal request stored in Firestore");
