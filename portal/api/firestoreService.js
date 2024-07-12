@@ -256,7 +256,7 @@ export const placeBet = async (betData) => {
       wallet: (currentBalance - betAmount).toString(),
     });
 
-    return `Bet of $${betAmount} placed on ${selectedTeam === "t1" ? t1 : t2}`;
+    return `Bet of ₹${betAmount} placed on ${selectedTeam === "t1" ? t1 : t2}`;
   } catch (error) {
     console.error("Error placing bet: ", error);
     throw error;

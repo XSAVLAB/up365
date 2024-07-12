@@ -166,7 +166,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                     });
 
                     setBalance((currentBalance - bet).toString());
-                    setMessage(`Bet of $${betAmount} placed on ${selectedTeam === 'team1' ? match.team1 : match.team2}`);
+                    setMessage(`Bet of ₹${betAmount} placed on ${selectedTeam === 'team1' ? match.team1 : match.team2}`);
                 } catch (error) {
                     console.error('Error placing bet: ', error);
                 }
@@ -270,7 +270,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                 <div className="fixed_footer__card-btm px-4 py-4">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                         <span className="d-block">Bet amount:</span>
-                        <span className="d-block">Your balance: <b>${balance}</b></span>
+                        <span className="d-block">Your balance: <b>₹ {balance}</b></span>
                     </div>
                     <div className="input-group mb-3">
                         <input type="text" className="form-control" value={betAmount} onChange={handleBetAmountChange} />
@@ -283,13 +283,13 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                                 className="btn btn-outline-secondary w-full"
                                 onClick={() => handleBetAmountButtonClick(amount)}
                             >
-                                ${amount}
+                                ₹{amount}
                             </button>
                         ))}
                     </div>
                     <div className="d-flex justify-content-between align-items-center mb-3">
                         <span className="d-block">Possible win:</span>
-                        <span className="d-block"><b>${possibleWin}</b></span>
+                        <span className="d-block"><b>₹{possibleWin}</b></span>
                     </div>
                     <button className="btn btn-primary w-100" onClick={handleBet}>Place Bet</button>
                     {message && <div className="alert alert-info mt-3">{message}</div>}

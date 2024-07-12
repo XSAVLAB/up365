@@ -18,11 +18,11 @@ export default function SideNav() {
                         <i className="ti ti-brand-google-home n5-color fs-five"></i> Home
                     </Link>
                 </li>
-                <li className="active">
+                {/* <li className="active">
                     <Link href="/cricket" className="d-flex align-items-center gap-2">
-                        <i className="ti ti-garden-cart n5-color fs-five"></i> Marketplace
+                        <i className="ti ti-garden-cart n5-color fs-five">Marketplace</i>
                     </Link>
-                </li>
+                </li> */}
                 <li className="active" onClick={() => setActiveCategory("Games")}>
                     <button className="d-flex align-items-center gap-2">
                         <i className="ti ti-game n5-color fs-five"></i> Games

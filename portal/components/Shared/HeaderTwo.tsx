@@ -14,7 +14,7 @@ export default function HeaderTwo() {
     const [isCardExpanded, setIsCardExpanded] = useState(false);
     const [isMiddleExpanded, setIsMiddleExpanded] = useState(false);
     const [walletBalance, setWalletBalance] = useState(null);
-    const [user, setUser] = useState(null); 
+    const [user, setUser] = useState(null);
     const toggleCard = () => {
         setIsCardExpanded(!isCardExpanded);
     };
@@ -88,7 +88,7 @@ export default function HeaderTwo() {
                     <div className="right-area custom-pos custom-postwo position-relative d-flex gap-3 gap-xl-7 align-items-center me-5 me-xl-10 align-items-center">
                         <div className="text-end d-none d-sm-block">
                             <span className="fs-seven mb-1 d-block">Your balance</span>
-                            <span className="fw-bold d-block">$ {walletBalance}</span>
+                            <span className="fw-bold d-block">₹ {walletBalance}</span>
                         </div>
                         {/* <Link href="/dashboard" className="cmn-btn px-xxl-6 d-none d-sm-block d-lg-none d-xxl-block">Deposit</Link> */}
                         <div className="d-flex align-items-center gap-2 mt-1">
@@ -113,7 +113,7 @@ export default function HeaderTwo() {
                     <div className="logo-area slide-toggle3 trader-list position-fixed top-0 d-flex align-items-center justify-content-center pt-6 pt-md-8 gap-sm-4 gap-md-5 gap-lg-7 px-4 px-lg-8">
                         <i className="ti ti-menu-deep left-nav-icon n8-color order-2 order-lg-0 d-none">
                         </i>
-                        <Link className="navbar-brand d-center text-center gap-1 gap-lg-2 ms-lg-4" href="index.html">
+                        <Link className="navbar-brand d-center text-center gap-1 gap-lg-2 ms-lg-4" href="/">
                             <Image className="logo" width={32} height={34} src="/images/logo.png" alt="Logo" />
                             <Image className="logo d-none d-xl-block" width={64} height={24} src="/images/logo-text.png" alt="Logo" />
                         </Link>

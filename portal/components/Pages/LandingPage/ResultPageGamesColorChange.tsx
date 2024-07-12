@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-
+import './styles.css'
 interface ResultData {
     ID: number;
     GameID: number;
@@ -161,14 +161,14 @@ const ResultGamesColorComponent = () => {
                             <th className="custom-border-4 custom-p-2">Total Players</th>
                             <th className="custom-border-4 custom-p-2">Total Game Amount</th>
                             <th className="custom-border-4 custom-p-2">Winner</th>
-                            <th className="custom-border-4 custom-p-2">Next Game Starting Time (sec)</th>
+                            {/* <th className="custom-border-4 custom-p-2">Next Game Starting Time (sec)</th> */}
                         </tr>
                     </thead>
                     <tbody>
                         {filteredData.map((row, index) => (
                             <tr
                                 key={index}
-                                className={`${index % 2 === 0 ? 'custom-bg-white custom-text-black' : 'custom-bg-black custom-text-white'} hover:custom-bg-green-300`}
+                                className="custom-bg-white custom-text-black"
                             >
                                 <td className="custom-border-4 custom-p-2">{row.ID}</td>
                                 <td className="custom-border-4 custom-p-2">{row.GameID}</td>
@@ -177,14 +177,14 @@ const ResultGamesColorComponent = () => {
                                 <td className="custom-border-4 custom-p-2">{row.GameName}</td>
                                 <td className="custom-border-4 custom-p-2">{row.TotalPlayers}</td>
                                 <td className="custom-border-4 custom-p-2">{row.TotalGameAmount}</td>
-                                <td className="custom-border-4 custom-p-2">{row.Winner}</td>
-                                <td className="custom-border-4 custom-p-2">{row.NextGameStartingTime}</td>
+                                <td className="custom-border-4 custom-p-2 custom-bg-green-300">{row.Winner}</td>
+                                {/* <td className="custom-border-4 custom-p-2">{row.NextGameStartingTime}</td> */}
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div >
     );
 };
 

@@ -68,7 +68,7 @@ export default function DepositAmount() {
                     amount: formDepositData.amount,
                     status: 'pending',
                 });
-                setSuccessMessage(`Deposit request for $${activeItem.amount} submitted successfully.`);
+                setSuccessMessage(`Deposit request for ₹${activeItem.amount} submitted successfully.`);
                 setErrorMessage('');
             } catch (error) {
                 setErrorMessage('Error storing deposit details!');
@@ -198,7 +198,7 @@ export default function DepositAmount() {
                                         key={singleData.id}
                                     >
                                         <div className="py-3 px-5 px-md-6 n11-bg rounded-3">
-                                            <span className="fs-ten fw-bold mb-2">${singleData.amount}</span>
+                                            <span className="fs-ten fw-bold mb-2">₹ {singleData.amount}</span>
                                             {/* <span className="fs-seven d-block">{singleData.bonus}</span> */}
                                         </div>
                                     </div>
@@ -210,7 +210,7 @@ export default function DepositAmount() {
                         </div>
                         <div className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
                             <span>Total</span>
-                            <span>${activeItem.amount}</span>
+                            <span>₹ {activeItem.amount}</span>
                         </div>
                         <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">
                             Deposit

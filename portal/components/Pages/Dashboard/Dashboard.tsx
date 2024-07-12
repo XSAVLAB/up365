@@ -359,19 +359,19 @@ export default function Dashboard() {
                                                             <div className="pay_method__amount-actual">
                                                                 <span className="fs-seven mb-3">Available balance</span>
                                                                 <div className="d-flex align-items-center gap-3">
-                                                                    <span className="fw-bol">$ {walletBalance}</span>
+                                                                    <span className="fw-bol">₹ {walletBalance}</span>
                                                                     <i className="ti ti-refresh fs-seven cpoint"></i>
                                                                 </div>
                                                             </div>
                                                             <span className="v-line lgx d-none d-sm-block"></span>
                                                             <div className="pay_method__amount-sports">
                                                                 <span className="fs-seven mb-3">Bonus No Sports</span>
-                                                                <span className="fw-bol d-block">$ 0.00</span>
+                                                                <span className="fw-bol d-block">₹ 0.00</span>
                                                             </div>
                                                             <span className="v-line lgx d-none d-sm-block"></span>
                                                             <div className="pay_method__amount-sports">
                                                                 <span className="fs-seven mb-3">Bonus in casino</span>
-                                                                <span className="fw-bol d-block">$ 0.00</span>
+                                                                <span className="fw-bol d-block">₹ 0.00</span>
                                                             </div>
                                                         </div>
                                                         <WithdrawalAmount />
@@ -525,7 +525,7 @@ export default function Dashboard() {
                                                                 </div>
                                                                 {/* <div className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
                                                                     <span>Total</span>
-                                                                    <span>$3,000</span>
+                                                                    <span>₹ 3,000</span>
                                                                 </div>  */}
                                                                 <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">Save</button>
                                                             </form>

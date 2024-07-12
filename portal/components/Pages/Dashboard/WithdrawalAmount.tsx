@@ -60,7 +60,7 @@ export default function WithdrawalAmount() {
             if (walletBalance >= withdrawalAmount) {
                 try {
                     await addWithdrawalRequest(user.uid, activeItem.amount);
-                    setSuccessMessage(`Withdrawal request for $${activeItem.amount} submitted successfully.`);
+                    setSuccessMessage(`Withdrawal request for ₹${activeItem.amount} submitted successfully.`);
                     setErrorMessage('');
                 } catch (error) {
                     setErrorMessage('Error storing withdrawal request!');
@@ -90,17 +90,17 @@ export default function WithdrawalAmount() {
                             style={getItemStyle(singleAmmount)}
                         >
                             <div className="py-3 px-5 px-md-6 n11-bg rounded-3">
-                                <span className="fs-ten fw-bold">${singleAmmount.amount}</span>
+                                <span className="fs-ten fw-bold">₹{singleAmmount.amount}</span>
                             </div>
                         </div>
                     ))}
                 </div>
                 <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">
-                    Withdraw ${activeItem.amount}
+                    Withdraw ₹{activeItem.amount}
                 </button>
             </form>
             <div className="text-center mt-4">
-                <span>Your withdrawal limit for the month: $50,000</span>
+                <span>Your withdrawal limit for the month: ₹ 50,000</span>
             </div>
         </div>
     );
