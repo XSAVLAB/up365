@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebaseConfig'; // Ensure this import path is correct
 import { IconAdjustmentsHorizontal, IconX } from "@tabler/icons-react";
-import Language from './Language';
+// import Language from './Language';
 import SideNav from './SideNav';
 import NavItem from './NavItem';
 
@@ -65,7 +65,7 @@ export default function HeaderMain() {
                         </ul>
                     </div>
                     <div className="right-area custom-pos position-relative d-flex gap-0 gap-lg-7 align-items-center me-5 me-xl-10">
-                        <Language />
+                        {/* <Language /> */}
                         {!user ? (
                             <>
                                 <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2 me-5 me-lg-0 d-none d-sm-block">Log In</Link>

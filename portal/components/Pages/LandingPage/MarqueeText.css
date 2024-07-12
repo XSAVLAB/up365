@@ -1,0 +1,55 @@
+/* Navbar.css */
+@keyframes moveText {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  
+  .animate-marquee {
+    animation: moveText 20s linear infinite;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
+  
+  .marquee-content {
+    display: inline-block;
+    padding-right: 100%;
+  }
+
+  .marquee-content:hover {
+    color: #eab308;
+  }
+
+  @keyframes changeTextColor {
+    0% {
+      color: #ef4444;
+    }
+    20% {
+      color: #f97316;
+    }
+    40% {
+      color: #fbbf24;
+    }
+    60% {
+      color: #a3e635;
+    }
+    80% {
+      color: #4ade80;
+    }
+    100% {
+      color: #5eead4;
+    }
+  }
+  .animate-color-change {
+    animation: changeTextColor 5s linear infinite;
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+  }

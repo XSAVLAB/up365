@@ -204,3 +204,21 @@ export const toggleSeriesActive = async (seriesName, activeStatus) => {
     throw error;
   }
 };
+
+// Block or unblock user
+export const updateUserBlockStatus = async (
+  userId,
+  blockStatus,
+  comment = ""
+) => {
+  try {
+    const userDocRef = doc(db, "users", userId);
+    await updateDoc(userDocRef, {
+      isBlocked: blockStatus,
+      blockComment: comment,
+    });
+  } catch (error) {
+    console.error("Error updating user block status: ", error);
+    throw error;
+  }
+};

@@ -12,3 +12,5 @@ package-lock.json
 
 # Ignore secret key JSON file
 secret_key.json
+# Local Netlify folder
+.netlify

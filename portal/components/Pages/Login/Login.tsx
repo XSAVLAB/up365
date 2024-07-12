@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation';
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
 import { auth, db } from '../../../firebaseConfig';
 import { signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, signInWithPopup } from "firebase/auth";
-import { doPasswordReset } from '@/firebase/auth';
+import { doPasswordReset, doSignInWithGoogle } from '@/firebase/auth';
 import { getDoc, doc } from 'firebase/firestore';
+import { createProfile } from '@/api/firestoreService';
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -22,11 +23,14 @@ export default function Login() {
                 const user = userCredential.user;
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 const userData = userDoc.data();
-
-                if (userData?.role === 'admin') {
-                    router.push('/admin');
+                if (userData?.isBlocked === false) {
+                    if (userData?.role === 'admin') {
+                        router.push('/admin');
+                    } else {
+                        router.push('/');
+                    }
                 } else {
-                    router.push('/');
+                    setMessage('You are suspended from the system');
                 }
             })
             .catch((error) => {
@@ -38,17 +42,41 @@ export default function Login() {
     };
 
 
-    const handleGoogleLogin = () => {
-        const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                const user = result.user;
-                console.log(user);
-                router.push('/');
-            }).catch((error) => {
-                console.error(error);
-            });
-    };
+    const onGoogleSignIn = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        e.preventDefault();
+
+        try {
+            const userCredential = await doSignInWithGoogle();
+            const user = userCredential.user;
+
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            const userData = userDoc.data();
+            if (userData?.isBlocked === false) {
+                if (userData) {
+                    if (userData.role === 'admin') {
+                        router.push('/admin');
+                    } else {
+                        router.push('/');
+                    }
+                } else {
+                    const profileData = {
+                        firstName: user.displayName?.split(' ')[0] || '',
+                        lastName: user.displayName?.split(' ')[1] || '',
+                        phoneNumber: '',
+                        email: user.email,
+                        wallet: '1000',
+                        role: "user"
+                    };
+                    await createProfile(user.uid, profileData);
+                    router.push('/');
+                }
+            } else {
+                setMessage('You are suspended from the system');
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     const handleFacebookLogin = () => {
         const provider = new FacebookAuthProvider();
@@ -143,7 +171,7 @@ export default function Login() {
                                                 <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleTwitterLogin}>
                                                     <IconBrandTwitterFilled className="ti ti-brand-twitter-filled fs-four" />
                                                 </Link>
-                                                <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleGoogleLogin}>
+                                                <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={onGoogleSignIn}>
                                                     <IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" />
                                                 </Link>
                                             </div>

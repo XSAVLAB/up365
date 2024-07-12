@@ -1,4 +1,50 @@
-export const popularData = [
+import { link } from "fs";
+
+export const popularData=[
+  {
+    id: 12288,
+    image: "/images/icon/cricket.png",
+    linkText: "Games",
+    
+  },
+  {
+    id: 12299,
+    image: "/images/icon/soccer-icon.png",
+    linkText: "Sports",
+    
+  },
+]
+
+export const gameData=[
+  {
+    id: 13388,
+    image: "/images/icon/cricket.png",
+    linkText: "Single Digit Lottery",
+    href: "/single-digit-lottery",
+    
+  },
+  {
+    id: 13399,
+    image: "/images/icon/soccer-icon.png",
+    linkText: "Double Digit Lottery",
+    href: "/double-digit-lottery",
+  
+  },
+  {
+    id:13377,
+    image: "/images/icon/soccer-icon.png",
+    linkText: "Triple Digit Lottery",
+    href: "/triple-digit-lottery",
+  },
+  {
+    id:13366,
+    image: "/images/icon/soccer-icon.png",
+    linkText: "Color Ball Lottery",
+    href: "/colorball-game",
+  }
+]
+
+export const sportsData = [
   {
     id: 9058,
     image: "/images/icon/cricket.png",

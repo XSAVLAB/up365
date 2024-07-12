@@ -1,0 +1,44 @@
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background-color: #000616;
+
+}
+
+.marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scroll 30s linear infinite;
+}
+
+.marquee-item {
+  display: inline-block;
+  width: 280px; 
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  margin-right: 10px;
+  border: 2px solid rgba(254, 254, 254, 0.509);
+  border-radius: 10px;
+  transition: border 0.3s ease;
+}
+
+.marquee-item:hover {
+  border: 3px solid #35c31e;
+}
+
+.marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  0% {
+      transform: translateX(0);
+  }
+  100% {
+      transform: translateX(-50%);
+  }
+}
