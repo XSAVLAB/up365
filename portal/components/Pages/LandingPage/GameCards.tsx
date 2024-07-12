@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
 const games = [
-    { name: 'Single Digit Lottery', image: '/images/single-digit-lottery.jpg', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-    { name: 'Double Digit Lottery', image: '/images/double-digit-lottery.jpg', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-    { name: 'Triple Digit Lottery', image: '/images/triple-digit-lottery.jpg', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-    { name: 'Color Ball Lottery', image: '/images/color-ball-game.jpg', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-    { name: 'Ludo', image: '/images/ludo.jpg', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-    { name: 'Teen Patti', image: '/images/teen-patti.jpg', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+    { name: 'Single Digit Lottery', image: '/images/single-digit-lottery.jpg', video: "https://www.youtube.com/embed/qcJFkx5NDWM?si=1Va946zPG1Ts1iXD&amp;controls=0" },
+    { name: 'Double Digit Lottery', image: '/images/double-digit-lottery.jpg', video: "https://www.youtube.com/embed/qcJFkx5NDWM?si=1Va946zPG1Ts1iXD&amp;controls=0" },
+    { name: 'Triple Digit Lottery', image: '/images/triple-digit-lottery.jpg', video: "https://www.youtube.com/embed/qcJFkx5NDWM?si=1Va946zPG1Ts1iXD&amp;controls=0" },
+    { name: 'Color Ball Lottery', image: '/images/color-ball-game.jpg', video: "https://www.youtube.com/embed/qcJFkx5NDWM?si=1Va946zPG1Ts1iXD&amp;controls=0" },
+    { name: 'Ludo', image: '/images/ludo.jpg', video: "https://www.youtube.com/embed/qcJFkx5NDWM?si=1Va946zPG1Ts1iXD&amp;controls=0" },
+    { name: 'Teen Patti', image: '/images/teen-patti.jpg', video: "https://www.youtube.com/embed/qcJFkx5NDWM?si=1Va946zPG1Ts1iXD&amp;controls=0" },
 ];
 
 const GameCards = () => {
