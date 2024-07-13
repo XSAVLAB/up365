@@ -54,14 +54,23 @@ export default function HeaderMain() {
                     <div className={`collapse navbar-collapse justify-content-between ${isCardExpanded ? "show" : "hide"}`} id="navbar-content">
                         <ul className="navbar-nav2fixed navbar-nav d-flex align-items-lg-center gap-4 gap-sm-5 py-2 py-lg-0 align-self-center p2-bg">
                             <NavItem />
-                            {!user && (
+                            {!user ? (
                                 <li className="dropdown show-dropdown d-block d-sm-none">
                                     <div className="d-flex align-items-center flex-wrap gap-3">
                                         <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2">Log In</Link>
                                         <Link href="/create-acount" className="cmn-btn px-xxl-11">Sign Up</Link>
                                     </div>
                                 </li>
-                            )}
+                            ) : (
+                                <li className="dropdown show-dropdown d-block d-sm-none">
+                                    <div className="d-flex align-items-center flex-wrap gap-3">
+                                        <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link>
+                                        <button onClick={() => auth.signOut()} className="cmn-btn px-xxl-11">Log Out</button>
+                                    </div>
+                                </li>
+                            )
+
+                            }
                         </ul>
                     </div>
                     <div className="right-area custom-pos position-relative d-flex gap-0 gap-lg-7 align-items-center me-5 me-xl-10">
@@ -72,9 +81,11 @@ export default function HeaderMain() {
                                 <Link href="/create-acount" className="cmn-btn d-none px-xxl-11 d-sm-block d-lg-none d-xl-block">Sign Up</Link>
                             </>
                         ) : (
-                            <div className="d-flex align-items-center gap-3">
-                                <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link>
-                                <button onClick={() => auth.signOut()} className="cmn-btn px-xxl-11">Log Out</button>
+                            <div className="d-none d-sm-block">
+                                <div className="d-flex align-items-center gap-3">
+                                    <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link>
+                                    <button onClick={() => auth.signOut()} className="cmn-btn px-xxl-11">Log Out</button>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -87,7 +98,6 @@ export default function HeaderMain() {
                         <Link className="navbar-brand d-center text-center gap-1 gap-lg-1 ms-lg-1 -m" href="/">
                             <Image className="logo" width={98} height={98} src="/images/logo.png" alt="Logo" />
                             <Image className="logo d-none d-xl-block" width={84} height={44} src="/images/logo-text.png" alt="Logo" />
-
                         </Link>
                     </div>
                     <div className={`nav_aside px-5 p2-bg ${isMiddleExpanded ? "show" : "hide"}`}>

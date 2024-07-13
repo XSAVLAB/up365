@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -15,6 +15,7 @@ export default function HeaderTwo() {
     const [isMiddleExpanded, setIsMiddleExpanded] = useState(false);
     const [walletBalance, setWalletBalance] = useState(null);
     const [user, setUser] = useState(null);
+
     const toggleCard = () => {
         setIsCardExpanded(!isCardExpanded);
     };
@@ -77,20 +78,30 @@ export default function HeaderTwo() {
                     <div className={`collapse navbar-collapse justify-content-between ${isCardExpanded ? "show" : "hide"}`} id="navbar-content">
                         <ul className="navbar-nav2fixed navbar-nav d-flex align-items-lg-center gap-4 gap-sm-5 py-2 py-lg-0 align-self-center p2-bg">
                             <NavItem />
-                            <li className="dropdown show-dropdown d-block d-sm-none">
-                                <div className="d-flex align-items-center flex-wrap gap-3">
-                                    <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2">Log In</Link>
-                                    <Link href="/create-acount" className="cmn-btn px-xxl-11">Sign Up</Link>
-                                </div>
-                            </li>
+                            {!user ? (
+                                <li className="dropdown show-dropdown d-block d-sm-none">
+                                    <div className="d-flex align-items-center flex-wrap gap-3">
+                                        <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2">Log In</Link>
+                                        <Link href="/create-acount" className="cmn-btn px-xxl-11">Sign Up</Link>
+                                    </div>
+                                </li>
+                            ) : (
+                                <li className="dropdown show-dropdown d-block d-sm-none">
+                                    <div className="d-flex align-items-center flex-wrap gap-3">
+                                        <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link>
+                                        <button onClick={() => auth.signOut()} className="cmn-btn px-xxl-11">Log Out</button>
+                                    </div>
+                                </li>
+                            )}
                         </ul>
                     </div>
                     <div className="right-area custom-pos custom-postwo position-relative d-flex gap-3 gap-xl-7 align-items-center me-5 me-xl-10 align-items-center">
-                        <div className="text-end d-none d-sm-block">
-                            <span className="fs-seven mb-1 d-block">Your balance</span>
-                            <span className="fw-bold d-block">₹ {walletBalance}</span>
-                        </div>
-                        {/* <Link href="/dashboard" className="cmn-btn px-xxl-6 d-none d-sm-block d-lg-none d-xxl-block">Deposit</Link> */}
+                        {user && (
+                            <div className="text-end d-none d-sm-block">
+                                <span className="fs-seven mb-1 d-block">Your balance</span>
+                                <span className="fw-bold d-block">₹ {walletBalance}</span>
+                            </div>
+                        )}
                         <div className="d-flex align-items-center gap-2 mt-1">
                             <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative">
                                 <IconGift height={24} width={24} className="ti ti-gift fs-four" />
