@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { IconAdjustmentsHorizontal, IconX, IconUserCircle } from "@tabler/icons-react";
+import { IconAdjustmentsHorizontal, IconX, IconUserCircle, IconLogout } from "@tabler/icons-react";
 import { FaWhatsapp } from 'react-icons/fa';
 import { fetchUserWallet, fetchProfileData } from '@/api/firestoreService';
 import HeaderTwoChat from './HeaderTwoChat';
@@ -86,13 +86,32 @@ export default function HeaderTwo() {
 
     const handleWhatsAppClick = () => {
         if (user && userDetails) {
-            const adminPhoneNumber = '8080917565';
+            const adminPhoneNumber = '+918080917565';
             const { firstName, lastName } = userDetails;
             const message = `Hello, I am ${firstName} ${lastName}.`;
             const whatsappURL = `https://wa.me/${adminPhoneNumber}?text=${encodeURIComponent(message)}`;
             window.open(whatsappURL, '_blank');
         }
     };
+
+    function handleLogout(): React.MouseEventHandler<HTMLButtonElement> | undefined {
+        return async () => {
+            await auth.signOut();
+            setUser(null);
+            window.location.href = '/login';
+        };
+    }
+
+    function handleProfileClick(): React.MouseEventHandler<HTMLButtonElement> | undefined {
+        return () => {
+            if (user) {
+                window.location.href = '/dashboard';
+            }
+            else {
+                window.location.href = '/login';
+            }
+        };
+    }
 
     return (
         <>
@@ -130,10 +149,14 @@ export default function HeaderTwo() {
                                 <FaWhatsapp height={24} width={24} className="ti ti-whatsapp fs-four" />
                             </button>
                             <div className="cart-area search-area d-flex">
-                                <HeaderTwoChat />
-                                <button type="button" className="py-1 px-2 n11-bg rounded-5">
+                                {/* <HeaderTwoChat /> */}
+                                <button type="button" className="py-1 px-2 n11-bg rounded-5" onClick={handleProfileClick()}>
                                     <IconUserCircle height={24} width={24} className="ti ti-user-circle fs-four" />
                                 </button>
+                                <button type="button" className="py-1 px-2 n11-bg rounded-5" onClick={handleLogout()}>
+                                    <IconLogout height={24} width={24} className="ti ti-user-circle fs-four" />
+                                </button>
+
                             </div>
                         </div>
                         <button onClick={toggleCard} className="navbar-toggler navbar-toggler-two mt-1 mt-sm-2 mt-lg-0" type="button" data-bs-toggle="collapse" aria-label="Navbar Toggler"
