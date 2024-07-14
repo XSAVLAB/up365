@@ -5,14 +5,19 @@ import React, { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebaseConfig'; // Ensure this import path is correct
 import { IconAdjustmentsHorizontal, IconX } from "@tabler/icons-react";
+import { FaWhatsapp } from 'react-icons/fa';
 // import Language from './Language';
 import SideNav from './SideNav';
 import NavItem from './NavItem';
+import { fetchProfileData, fetchUserWallet } from '@/api/firestoreService';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function HeaderMain() {
     const [isCardExpanded, setIsCardExpanded] = useState(false);
     const [isMiddleExpanded, setIsMiddleExpanded] = useState(false);
-    const [user] = useAuthState(auth);
+    const [walletBalance, setWalletBalance] = useState(null);
+    const [user, setUser] = useState<any>(null);
+    const [userDetails, setUserDetails] = useState<any>(null);
 
     const toggleCard = () => {
         setIsCardExpanded(!isCardExpanded);
@@ -23,7 +28,7 @@ export default function HeaderMain() {
     };
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
+        const handleClickOutside = (event: any) => {
             if (isCardExpanded && !event.target.closest(".navbar-toggler")) {
                 setIsCardExpanded(false);
             }
@@ -35,7 +40,7 @@ export default function HeaderMain() {
     }, [isCardExpanded]);
 
     useEffect(() => {
-        const handleClickOutsideMiddle = (event) => {
+        const handleClickOutsideMiddle = (event: any) => {
             if (isMiddleExpanded && !event.target.closest(".left-nav-icon")) {
                 setIsMiddleExpanded(false);
             }
@@ -46,6 +51,50 @@ export default function HeaderMain() {
             document.body.removeEventListener("click", handleClickOutsideMiddle);
         };
     }, [isMiddleExpanded]);
+
+    useEffect(() => {
+        const fetchWallet = async (userId: string) => {
+            try {
+                const balance = await fetchUserWallet(userId);
+                setWalletBalance(balance);
+            } catch (error) {
+                console.error('Error fetching wallet balance:', error);
+            }
+        };
+
+        const fetchDetails = async (userId: string) => {
+            try {
+                const details = await fetchProfileData(userId);
+                setUserDetails(details);
+            } catch (error) {
+                console.error('Error fetching user details:', error);
+            }
+        };
+
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            if (currentUser) {
+                setUser(currentUser);
+                fetchWallet(currentUser.uid);
+                fetchDetails(currentUser.uid);
+            } else {
+                setUser(null);
+                setWalletBalance(null);
+                setUserDetails(null);
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const handleWhatsAppClick = () => {
+        if (user && userDetails) {
+            const adminPhoneNumber = '8080917565';
+            const { firstName, lastName } = userDetails;
+            const message = `Hello, I am ${firstName} ${lastName}.`;
+            const whatsappURL = `https://wa.me/${adminPhoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappURL, '_blank');
+        }
+    };
 
     return (
         <>
@@ -64,6 +113,13 @@ export default function HeaderMain() {
                             ) : (
                                 <li className="dropdown show-dropdown d-block d-sm-none">
                                     <div className="d-flex align-items-center flex-wrap gap-3">
+                                        <div className="text-end d-none d-sm-block">
+                                            <span className="fs-seven mb-1 d-block">Your balance</span>
+                                            <span className="fw-bold d-block">₹ {walletBalance}</span>
+                                        </div>
+                                        <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" >
+                                            <FaWhatsapp height={24} width={24} className="ti ti-whatsapp fs-four" />
+                                        </button>
                                         <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link>
                                         <button onClick={() => auth.signOut()} className="cmn-btn px-xxl-11">Log Out</button>
                                     </div>
@@ -83,6 +139,13 @@ export default function HeaderMain() {
                         ) : (
                             <div className="d-none d-sm-block">
                                 <div className="d-flex align-items-center gap-3">
+                                    <div className="text-end d-none d-sm-block">
+                                        <span className="fs-seven mb-1 d-block">Your balance</span>
+                                        <span className="fw-bold d-block">₹ {walletBalance}</span>
+                                    </div>
+                                    <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleWhatsAppClick}>
+                                        <FaWhatsapp height={24} width={24} className="ti ti-whatsapp fs-four" />
+                                    </button>
                                     <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link>
                                     <button onClick={() => auth.signOut()} className="cmn-btn px-xxl-11">Log Out</button>
                                 </div>
