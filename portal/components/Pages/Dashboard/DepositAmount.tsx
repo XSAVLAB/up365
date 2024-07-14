@@ -10,6 +10,7 @@ export default function DepositAmount() {
     const [formDepositData, setFormDepositData] = useState({
         card_number: '',
         expiration: '',
+        cvv: '',
         street_address: '',
         apt_unit_suite: '',
         phone_number: '',
@@ -100,6 +101,22 @@ export default function DepositAmount() {
                                         placeholder="Card number"
                                         value={formDepositData.card_number}
                                         required
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            const numericValue = value.replace(/\D/g, '');
+                                            setFormDepositData({ ...formDepositData, card_number: numericValue });
+                                        }}
+                                    />
+                                </div>
+                                <div className="d-flex align-items-center justify-content-end">
+                                    <input
+                                        className="w-80"
+                                        type="text"
+                                        id="expiration"
+                                        name="expiration"
+                                        placeholder="MM/YY"
+                                        value={formDepositData.expiration}
+                                        required
                                         onChange={handleChange(formDepositData, setFormDepositData)}
                                     />
                                 </div>
@@ -107,12 +124,16 @@ export default function DepositAmount() {
                                     <input
                                         className="w-75"
                                         type="text"
-                                        id="expiration"
-                                        name="expiration"
-                                        placeholder="MM/YY CVC"
-                                        value={formDepositData.expiration}
+                                        id="cvv"
+                                        name="cvv"
+                                        placeholder="CVV"
+                                        value={formDepositData.cvv}
                                         required
-                                        onChange={handleChange(formDepositData, setFormDepositData)}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            const numericValue = value.replace(/\D/g, '');
+                                            setFormDepositData({ ...formDepositData, cvv: numericValue });
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -141,11 +162,15 @@ export default function DepositAmount() {
                             <div className="d-flex w-100 p1-bg rounded-8">
                                 <input
                                     type="text"
-                                    placeholder="(+33)7 35 55 21 02"
+                                    placeholder="(+91) XXX-XXX-XXXX"
                                     name="phone_number"
                                     value={formDepositData.phone_number}
                                     required
-                                    onChange={handleChange(formDepositData, setFormDepositData)}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        const numericValue = value.replace(/\D/g, '');
+                                        setFormDepositData({ ...formDepositData, phone_number: numericValue });
+                                    }}
                                 />
                             </div>
                         </div>
@@ -178,7 +203,11 @@ export default function DepositAmount() {
                                         name="zip_code"
                                         value={formDepositData.zip_code}
                                         required
-                                        onChange={handleChange(formDepositData, setFormDepositData)}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            const numericValue = value.replace(/\D/g, '');
+                                            setFormDepositData({ ...formDepositData, zip_code: numericValue });
+                                        }}
                                     />
                                 </div>
                             </div>
