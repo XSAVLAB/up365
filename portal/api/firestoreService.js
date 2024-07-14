@@ -326,14 +326,14 @@ export const submitLotteryBet = async (
 };
 
 // Fetch Lottery Bets
-export const fetchLotteryBets = async (userId) => {
+export const fetchLotteryBets = async (userId, gameType) => {
   try {
     const db = getFirestore();
     const q = query(
       collection(db, "gameBets"),
       where("userID", "==", userId),
-      where("settled", "==", false)
-      // where("gameType", "==", gameType)
+      // where("settled", "==", true),
+      where("gameType", "==", gameType)
     );
     const betsSnapshot = await getDocs(q);
     return betsSnapshot.docs.map((doc) => ({
@@ -347,21 +347,17 @@ export const fetchLotteryBets = async (userId) => {
 };
 
 // Fetch all lottery bets
-export const fetchAllLotteryBets = async (userId, gameType) => {
+export const fetchAllLotteryBets = async (userId) => {
   try {
     const db = getFirestore();
-
-    const betsSnapshot = await getDocs(
-      collection(db, "gameBets"),
-      where("userID", "==", userId),
-      where("gameType", "==", gameType)
-    );
+    const q = query(collection(db, "gameBets"), where("userID", "==", userId));
+    const betsSnapshot = await getDocs(q);
     return betsSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
   } catch (error) {
-    console.error("Error fetching all bets: ", error);
+    console.error("Error fetching user bets: ", error);
     throw error;
   }
 };
@@ -514,11 +510,83 @@ export const settleColorBallBets = async () => {
   }
 };
 // Fetch winning bets
-export const fetchWinningBets = async () => {
+// export const fetchWinningBets = async () => {
+//   try {
+//     const db = getFirestore();
+//     const gameBetsRef = collection(db, "gameBets");
+//     const settledBetsQuery = query(gameBetsRef, where("settled", "==", true));
+//     const snapshot = await getDocs(settledBetsQuery);
+//     const winningBets = {};
+//     snapshot.forEach((betDoc) => {
+//       const betData = betDoc.data();
+//       if (!winningBets[betData.gameType]) {
+//         winningBets[betData.gameType] = {
+//           gameType: betData.gameType,
+//           winningNumber: betData.winningNumber,
+//           winningColor: betData.winningColor,
+//           winners: 0,
+//           totalWon: 0,
+//         };
+//       }
+//       if (betData.rewardAmount > 0) {
+//         winningBets[betData.gameType].winners += 1;
+//         winningBets[betData.gameType].totalWon += betData.rewardAmount;
+//       }
+//     });
+//     return Object.values(winningBets);
+//   } catch (error) {
+//     console.error("Error fetching winning bets: ", error);
+//     throw error;
+//   }
+// };
+
+// I want the winning bets of the current user and current game type
+// export const fetchWinningBets = async (userId, gameType) => {
+//   try {
+//     const db = getFirestore();
+//     const gameBetsRef = collection(db, "gameBets");
+//     const settledBetsQuery = query(
+//       gameBetsRef,
+//       where("settled", "==", true),
+//       where("userID", "==", userId),
+//       where("gameType", "==", gameType)
+//     );
+//     const snapshot = await getDocs(settledBetsQuery);
+//     const winningBets = {};
+//     snapshot.forEach((betDoc) => {
+//       const betData = betDoc.data();
+//       if (!winningBets[betData.gameType]) {
+//         winningBets[betData.gameType] = {
+//           gameType: betData.gameType,
+//           winningNumber: betData.winningNumber,
+//           winningColor: betData.winningColor,
+//           winners: 0,
+//           totalWon: 0,
+//         };
+//       }
+//       if (betData.rewardAmount > 0) {
+//         winningBets[betData.gameType].winners += 1;
+//         winningBets[betData.gameType].totalWon += betData.rewardAmount;
+//       }
+//     });
+//     return Object.values(winningBets);
+//   } catch (error) {
+//     console.error("Error fetching winning bets: ", error);
+//     throw error;
+//   }
+// };
+
+// In this function I also want to access the timestamp
+export const fetchWinningBets = async (userId, gameType) => {
   try {
     const db = getFirestore();
     const gameBetsRef = collection(db, "gameBets");
-    const settledBetsQuery = query(gameBetsRef, where("settled", "==", true));
+    const settledBetsQuery = query(
+      gameBetsRef,
+      where("settled", "==", true),
+      where("userID", "==", userId),
+      where("gameType", "==", gameType)
+    );
     const snapshot = await getDocs(settledBetsQuery);
     const winningBets = {};
     snapshot.forEach((betDoc) => {
@@ -530,6 +598,7 @@ export const fetchWinningBets = async () => {
           winningColor: betData.winningColor,
           winners: 0,
           totalWon: 0,
+          timestamp: betData.timestamp,
         };
       }
       if (betData.rewardAmount > 0) {

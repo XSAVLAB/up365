@@ -23,7 +23,7 @@ function AllLotteryBets() {
                 setUser(currentUser);
                 console.log('User:', currentUser);
                 try {
-                    const fetchedBets = await fetchAllLotteryBets(currentUser.uid, 'Double Digit Lottery');
+                    const fetchedBets = await fetchAllLotteryBets(currentUser.uid);
                     setMyBetsTable(fetchedBets);
                     if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
                 } catch (error) {
@@ -56,9 +56,10 @@ function AllLotteryBets() {
                                 <th>Time</th>
                                 {/* <th>User-ID</th> */}
                                 <th>Bet Amount</th>
-                                <th>Bet Number</th>
-                                <th>Color</th>
+                                <th>Bet</th>
+
                                 <th>Reward</th>
+                                <th>Result</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,9 +72,9 @@ function AllLotteryBets() {
                                     <td>{format(new Date(row.timestamp * 1000), 'HH:mm:ss')}</td>
                                     {/* <td>{row.userID}</td> */}
                                     <td>{row.betAmount}</td>
-                                    <td>{row.betNumber}</td>
-                                    <td>{row.ballColor}</td>
-                                    <td>-</td>
+                                    <td>{row.betNumber} {row.ballColor}</td>
+                                    <td>{row.rewardAmount}</td>
+                                    <td>{row.winningNumber} {row.ballColor}</td>
                                 </tr>
                             ))}
                         </tbody>

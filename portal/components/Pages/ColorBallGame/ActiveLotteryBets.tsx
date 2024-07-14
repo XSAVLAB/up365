@@ -4,11 +4,10 @@ import { format } from 'date-fns';
 import { MdOutlineArrowDropDownCircle } from 'react-icons/md';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchAllLotteryBets } from '../../../api/firestoreService';
+import { fetchLotteryBets } from '../../../api/firestoreService';
 
 
-
-function AllLotteryBets() {
+function ActiveLotterBets() {
     const [user, setUser] = useState<User | null>(null);
     const [myBetsTable, setMyBetsTable] = useState<any[]>([]);
     const [showBets, setShowBets] = useState(false);
@@ -21,9 +20,8 @@ function AllLotteryBets() {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                console.log('User:', currentUser);
                 try {
-                    const fetchedBets = await fetchAllLotteryBets(currentUser.uid);
+                    const fetchedBets = await fetchLotteryBets(currentUser.uid, 'Color Ball Game');
                     setMyBetsTable(fetchedBets);
                     if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
                 } catch (error) {
@@ -41,7 +39,7 @@ function AllLotteryBets() {
     return (
         <div className="bets-table-container">
             <div onClick={handleShowBets} className="show-bets-button">
-                All Bets History
+                Active Bets
                 <MdOutlineArrowDropDownCircle size={30} />
             </div>
             {showBets && (
@@ -50,14 +48,13 @@ function AllLotteryBets() {
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Game Name</th>
                                 {/* <th>Bet-ID</th> */}
-                                {/* <th>Date</th> */}
+                                <th>Game Name</th>
+                                <th>Date</th>
                                 <th>Time</th>
                                 {/* <th>User-ID</th> */}
                                 <th>Bet Amount</th>
-                                <th>Bet</th>
-
+                                <th>Bet Number</th>
                                 <th>Reward</th>
                                 <th>Result</th>
                             </tr>
@@ -66,17 +63,28 @@ function AllLotteryBets() {
                             {myBetsTable.map((row, index) => (
                                 <tr key={index}>
                                     <td>{index + 1}</td>
-                                    <td>{row.gameType}</td>
                                     {/* <td>{row.betID}</td> */}
-                                    {/* <td>{format(new Date(row.timestamp * 1000), 'dd/MM/yyyy')}</td> */}
+                                    <td>{row.gameType}</td>
+                                    <td>{format(new Date(row.timestamp * 1000), 'dd/MM/yyyy')}</td>
                                     <td>{format(new Date(row.timestamp * 1000), 'HH:mm:ss')}</td>
                                     {/* <td>{row.userID}</td> */}
                                     <td>{row.betAmount}</td>
-                                    <td>{row.betNumber} {row.ballColor}</td>
+                                    <td>{row.betNumber} & {row.ballColor}</td>
                                     <td>{row.rewardAmount}</td>
-                                    <td>{row.winningNumber} {row.ballColor}</td>
+                                    <td>{row.winningNumber} & {row.ballColor}</td>
                                 </tr>
+
                             ))}
+                            <tr>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -85,4 +93,4 @@ function AllLotteryBets() {
     );
 }
 
-export default AllLotteryBets;
+export default ActiveLotterBets;

@@ -1,8 +1,8 @@
+import ActiveLotterBets from '@/components/Pages/TripleDigitLottery/ActiveLotteryBets';
 import AllLotteryBets from '@/components/Pages/TripleDigitLottery/AllLotteryBets';
+import LotterResult from '@/components/Pages/TripleDigitLottery/LotteryResult';
 import TripleDigitLottery from '@/components/Pages/TripleDigitLottery/TripleDigitLottery';
-import ActiveLotterBets from '@/components/Shared/ActiveLotteryBets';
 import HeaderMain from '@/components/Shared/HeaderMain';
-import LotterResult from '@/components/Shared/LotteryResult';
 
 export default function page() {
     return (

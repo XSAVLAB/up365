@@ -2,9 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { MdOutlineArrowDropDownCircle } from 'react-icons/md';
-import { fetchWinningBets } from '../../api/firestoreService';
+import { User, onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/firebaseConfig';
+import { fetchWinningBets } from '../../../api/firestoreService';
 
-function LotterResult() {
+function LotteryResult() {
+  const [user, setUser] = useState<User | null>(null);
   const [winningBets, setWinningBets] = useState<any[]>([]);
   const [showBets, setShowBets] = useState(false);
 
@@ -13,18 +16,24 @@ function LotterResult() {
   };
 
   useEffect(() => {
-    const fetchBetsData = async () => {
-      try {
-        const fetchedWinningBets = await fetchWinningBets();
-        setWinningBets(fetchedWinningBets);
-        if (!fetchedWinningBets.length) {
-          console.error("No Winning Bets Found.");
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        try {
+          const fetchedWinningBets = await fetchWinningBets(currentUser.uid, 'Double Digit Lottery');
+          setWinningBets(fetchedWinningBets);
+          if (!fetchedWinningBets.length) {
+            console.error("No Winning Bets Found.");
+          }
+        } catch (error) {
+          console.error('Error fetching winning bets data:', error);
         }
-      } catch (error) {
-        console.error('Error fetching winning bets data:', error);
+      } else {
+        setUser(null);
       }
-    };
-    fetchBetsData();
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -40,9 +49,10 @@ function LotterResult() {
               <tr>
                 <th>ID</th>
                 <th>Game Name</th>
+                <th>Date</th>
+                <th>Time</th>
                 <th>Winning Number</th>
-                <th>Winning Color</th>
-                <th>Number of Winners</th>
+                {/* <th>Number of Winners</th> */}
                 <th>Total Amount Won</th>
               </tr>
             </thead>
@@ -51,9 +61,10 @@ function LotterResult() {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{info.gameType}</td>
+                  <td>{format(new Date(info.timestamp * 1000), 'dd/MM/yyyy')}</td>
+                  <td>{format(new Date(info.timestamp * 1000), 'HH:mm:ss')}</td>
                   <td>{info.winningNumber || '-'}</td>
-                  <td>{info.winningColor || '-'}</td>
-                  <td>{info.winners || '-'}</td>
+                  {/* <td>{info.winners || '-'}</td> */}
                   <td>{info.totalWon || '-'}</td>
                 </tr>
               ))}
@@ -65,4 +76,4 @@ function LotterResult() {
   );
 }
 
-export default LotterResult;
+export default LotteryResult;

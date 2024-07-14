@@ -58,7 +58,7 @@ export default function HeaderMain() {
                                 <li className="dropdown show-dropdown d-block d-sm-none">
                                     <div className="d-flex align-items-center flex-wrap gap-3">
                                         <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2">Log In</Link>
-                                        <Link href="/create-account" className="cmn-btn px-xxl-11">Sign Up</Link>
+                                        <Link href="/create-acount" className="cmn-btn px-xxl-11">Sign Up</Link>
                                     </div>
                                 </li>
                             )}
@@ -69,7 +69,7 @@ export default function HeaderMain() {
                         {!user ? (
                             <>
                                 <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2 me-5 me-lg-0 d-none d-sm-block">Log In</Link>
-                                <Link href="/create-account" className="cmn-btn d-none px-xxl-11 d-sm-block d-lg-none d-xl-block">Sign Up</Link>
+                                <Link href="/create-acount" className="cmn-btn d-none px-xxl-11 d-sm-block d-lg-none d-xl-block">Sign Up</Link>
                             </>
                         ) : (
                             <div className="d-none d-sm-block">

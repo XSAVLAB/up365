@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { MdOutlineArrowDropDownCircle } from 'react-icons/md';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchLotteryBets } from '../../api/firestoreService';
+import { fetchLotteryBets } from '../../../api/firestoreService';
 
 
 function ActiveLotterBets() {
@@ -16,12 +16,13 @@ function ActiveLotterBets() {
         setShowBets(!showBets);
     }
 
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
                 try {
-                    const fetchedBets = await fetchLotteryBets(currentUser.uid);
+                    const fetchedBets = await fetchLotteryBets(currentUser.uid, 'Double Digit Lottery');
                     setMyBetsTable(fetchedBets);
                     if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
                 } catch (error) {
@@ -56,6 +57,7 @@ function ActiveLotterBets() {
                                 <th>Bet Amount</th>
                                 <th>Bet Number</th>
                                 <th>Reward</th>
+                                <th>Result</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,11 +71,13 @@ function ActiveLotterBets() {
                                     {/* <td>{row.userID}</td> */}
                                     <td>{row.betAmount}</td>
                                     <td>{row.betNumber}</td>
-                                    <td>-</td>
+                                    <td>{row.rewardAmount}</td>
+                                    <td>{row.winningNumber}</td>
                                 </tr>
 
                             ))}
                             <tr>
+                                <td>-</td>
                                 <td>-</td>
                                 <td>-</td>
                                 <td>-</td>
