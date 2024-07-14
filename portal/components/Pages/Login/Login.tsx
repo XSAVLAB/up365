@@ -4,17 +4,17 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation';
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
-import { auth, db } from '../../../firebaseConfig';
+import { auth, db, isAdmin } from '../../../firebaseConfig';
 import { signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, signInWithPopup } from "firebase/auth";
 import { doPasswordReset, doSignInWithGoogle } from '@/firebase/auth';
 import { getDoc, doc } from 'firebase/firestore';
 import { createProfile } from '@/api/firestoreService';
+
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const router = useRouter();
-
 
     const handleLogin = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -23,15 +23,17 @@ export default function Login() {
                 const user = userCredential.user;
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 const userData = userDoc.data();
-                if (userData?.isBlocked === false) {
-                    if (userData?.role === 'admin') {
-                        router.push('/admin');
-                    } else {
-                        router.push('/');
-                    }
+
+                if (isAdmin(user.email)) {
+                    router.push('/admin');
                 } else {
-                    setMessage('You are suspended from the system');
+                    if (userData?.isBlocked === false) {
+                        router.push('/');
+                    } else {
+                        setMessage('You are suspended from the system' + user.email);
+                    }
                 }
+
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -41,8 +43,7 @@ export default function Login() {
             });
     };
 
-
-    const onGoogleSignIn = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    const onGoogleSignIn = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
         try {
@@ -51,9 +52,10 @@ export default function Login() {
 
             const userDoc = await getDoc(doc(db, "users", user.uid));
             const userData = userDoc.data();
+
             if (userData?.isBlocked === false) {
                 if (userData) {
-                    if (userData.role === 'admin') {
+                    if (isAdmin(user.email)) {
                         router.push('/admin');
                     } else {
                         router.push('/');
@@ -76,7 +78,7 @@ export default function Login() {
         } catch (e) {
             console.log(e);
         }
-    }
+    };
 
     const handleFacebookLogin = () => {
         const provider = new FacebookAuthProvider();
@@ -101,7 +103,6 @@ export default function Login() {
                 console.error(error);
             });
     };
-
 
     const handleForgotPassword = async () => {
         setMessage('');

@@ -50,7 +50,7 @@ function AllLotteryBets() {
                                 <th>ID</th>
                                 <th>Game Name</th>
                                 {/* <th>Bet-ID</th> */}
-                                <th>Date</th>
+                                {/* <th>Date</th> */}
                                 <th>Time</th>
                                 {/* <th>User-ID</th> */}
                                 <th>Bet Amount</th>
@@ -65,7 +65,7 @@ function AllLotteryBets() {
                                     <td>{index + 1}</td>
                                     <td>{row.gameType}</td>
                                     {/* <td>{row.betID}</td> */}
-                                    <td>{format(new Date(row.timestamp * 1000), 'dd/MM/yyyy')}</td>
+                                    {/* <td>{format(new Date(row.timestamp * 1000), 'dd/MM/yyyy')}</td> */}
                                     <td>{format(new Date(row.timestamp * 1000), 'HH:mm:ss')}</td>
                                     {/* <td>{row.userID}</td> */}
                                     <td>{row.betAmount}</td>

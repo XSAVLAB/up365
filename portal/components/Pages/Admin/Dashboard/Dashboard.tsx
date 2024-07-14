@@ -5,7 +5,7 @@ import { Tab } from '@headlessui/react';
 import { dashboardTabs } from '@/public/data/adminTabs';
 import { doSignOut } from '../../../../firebase/auth';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/firebaseConfig';
+import { auth, isAdmin as checkIsAdmin } from '@/firebaseConfig';
 import { fetchAllUsers, deleteUser, fetchUserRole, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus } from '../../../../api/firestoreAdminService';
 import EditUserForm from '../UserManagement/EditUserForm';
 import History from '../Dashboard/History';
@@ -59,8 +59,8 @@ export default function Dashboard() {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                const role = await fetchUserRole(currentUser.uid);
-                if (role === 'admin') {
+                const userIsAdmin = checkIsAdmin(currentUser.email);
+                if (userIsAdmin) {
                     setIsAdmin(true);
                 } else {
                     setIsAdmin(false);

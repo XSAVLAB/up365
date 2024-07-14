@@ -67,7 +67,7 @@ function ColorBallGame() {
         e.preventDefault();
         if (betAmount > Number(walletBalance) || Number(walletBalance) === 0) {
             alert('Insufficient Wallet Balance.\nPlease Recharge Your Wallet...');
-        } else if (number >= 1 && number < 37 && betAmount > 99 && selectedColor) {
+        } else if (number > 0 && number < 37 && betAmount > 99 && selectedColor) {
             setBetCount((prevCount) => prevCount + 1);
             try {
                 const response = await submitLotteryBet(user?.uid, number, betAmount, 'Color Ball Game', selectedColor, false);
@@ -159,6 +159,7 @@ function ColorBallGame() {
                             value={number}
                             onChange={(e) => handleNumberClick(e.target.value)}
                             className='bet-select'>
+                            <option value="no-value">Select Number</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
