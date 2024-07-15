@@ -576,7 +576,6 @@ export const settleColorBallBets = async () => {
 //   }
 // };
 
-// In this function I also want to access the timestamp
 export const fetchWinningBets = async (userId, gameType) => {
   try {
     const db = getFirestore();
@@ -588,25 +587,37 @@ export const fetchWinningBets = async (userId, gameType) => {
       where("gameType", "==", gameType)
     );
     const snapshot = await getDocs(settledBetsQuery);
-    const winningBets = {};
+    const winningBets = new Map();
+
     snapshot.forEach((betDoc) => {
       const betData = betDoc.data();
-      if (!winningBets[betData.gameType]) {
-        winningBets[betData.gameType] = {
-          gameType: betData.gameType,
-          winningNumber: betData.winningNumber,
-          winningColor: betData.winningColor,
-          winners: 0,
-          totalWon: 0,
-          timestamp: betData.timestamp,
-        };
-      }
       if (betData.rewardAmount > 0) {
-        winningBets[betData.gameType].winners += 1;
-        winningBets[betData.gameType].totalWon += betData.rewardAmount;
+        // Only consider winning bets
+        const betTimestamp = betData.timestamp.toDate();
+
+        const minutes = betTimestamp.getMinutes();
+        const roundedMinutes = Math.floor(minutes / 5) * 5;
+        betTimestamp.setMinutes(roundedMinutes, 0, 0);
+
+        const intervalKey = `${betTimestamp.toISOString()}-${
+          betData.winningNumber
+        }-${betData.winningColor}`;
+
+        if (!winningBets.has(intervalKey)) {
+          winningBets.set(intervalKey, {
+            gameType: betData.gameType,
+            winningNumber: betData.winningNumber,
+            winningColor: betData.winningColor,
+            rewardAmount: betData.rewardAmount,
+            timestamp: betTimestamp,
+          });
+        } else {
+          winningBets.get(intervalKey).rewardAmount += betData.rewardAmount;
+        }
       }
     });
-    return Object.values(winningBets);
+
+    return Array.from(winningBets.values());
   } catch (error) {
     console.error("Error fetching winning bets: ", error);
     throw error;
