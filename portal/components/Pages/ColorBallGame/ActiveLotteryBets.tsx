@@ -6,8 +6,7 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchLotteryBets } from '../../../api/firestoreService';
 
-
-function ActiveLotterBets() {
+function ActiveLotteryBets() {
     const [user, setUser] = useState<User | null>(null);
     const [myBetsTable, setMyBetsTable] = useState<any[]>([]);
     const [showBets, setShowBets] = useState(false);
@@ -34,8 +33,6 @@ function ActiveLotterBets() {
         return () => unsubscribe();
     }, []);
 
-
-
     return (
         <div className="bets-table-container">
             <div onClick={handleShowBets} className="show-bets-button">
@@ -60,21 +57,23 @@ function ActiveLotterBets() {
                             </tr>
                         </thead>
                         <tbody>
-                            {myBetsTable.map((row, index) => (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    {/* <td>{row.betID}</td> */}
-                                    <td>{row.gameType}</td>
-                                    <td>{format(new Date(row.timestamp * 1000), 'dd/MM/yyyy')}</td>
-                                    <td>{format(new Date(row.timestamp * 1000), 'HH:mm:ss')}</td>
-                                    {/* <td>{row.userID}</td> */}
-                                    <td>{row.betAmount}</td>
-                                    <td>{row.betNumber} & {row.ballColor}</td>
-                                    <td>{row.rewardAmount}</td>
-                                    <td>{row.winningNumber} & {row.ballColor}</td>
-                                </tr>
-
-                            ))}
+                            {myBetsTable.map((row, index) => {
+                                const date = row.timestamp.toDate();
+                                return (
+                                    <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        {/* <td>{row.betID}</td> */}
+                                        <td>{row.gameType}</td>
+                                        <td>{format(date, 'dd/MM/yyyy')}</td>
+                                        <td>{format(date, 'HH:mm:ss')}</td>
+                                        {/* <td>{row.userID}</td> */}
+                                        <td>{row.betAmount}</td>
+                                        <td>{row.betNumber} & {row.ballColor}</td>
+                                        <td>{row.rewardAmount}</td>
+                                        <td>{row.winningNumber} & {row.ballColor}</td>
+                                    </tr>
+                                );
+                            })}
                             <tr>
                                 <td>-</td>
                                 <td>-</td>
@@ -93,4 +92,4 @@ function ActiveLotterBets() {
     );
 }
 
-export default ActiveLotterBets;
+export default ActiveLotteryBets;

@@ -57,17 +57,20 @@ function LotteryResult() {
               </tr>
             </thead>
             <tbody>
-              {winningBets.map((info, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{info.gameType}</td>
-                  <td>{format(new Date(info.timestamp * 1000), 'dd/MM/yyyy')}</td>
-                  <td>{format(new Date(info.timestamp * 1000), 'HH:mm:ss')}</td>
-                  <td>{info.winningNumber || '-'} {info.winningColor || '-'}</td>
-                  {/* <td>{info.winners || '-'}</td> */}
-                  <td>{info.totalWon || '-'}</td>
-                </tr>
-              ))}
+              {winningBets.map((info, index) => {
+                const date = info.timestamp.toDate();
+                return (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{info.gameType}</td>
+                    <td>{format(date, 'dd/MM/yyyy')}</td>
+                    <td>{format(date, 'HH:mm:ss')}</td>
+                    <td>{info.winningNumber || '-'} {info.winningColor || '-'}</td>
+                    {/* <td>{info.winners || '-'}</td> */}
+                    <td>{info.totalWon || '-'}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
