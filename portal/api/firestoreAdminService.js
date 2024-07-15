@@ -9,6 +9,7 @@ import {
   updateDoc,
   query,
   where,
+  orderBy,
 } from "firebase/firestore";
 
 // Fetch all users
@@ -72,7 +73,11 @@ export const fetchUserRole = async (userId) => {
 export const fetchTransactions = async () => {
   try {
     const transactionsCollectionRef = collection(db, "transactions");
-    const transactionsSnapshot = await getDocs(transactionsCollectionRef);
+    const transactionsQuery = query(
+      transactionsCollectionRef,
+      orderBy("timestamp", "asc")
+    );
+    const transactionsSnapshot = await getDocs(transactionsQuery);
     const transactionsData = transactionsSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
@@ -117,7 +122,11 @@ export const updateUserWallet = async (userId, amount) => {
 export const fetchWithdrawals = async () => {
   try {
     const withdrawalsCollectionRef = collection(db, "withdrawals");
-    const withdrawalsSnapshot = await getDocs(withdrawalsCollectionRef);
+    const withdrawalsQuery = query(
+      withdrawalsCollectionRef,
+      orderBy("timestamp", "asc")
+    );
+    const withdrawalsSnapshot = await getDocs(withdrawalsQuery);
     const withdrawalsData = withdrawalsSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
@@ -164,18 +173,42 @@ export const updateWithdrawalStatus = async (
 
 // Fetch Approved Transactions
 export const fetchApprovedTransactions = async () => {
-  const transactionsCollection = collection(db, "transactions");
-  const q = query(transactionsCollection, where("status", "==", "approved"));
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map((doc) => doc.data());
+  try {
+    const transactionsCollection = collection(db, "transactions");
+    const q = query(
+      transactionsCollection,
+      where("status", "==", "approved"),
+      orderBy("timestamp", "asc")
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error("Error fetching approved transactions: ", error);
+    throw error;
+  }
 };
 
 // Fetch Approved Withdrawals
 export const fetchApprovedWithdrawals = async () => {
-  const withdrawalsCollection = collection(db, "withdrawals");
-  const q = query(withdrawalsCollection, where("status", "==", "approved"));
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map((doc) => doc.data());
+  try {
+    const withdrawalsCollection = collection(db, "withdrawals");
+    const q = query(
+      withdrawalsCollection,
+      where("status", "==", "approved"),
+      orderBy("timestamp", "asc")
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error("Error fetching approved withdrawals: ", error);
+    throw error;
+  }
 };
 
 // Fetch series data

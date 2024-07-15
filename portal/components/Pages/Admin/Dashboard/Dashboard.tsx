@@ -229,6 +229,11 @@ export default function Dashboard() {
         }
     };
 
+    const getUserNameById = (userId: string) => {
+        const user = userDetails.find(user => user.id === userId);
+        return user ? `${user.firstName} ${user.lastName}` : 'Unknown User';
+    };
+
     if (!isAdmin) {
         return <div>Loading...</div>;
     }
@@ -317,6 +322,7 @@ export default function Dashboard() {
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Timestamp</th>
+                                                                        <th>User Name</th>
                                                                         <th>Amount</th>
                                                                         <th>Status</th>
                                                                         <th>Approve</th>
@@ -329,6 +335,7 @@ export default function Dashboard() {
                                                                     {transactions.map((transaction) => (
                                                                         <tr key={transaction.id}>
                                                                             <td>{transaction.timestamp}</td>
+                                                                            <td>{getUserNameById(transaction.userId)}</td>
                                                                             <td>{transaction.amount}</td>
                                                                             <td style={getStatusStyle(transaction.status)}>{transaction.status}</td>
                                                                             <td>
@@ -357,6 +364,7 @@ export default function Dashboard() {
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Timestamp</th>
+                                                                        <th>User Name</th>
                                                                         <th>Amount</th>
                                                                         <th>Status</th>
                                                                         <th>Approve</th>
@@ -369,6 +377,7 @@ export default function Dashboard() {
                                                                     {withdrawals.map((withdrawal) => (
                                                                         <tr key={withdrawal.id}>
                                                                             <td>{withdrawal.timestamp}</td>
+                                                                            <td>{getUserNameById(withdrawal.userId)}</td>
                                                                             <td>{withdrawal.amount}</td>
                                                                             <td style={getStatusStyle(withdrawal.status)}>{withdrawal.status}</td>
                                                                             <td>
