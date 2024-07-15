@@ -509,72 +509,8 @@ export const settleColorBallBets = async () => {
     console.error("Error settling bets: ", error);
   }
 };
-// Fetch winning bets
-// export const fetchWinningBets = async () => {
-//   try {
-//     const db = getFirestore();
-//     const gameBetsRef = collection(db, "gameBets");
-//     const settledBetsQuery = query(gameBetsRef, where("settled", "==", true));
-//     const snapshot = await getDocs(settledBetsQuery);
-//     const winningBets = {};
-//     snapshot.forEach((betDoc) => {
-//       const betData = betDoc.data();
-//       if (!winningBets[betData.gameType]) {
-//         winningBets[betData.gameType] = {
-//           gameType: betData.gameType,
-//           winningNumber: betData.winningNumber,
-//           winningColor: betData.winningColor,
-//           winners: 0,
-//           totalWon: 0,
-//         };
-//       }
-//       if (betData.rewardAmount > 0) {
-//         winningBets[betData.gameType].winners += 1;
-//         winningBets[betData.gameType].totalWon += betData.rewardAmount;
-//       }
-//     });
-//     return Object.values(winningBets);
-//   } catch (error) {
-//     console.error("Error fetching winning bets: ", error);
-//     throw error;
-//   }
-// };
 
-// I want the winning bets of the current user and current game type
-// export const fetchWinningBets = async (userId, gameType) => {
-//   try {
-//     const db = getFirestore();
-//     const gameBetsRef = collection(db, "gameBets");
-//     const settledBetsQuery = query(
-//       gameBetsRef,
-//       where("settled", "==", true),
-//       where("userID", "==", userId),
-//       where("gameType", "==", gameType)
-//     );
-//     const snapshot = await getDocs(settledBetsQuery);
-//     const winningBets = {};
-//     snapshot.forEach((betDoc) => {
-//       const betData = betDoc.data();
-//       if (!winningBets[betData.gameType]) {
-//         winningBets[betData.gameType] = {
-//           gameType: betData.gameType,
-//           winningNumber: betData.winningNumber,
-//           winningColor: betData.winningColor,
-//           winners: 0,
-//           totalWon: 0,
-//         };
-//       }
-//       if (betData.rewardAmount > 0) {
-//         winningBets[betData.gameType].winners += 1;
-//         winningBets[betData.gameType].totalWon += betData.rewardAmount;
-//       }
-//     });
-//     return Object.values(winningBets);
-//   } catch (error) {
-//     console.error("Error fetching winning bets: ", error);
-//     throw error;
-//   }
-// };
+// Fetch winning bets
 
 export const fetchWinningBets = async (userId, gameType) => {
   try {

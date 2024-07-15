@@ -6,7 +6,6 @@ import { MdArrowDropDownCircle } from 'react-icons/md';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets, fetchProfileData } from '../../../api/firestoreService';
-
 const gameTimer = 300;
 
 function formatTimer(seconds: number) {
@@ -96,21 +95,34 @@ function SingleDigitLottery() {
     }
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (countdownTimer === 0) {
+        let worker = new Worker(new URL('../../../public/worker.js', import.meta.url));
+
+        worker.postMessage({
+            command: 'start',
+            timer: countdownTimer,
+            coolDown: cooldown,
+        });
+
+        worker.onmessage = function (e) {
+            const { command, timer, coolDown } = e.data;
+
+            if (command === 'update') {
+                setCountdownTimer(timer);
+                setCooldown(coolDown);
+                localStorage.setItem('countdownTimer', timer);
+                localStorage.setItem('cooldown', coolDown);
+            } else if (command === 'settleBets') {
                 settleLotteryBets('Single Digit Lottery');
                 setCounter((prevCounter) => prevCounter + 1);
                 setBetCount(0);
-                setCountdownTimer(calculateTimeToNextInterval());
-                setCooldown(10);
-            } else if (cooldown !== 0) {
-                setCooldown((prevCooldown) => prevCooldown - 1);
-            } else {
-                setCountdownTimer((prevCountdown) => prevCountdown - 1);
+                localStorage.setItem('countdownTimer', gameTimer.toString());
+                localStorage.setItem('cooldown', '0');
+
             }
-        }, 1000);
+        };
+
         return () => {
-            clearInterval(interval);
+            worker.terminate();
         };
     }, [countdownTimer, cooldown, user?.uid, number, betAmount, counter]);
 
