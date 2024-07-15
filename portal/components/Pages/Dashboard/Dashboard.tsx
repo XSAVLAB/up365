@@ -10,6 +10,7 @@ import { doSignOut } from '../../../firebase/auth';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchBalanceHistory, fetchProfileData, fetchUserBets, fetchUserWallet, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
+import UserStatement from './UserStatement';
 
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
@@ -561,6 +562,9 @@ export default function Dashboard() {
                                                             </table>
                                                         </div>
                                                     </div>
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    <UserStatement userId={user?.uid} />
                                                 </Tab.Panel>
                                                 {/* <Tab.Panel>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">

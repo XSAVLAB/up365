@@ -559,3 +559,87 @@ export const fetchWinningBets = async (userId, gameType) => {
     throw error;
   }
 };
+
+// Fetch all transaction (Statement) of the user
+export const fetchUserStatement = async (userId) => {
+  try {
+    const transactionsCollectionRef = collection(db, "transactions");
+    const withdrawalsCollectionRef = collection(db, "withdrawals");
+    const betsCollectionRef = collection(db, "bets");
+    const gameBetsCollectionRef = collection(db, "gameBets");
+
+    const transactionsSnapshot = await getDocs(
+      query(
+        transactionsCollectionRef,
+        where("userId", "==", userId),
+        where("status", "==", "approved")
+      )
+    );
+    const withdrawalsSnapshot = await getDocs(
+      query(
+        withdrawalsCollectionRef,
+        where("userId", "==", userId),
+        where("status", "==", "approved")
+      )
+    );
+    const betsSnapshot = await getDocs(
+      query(betsCollectionRef, where("userId", "==", userId))
+    );
+    const gameBetsSnapshot = await getDocs(
+      query(gameBetsCollectionRef, where("userID", "==", userId))
+    );
+
+    const transactionsData = transactionsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      type: "Deposit",
+      amount: doc.data().amount,
+      status: doc.data().status,
+      timestamp: doc.data().timestamp,
+      userId: doc.data().userId,
+    }));
+
+    const withdrawalsData = withdrawalsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      type: "Withdrawal",
+      amount: doc.data().amount,
+      status: doc.data().status,
+      timestamp: doc.data().timestamp,
+      userId: doc.data().userId,
+    }));
+
+    const betsData = betsSnapshot.docs
+      .map((doc) => ({
+        id: doc.id,
+        type: "Bet",
+        amount: doc.data().betAmount,
+        rewardAmount: doc.data().possibleWin, // Assuming this is the reward amount
+        status: doc.data().settled ? "settled" : "unsettled",
+        timestamp: doc.data().timestamp,
+        userId: doc.data().userId,
+      }))
+      .filter((bet) => bet.rewardAmount > 0);
+
+    const gameBetsData = gameBetsSnapshot.docs
+      .map((doc) => ({
+        id: doc.id,
+        type: "Game Bet",
+        amount: doc.data().betAmount,
+        rewardAmount: doc.data().rewardAmount,
+        status: doc.data().settled ? "settled" : "unsettled",
+        timestamp: doc.data().timestamp,
+        userId: doc.data().userID,
+      }))
+      .filter((gameBet) => gameBet.rewardAmount > 0);
+
+    const combinedData = [
+      ...transactionsData,
+      ...withdrawalsData,
+      ...betsData,
+      ...gameBetsData,
+    ];
+    return combinedData;
+  } catch (error) {
+    console.error("Error fetching balance history: ", error);
+    throw error;
+  }
+};

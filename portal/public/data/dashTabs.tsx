@@ -44,6 +44,12 @@ export const dashboardTabs = [
     icon: <IconReportMoney
       className="ti ti-bell-ringing fs-five n5-color" />,
   },
+  {
+    id: 7,
+    tabname: "Statement",
+    icon: <IconMoneybag
+      className="ti ti-bell-ringing fs-five n5-color" />,
+  },
   // {
   //   id: 7,
   //   tabname: "Notifications",
@@ -51,7 +57,7 @@ export const dashboardTabs = [
   //     className="ti ti-bell-ringing fs-five n5-color" />,
   // },
   {
-    id: 7,
+    id: 8,
     tabname: "Log out",
     icon: <IconLogout
       className="ti ti-logout fs-five n5-color" />,
