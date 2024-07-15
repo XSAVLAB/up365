@@ -396,7 +396,7 @@ export const settleLotteryBets = async (gameType) => {
         const betRef = doc(db, "gameBets", bet.id);
         const userRef = doc(db, "users", bet.userID);
         if (bet.betNumber === winningNumber) {
-          const reward = bet.betAmount * 1.5;
+          const reward = bet.betAmount * 8;
           const userDoc = await getDoc(userRef);
           const userWallet = userDoc.data().wallet;
           const updatedWallet = (parseInt(userWallet) + reward).toString();
@@ -480,7 +480,7 @@ export const settleColorBallBets = async () => {
           bet.ballColor === winningColor &&
           bet.betNumber === parseInt(winningNumber, 10)
         ) {
-          const reward = bet.betAmount * 1.5;
+          const reward = bet.betAmount * 8;
           const userDoc = await getDoc(userRef);
           const userWallet = userDoc.data().wallet;
           const updatedWallet = (parseInt(userWallet) + reward).toString();

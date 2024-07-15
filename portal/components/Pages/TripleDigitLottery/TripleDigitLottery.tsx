@@ -66,7 +66,7 @@ function TripleDigitLottery() {
         e.preventDefault();
         if (betAmount > Number(walletBalance) || Number(walletBalance) === 0) {
             alert('Insufficient Wallet Balance.\nPlease Recharge Your Wallet...');
-        } else if (number > 100 && number < 1000 && betAmount > 99) {
+        } else if (number > 99 && number < 1000 && betAmount > 99) {
             setBetCount((prevCount) => prevCount + 1);
             try {
                 const response = await submitLotteryBet(user?.uid, number, betAmount, 'Triple Digit Lottery', null, false);
