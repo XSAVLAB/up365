@@ -224,7 +224,11 @@ export default function Dashboard() {
                                                                                     name="day"
                                                                                     placeholder="12"
                                                                                     value={formProfileData.day}
-                                                                                    onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                                    onChange={(e) => {
+                                                                                        const value = e.target.value;
+                                                                                        const numericValue = value.replace(/\D/g, '');
+                                                                                        setFormProfileData({ ...formProfileData, day: numericValue });
+                                                                                    }} />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
                                                                                 <input
@@ -232,7 +236,11 @@ export default function Dashboard() {
                                                                                     name="month"
                                                                                     placeholder="09"
                                                                                     value={formProfileData.month}
-                                                                                    onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                                    onChange={(e) => {
+                                                                                        const value = e.target.value;
+                                                                                        const numericValue = value.replace(/\D/g, '');
+                                                                                        setFormProfileData({ ...formProfileData, month: numericValue });
+                                                                                    }} />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
                                                                                 <input
@@ -240,7 +248,11 @@ export default function Dashboard() {
                                                                                     name="year"
                                                                                     placeholder="1999"
                                                                                     value={formProfileData.year}
-                                                                                    onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                                    onChange={(e) => {
+                                                                                        const value = e.target.value;
+                                                                                        const numericValue = value.replace(/\D/g, '');
+                                                                                        setFormProfileData({ ...formProfileData, year: numericValue });
+                                                                                    }} />
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -251,16 +263,24 @@ export default function Dashboard() {
                                                                                 className="w-25 n11-bg rounded-8"
                                                                                 type="text"
                                                                                 name="phoneCode"
-                                                                                placeholder="+962"
+                                                                                placeholder="+91"
                                                                                 value={formProfileData.phoneCode}
-                                                                                onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    const numericValue = value.replace(/\D/g, '');
+                                                                                    setFormProfileData({ ...formProfileData, phoneCode: numericValue });
+                                                                                }} />
                                                                             <input
                                                                                 className="n11-bg rounded-8"
                                                                                 type="text"
                                                                                 name="phoneNumber"
                                                                                 placeholder="XX-XXX-XXXXX"
                                                                                 value={formProfileData.phoneNumber}
-                                                                                onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    const numericValue = value.replace(/\D/g, '');
+                                                                                    setFormProfileData({ ...formProfileData, phoneNumber: numericValue });
+                                                                                }} />
                                                                         </div>
                                                                     </div>
                                                                 </div>

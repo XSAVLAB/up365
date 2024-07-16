@@ -69,7 +69,7 @@ function AllLotteryBets() {
                                     <td>{row.gameType}</td>
                                     {/* <td>{row.betID}</td> */}
                                     {/* <td>{format(new Date(row.timestamp * 1000), 'dd/MM/yyyy')}</td> */}
-                                    <td>{format(new Date(row.timestamp * 1000), 'HH:mm:ss')}</td>
+                                    <td>{row.timestamp}</td>
                                     {/* <td>{row.userID}</td> */}
                                     <td>{row.betAmount}</td>
                                     <td>{row.betNumber} {row.ballColor}</td>

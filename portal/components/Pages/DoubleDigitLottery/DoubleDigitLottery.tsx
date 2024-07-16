@@ -7,16 +7,14 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets, fetchProfileData } from '../../../api/firestoreService';
 
-const gameTimer = 300;
+const gameTimer = 90;
 
 function formatTimer(seconds: number) {
-    const hours = Math.floor((seconds % (3600 * 24)) / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
+    const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    const hoursStr = String(hours).padStart(2, '0');
     const minutesStr = String(minutes).padStart(2, '0');
     const secondsStr = String(remainingSeconds).padStart(2, '0');
-    return `${hoursStr}:${minutesStr}:${secondsStr}`;
+    return `${minutesStr}:${secondsStr}`;
 }
 
 function calculateTimeToNextInterval() {
@@ -25,11 +23,11 @@ function calculateTimeToNextInterval() {
     nextInterval.setSeconds(0);
     nextInterval.setMilliseconds(0);
 
-    if (now.getMinutes() % 5 === 0 && now.getSeconds() === 0) {
+    if (now.getSeconds() % 90 === 0) {
         return gameTimer;
     } else {
-        const minutes = now.getMinutes() + (5 - (now.getMinutes() % 5));
-        nextInterval.setMinutes(minutes);
+        const seconds = now.getSeconds() + (90 - (now.getSeconds() % 90));
+        nextInterval.setSeconds(seconds);
         return Math.floor((nextInterval.getTime() - now.getTime()) / 1000);
     }
 }

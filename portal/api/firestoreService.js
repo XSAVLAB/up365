@@ -532,7 +532,7 @@ export const fetchWinningBets = async (userId, gameType) => {
       const betData = betDoc.data();
       if (betData.rewardAmount > 0) {
         // Only consider winning bets
-        const betTimestamp = betData.timestamp.toDate();
+        const betTimestamp = new Date(betData.timestamp);
 
         const minutes = betTimestamp.getMinutes();
         const roundedMinutes = Math.floor(minutes / 5) * 5;
