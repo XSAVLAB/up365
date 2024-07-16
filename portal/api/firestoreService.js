@@ -95,7 +95,7 @@ export const updateSettings = async (userId, settingsData) => {
     const userDocRef = doc(db, "cardDetails", userId);
     await setDoc(userDocRef, {
       ...settingsData,
-      timestamp: new Date(),
+      timestamp: new Date().toLocaleString(),
     });
   } catch (error) {
     console.error("Error updating settings: ", error);
@@ -109,7 +109,10 @@ export const updateSettings = async (userId, settingsData) => {
 export const updateUserCardDetails = async (userId, cardDetails) => {
   try {
     const userDocRef = doc(db, "cardDetails", userId);
-    await setDoc(userDocRef, { ...cardDetails, timestamp: new Date() });
+    await setDoc(userDocRef, {
+      ...cardDetails,
+      timestamp: new Date().toLocaleString(),
+    });
     console.log("User card details updated in Firestore");
   } catch (error) {
     console.error("Error updating user card details: ", error);
@@ -236,7 +239,7 @@ export const placeBet = async (betData) => {
       throw new Error("Insufficient balance");
     }
 
-    const betDocRef = await addDoc(collection(db, "bets"), {
+    const betDocRef = await addDoc(collection(db, "sportsBets"), {
       userId,
       team1: t1,
       team2: t2,
@@ -244,13 +247,13 @@ export const placeBet = async (betData) => {
       odds: selectedTeam === "t1" ? t1odds.toString() : t2odds.toString(),
       possibleWin,
       selectedTeam: selectedTeam === "t1" ? t1 : t2,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toLocaleString(),
       status: "pending",
       matchId,
       settled: false,
     });
 
-    await updateDoc(doc(db, "bets", betDocRef.id), { id: betDocRef.id });
+    await updateDoc(doc(db, "sportsBets", betDocRef.id), { id: betDocRef.id });
 
     await updateDoc(doc(db, "users", userId), {
       wallet: (currentBalance - betAmount).toString(),
@@ -266,7 +269,7 @@ export const placeBet = async (betData) => {
 // Function to add a bet
 export const addBet = async (betData) => {
   const db = getFirestore();
-  const betRef = await addDoc(collection(db, "bets"), betData);
+  const betRef = await addDoc(collection(db, "sportsBets"), betData);
   await updateDoc(betRef, {
     id: betRef.id,
   });
@@ -286,7 +289,7 @@ export const updateUserWallet = async (userId, newBalance) => {
 export const fetchUserBets = async (userId) => {
   const db = getFirestore();
   const q = query(
-    collection(db, "bets"),
+    collection(db, "sportsBets"),
     where("userId", "==", userId),
     where("settled", "==", false)
   );
@@ -315,7 +318,7 @@ export const submitLotteryBet = async (
       gameType,
       ballColor,
       settled,
-      timestamp: new Date(),
+      timestamp: new Date().toLocaleString(),
     };
     await addDoc(collection(db, "gameBets"), betData);
     return { status: "Bet Placed" };
@@ -561,32 +564,49 @@ export const fetchWinningBets = async (userId, gameType) => {
 };
 
 // Fetch all transaction (Statement) of the user
-export const fetchUserStatement = async (userId) => {
+export const fetchUserStatement = async (userId, startDate, endDate) => {
   try {
     const transactionsCollectionRef = collection(db, "transactions");
     const withdrawalsCollectionRef = collection(db, "withdrawals");
-    const betsCollectionRef = collection(db, "bets");
+    const betsCollectionRef = collection(db, "sportsBets");
     const gameBetsCollectionRef = collection(db, "gameBets");
+
+    const startTimestamp = Timestamp.fromDate(startDate);
+    const endTimestamp = Timestamp.fromDate(endDate);
 
     const transactionsSnapshot = await getDocs(
       query(
         transactionsCollectionRef,
         where("userId", "==", userId),
-        where("status", "==", "approved")
+        where("status", "==", "approved"),
+        where("timestamp", ">=", startTimestamp),
+        where("timestamp", "<=", endTimestamp)
       )
     );
     const withdrawalsSnapshot = await getDocs(
       query(
         withdrawalsCollectionRef,
         where("userId", "==", userId),
-        where("status", "==", "approved")
+        where("status", "==", "approved"),
+        where("timestamp", ">=", startTimestamp),
+        where("timestamp", "<=", endTimestamp)
       )
     );
     const betsSnapshot = await getDocs(
-      query(betsCollectionRef, where("userId", "==", userId))
+      query(
+        betsCollectionRef,
+        where("userId", "==", userId),
+        where("timestamp", ">=", startTimestamp),
+        where("timestamp", "<=", endTimestamp)
+      )
     );
     const gameBetsSnapshot = await getDocs(
-      query(gameBetsCollectionRef, where("userID", "==", userId))
+      query(
+        gameBetsCollectionRef,
+        where("userID", "==", userId),
+        where("timestamp", ">=", startTimestamp),
+        where("timestamp", "<=", endTimestamp)
+      )
     );
 
     const transactionsData = transactionsSnapshot.docs.map((doc) => ({
@@ -612,7 +632,7 @@ export const fetchUserStatement = async (userId) => {
         id: doc.id,
         type: "Bet",
         amount: doc.data().betAmount,
-        rewardAmount: doc.data().possibleWin, // Assuming this is the reward amount
+        rewardAmount: doc.data().possibleWin,
         status: doc.data().settled ? "settled" : "unsettled",
         timestamp: doc.data().timestamp,
         userId: doc.data().userId,

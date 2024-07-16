@@ -85,6 +85,7 @@ export default function Dashboard() {
     const [formSettingsData, setFormSettingsData] = useState({
         cardNumber: '',
         expiration: '',
+        cvv: '',
         streetAddress: '',
         aptUnit: '',
         phoneNumber: '',
@@ -416,7 +417,7 @@ export default function Dashboard() {
                                                                     {balanceHistory.map((entry) => (
                                                                         <tr key={entry.id}>
                                                                             {/* <td className="text-nowrap">{entry.id}</td> */}
-                                                                            <td className="text-nowrap">{new Date(entry.timestamp.seconds * 1000).toLocaleString()}</td>
+                                                                            <td className="text-nowrap">{entry.timestamp}</td>
                                                                             <td className="text-nowrap">{entry.type}</td>
                                                                             <td className="text-nowrap">{entry.amount}</td>
                                                                             <td className={`${entry.status === 'Complete' ? 'g1-color' : 'r1-color'} fw-normal cpoint text-nowrap`}>
@@ -438,6 +439,7 @@ export default function Dashboard() {
                                                         </div>
                                                         <div className="pay_method__formarea">
                                                             <form onSubmit={onSettingsSubmit}>
+
                                                                 <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="d-flex w-100 p1-bg ps-3 rounded-8">
                                                                         <div className="d-flex align-items-center w-100">
@@ -448,7 +450,11 @@ export default function Dashboard() {
                                                                                 name="cardNumber"
                                                                                 placeholder="Card number"
                                                                                 value={formSettingsData.cardNumber}
-                                                                                onChange={handleChange(formSettingsData, setFormSettingsData)}
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    const numericValue = value.replace(/\D/g, '');
+                                                                                    setFormSettingsData({ ...formSettingsData, cardNumber: numericValue });
+                                                                                }}
                                                                             />
                                                                         </div>
                                                                         <div className="d-flex align-items-center justify-content-end">
@@ -457,9 +463,24 @@ export default function Dashboard() {
                                                                                 type="text"
                                                                                 id="expiration2"
                                                                                 name="expiration"
-                                                                                placeholder="MM/YY CVC"
+                                                                                placeholder="MM/YY"
                                                                                 value={formSettingsData.expiration}
                                                                                 onChange={handleChange(formSettingsData, setFormSettingsData)}
+                                                                            />
+                                                                        </div>
+                                                                        <div className="d-flex align-items-center justify-content-end">
+                                                                            <input
+                                                                                className="w-75"
+                                                                                type="text"
+                                                                                id="expiration2"
+                                                                                name="cvv"
+                                                                                placeholder="CVV"
+                                                                                value={formSettingsData.cvv}
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    const numericValue = value.replace(/\D/g, '');
+                                                                                    setFormSettingsData({ ...formSettingsData, cvv: numericValue });
+                                                                                }}
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -487,9 +508,13 @@ export default function Dashboard() {
                                                                         <input
                                                                             type="text"
                                                                             name="phoneNumber"
-                                                                            placeholder="(+33)7 35 55 21 02"
+                                                                            placeholder="(+91) XXX-XXX-XXXX"
                                                                             value={formSettingsData.phoneNumber}
-                                                                            onChange={handleChange(formSettingsData, setFormSettingsData)}
+                                                                            onChange={(e) => {
+                                                                                const value = e.target.value;
+                                                                                const numericValue = value.replace(/\D/g, '');
+                                                                                setFormSettingsData({ ...formSettingsData, phoneNumber: numericValue });
+                                                                            }}
                                                                         />
                                                                     </div>
                                                                 </div>
@@ -519,7 +544,11 @@ export default function Dashboard() {
                                                                                 name="zipCode"
                                                                                 placeholder="Zip code"
                                                                                 value={formSettingsData.zipCode}
-                                                                                onChange={handleChange(formSettingsData, setFormSettingsData)}
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    const numericValue = value.replace(/\D/g, '');
+                                                                                    setFormSettingsData({ ...formSettingsData, zipCode: numericValue });
+                                                                                }}
                                                                             />
                                                                         </div>
                                                                     </div>

@@ -145,7 +145,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                         odds: selectedOdds,
                         possibleWin: possibleWin,
                         selectedTeam: selectedTeam === 'team1' ? match.team1 : match.team2,
-                        timestamp: new Date().toISOString(),
+                        timestamp: new Date().toLocaleString(),
                         status: 'pending',
                         settled: false,
                         betType: betType,
@@ -155,7 +155,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                         matchType: match.matchType
                     };
 
-                    const betRef = await addDoc(collection(db, 'bets'), betData);
+                    const betRef = await addDoc(collection(db, "sportsBets"), betData);
                     await updateDoc(betRef, {
                         id: betRef.id
                     });
@@ -191,7 +191,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                 }
 
                 const db = getFirestore();
-                const q = query(collection(db, 'bets'), where('userId', '==', user.uid), where('settled', '==', false));
+                const q = query(collection(db, "sportsBets"), where('userId', '==', user.uid), where('settled', '==', false));
                 const betsSnapshot = await getDocs(q);
                 const userBets = betsSnapshot.docs.map(doc => ({
                     id: doc.id,
