@@ -564,49 +564,32 @@ export const fetchWinningBets = async (userId, gameType) => {
 };
 
 // Fetch all transaction (Statement) of the user
-export const fetchUserStatement = async (userId, startDate, endDate) => {
+export const fetchUserStatement = async (userId) => {
   try {
     const transactionsCollectionRef = collection(db, "transactions");
     const withdrawalsCollectionRef = collection(db, "withdrawals");
     const betsCollectionRef = collection(db, "sportsBets");
     const gameBetsCollectionRef = collection(db, "gameBets");
 
-    const startTimestamp = Timestamp.fromDate(startDate);
-    const endTimestamp = Timestamp.fromDate(endDate);
-
     const transactionsSnapshot = await getDocs(
       query(
         transactionsCollectionRef,
         where("userId", "==", userId),
-        where("status", "==", "approved"),
-        where("timestamp", ">=", startTimestamp),
-        where("timestamp", "<=", endTimestamp)
+        where("status", "==", "approved")
       )
     );
     const withdrawalsSnapshot = await getDocs(
       query(
         withdrawalsCollectionRef,
         where("userId", "==", userId),
-        where("status", "==", "approved"),
-        where("timestamp", ">=", startTimestamp),
-        where("timestamp", "<=", endTimestamp)
+        where("status", "==", "approved")
       )
     );
     const betsSnapshot = await getDocs(
-      query(
-        betsCollectionRef,
-        where("userId", "==", userId),
-        where("timestamp", ">=", startTimestamp),
-        where("timestamp", "<=", endTimestamp)
-      )
+      query(betsCollectionRef, where("userId", "==", userId))
     );
     const gameBetsSnapshot = await getDocs(
-      query(
-        gameBetsCollectionRef,
-        where("userID", "==", userId),
-        where("timestamp", ">=", startTimestamp),
-        where("timestamp", "<=", endTimestamp)
-      )
+      query(gameBetsCollectionRef, where("userID", "==", userId))
     );
 
     const transactionsData = transactionsSnapshot.docs.map((doc) => ({

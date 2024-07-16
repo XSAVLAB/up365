@@ -3,6 +3,8 @@ import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { fetchUserStatement } from '../../../api/firestoreService';
 
 interface Transaction {
@@ -10,7 +12,7 @@ interface Transaction {
     userId: string;
     amount: number;
     status: string;
-    timestamp: any; // Change this to Date if your timestamp is a Date object
+    timestamp: string;
     type: string;
     rewardAmount?: number;
 }
@@ -21,12 +23,16 @@ interface UserStatementProps {
 
 export default function UserStatement({ userId }: UserStatementProps) {
     const [balanceHistory, setBalanceHistory] = useState<Transaction[]>([]);
+    const [filteredData, setFilteredData] = useState<Transaction[]>([]);
+    const [fromDate, setFromDate] = useState<Date | null>(new Date());
+    const [toDate, setToDate] = useState<Date | null>(new Date());
 
     useEffect(() => {
         const fetchApprovedData = async () => {
             try {
                 const history = await fetchUserStatement(userId);
                 setBalanceHistory(history);
+                setFilteredData(history);
             } catch (error) {
                 console.error('Error fetching balance history:', error);
             }
@@ -35,27 +41,35 @@ export default function UserStatement({ userId }: UserStatementProps) {
         fetchApprovedData();
     }, [userId]);
 
+    useEffect(() => {
+        if (fromDate && toDate) {
+            const filtered = balanceHistory.filter(entry => {
+                const timestamp = new Date(entry.timestamp);
+                return timestamp >= fromDate && timestamp <= toDate;
+            });
+            setFilteredData(filtered);
+        } else {
+            setFilteredData(balanceHistory);
+        }
+    }, [fromDate, toDate, balanceHistory]);
+
     const handleDownloadExcel = () => {
-        const data = balanceHistory.map(entry => ({
-            // 'User ID': entry.userId,
-            'Timestamp': entry.timestamp.seconds ? new Date(entry.timestamp.seconds * 1000).toLocaleString() : entry.timestamp,
+        const data = filteredData.map(entry => ({
+            'Timestamp': entry.timestamp,
             'Deposit': entry.type === 'Deposit' ? entry.amount : '',
             'Withdraw': entry.type === 'Withdrawal' ? entry.amount : '',
             'Bet': entry.type === 'Bet' ? entry.amount : '',
             'Game Bet': entry.type === 'Game Bet' ? entry.amount : '',
             'Reward': (entry.type === 'Bet' || entry.type === 'Game Bet') ? entry.rewardAmount : '',
-            // 'Status': entry.status,
         }));
 
         const headers = [
-            // 'User ID',
             'Timestamp',
             'Deposit',
             'Withdraw',
             'Sports Bet Debit',
             'Game Bet Debit',
             'Rewards',
-            // 'Status',
         ];
 
         const workbook = XLSX.utils.book_new();
@@ -86,16 +100,14 @@ export default function UserStatement({ userId }: UserStatementProps) {
         const tableColumn = ["Timestamp", "Deposit", "Withdraw", "Sports Bet Debit", "Game Bet Debit", "Rewards"];
         const tableRows: (string | number | undefined)[][] = [];
 
-        balanceHistory.forEach(entry => {
+        filteredData.forEach(entry => {
             const entryData = [
-                // entry.userId,
-                entry.timestamp.seconds ? new Date(entry.timestamp.seconds * 1000).toLocaleString() : entry.timestamp,
+                entry.timestamp,
                 entry.type === 'Deposit' ? entry.amount : '',
                 entry.type === 'Withdrawal' ? entry.amount : '',
                 entry.type === 'Bet' ? entry.amount : '',
                 entry.type === 'Game Bet' ? entry.amount : '',
                 (entry.type === 'Bet' || entry.type === 'Game Bet') ? entry.rewardAmount : '',
-                // entry.status,
             ];
             tableRows.push(entryData);
         });
@@ -108,6 +120,24 @@ export default function UserStatement({ userId }: UserStatementProps) {
     return (
         <div className="pay_method__tabletwo">
             <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                <div className="mb-4">
+                    <label>
+                        From:
+                        <DatePicker
+                            selected={fromDate}
+                            onChange={(date: Date | null) => setFromDate(date)}
+                            dateFormat="dd/MM/yyyy"
+                        />
+                    </label>
+                    <label>
+                        To:
+                        <DatePicker
+                            selected={toDate}
+                            onChange={(date: Date | null) => setToDate(date)}
+                            dateFormat="dd/MM/yyyy"
+                        />
+                    </label>
+                </div>
                 <button onClick={handleDownloadExcel} className="btn btn-primary mb-4">Download Excel</button>
                 <button onClick={handleDownloadPDF} className="btn btn-primary mb-4">Download PDF</button>
                 <table className="w-100 text-center p2-bg">
@@ -119,21 +149,17 @@ export default function UserStatement({ userId }: UserStatementProps) {
                             <th>Sports Bet Debit</th>
                             <th>Game Bet Debit</th>
                             <th>Rewards</th>
-                            {/* <th>Status</th>
-                            <th>User ID</th> */}
                         </tr>
                     </thead>
                     <tbody>
-                        {balanceHistory.map((entry) => (
+                        {filteredData.map((entry) => (
                             <tr key={entry.id}>
-                                <td>{entry.timestamp.seconds ? new Date(entry.timestamp.seconds * 1000).toLocaleString() : entry.timestamp}</td>
+                                <td>{entry.timestamp}</td>
                                 <td>{entry.type === 'Deposit' ? entry.amount : '-'}</td>
                                 <td>{entry.type === 'Withdrawal' ? entry.amount : '-'}</td>
                                 <td>{entry.type === 'Bet' ? entry.amount : '-'}</td>
                                 <td>{entry.type === 'Game Bet' ? entry.amount : '-'}</td>
                                 <td>{entry.rewardAmount ? entry.rewardAmount : '-'}</td>
-                                {/* <td>{entry.status}</td>
-                                <td>{entry.userId}</td> */}
                             </tr>
                         ))}
                     </tbody>
