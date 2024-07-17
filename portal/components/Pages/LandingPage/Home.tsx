@@ -20,7 +20,7 @@ const Home: React.FC = () => {
     };
 
     const handleWhatsAppClick = () => {
-        const adminPhoneNumber = '+918080917565';
+        const adminPhoneNumber = '+919730219716';
         const message = `Hello, I want to create an account. Please can you help me?`;
         const whatsappURL = `https://wa.me/${adminPhoneNumber}?text=${encodeURIComponent(message)}`;
         window.open(whatsappURL, '_blank');

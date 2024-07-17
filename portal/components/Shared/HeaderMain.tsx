@@ -86,7 +86,7 @@ export default function HeaderTwo() {
 
     const handleWhatsAppClick = () => {
         if (user && userDetails) {
-            const adminPhoneNumber = '+918080917565';
+            const adminPhoneNumber = '+919730219716';
             const { firstName, lastName } = userDetails;
             const message = `Hello, I am ${firstName} ${lastName}.`;
             const whatsappURL = `https://wa.me/${adminPhoneNumber}?text=${encodeURIComponent(message)}`;
