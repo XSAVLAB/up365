@@ -7,7 +7,7 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets, fetchProfileData } from '../../../api/firestoreService';
 
-const gameTimer = 90;
+const gameTimer = 900;
 
 function formatTimer(seconds: number) {
     const minutes = Math.floor(seconds / 60);
@@ -23,10 +23,10 @@ function calculateTimeToNextInterval() {
     nextInterval.setSeconds(0);
     nextInterval.setMilliseconds(0);
 
-    if (now.getSeconds() % 90 === 0) {
+    if (now.getSeconds() % 900 === 0) {
         return gameTimer;
     } else {
-        const seconds = now.getSeconds() + (90 - (now.getSeconds() % 90));
+        const seconds = now.getSeconds() + (900 - (now.getSeconds() % 900));
         nextInterval.setSeconds(seconds);
         return Math.floor((nextInterval.getTime() - now.getTime()) / 1000);
     }
@@ -94,7 +94,7 @@ function TripleDigitLottery() {
     }
 
     useEffect(() => {
-        let worker = new Worker(new URL('../../../public/worker.js', import.meta.url));
+        let worker = new Worker(new URL('../../../public/worker3.js', import.meta.url));
 
         worker.postMessage({
             command: 'start',

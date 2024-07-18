@@ -93,7 +93,7 @@ function SingleDigitLottery() {
     }
 
     useEffect(() => {
-        let worker = new Worker(new URL('../../../public/worker.js', import.meta.url));
+        let worker = new Worker(new URL('../../../public/worker1.js', import.meta.url));
 
         worker.postMessage({
             command: 'start',
