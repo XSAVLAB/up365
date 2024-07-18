@@ -244,7 +244,7 @@ export default function Dashboard() {
                 <div className="container-fluid">
                     <div className="row">
                         <div className="col-12 gx-0 gx-sm-4">
-                            <div className="hero_area__main">
+                            <div className="hero_area__main1">
                                 <Tab.Group>
                                     <div className="row gy-6 gy-xxl-0 singletab">
                                         <div className="col-xxl-3">

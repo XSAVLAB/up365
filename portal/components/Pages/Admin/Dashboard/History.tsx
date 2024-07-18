@@ -9,7 +9,7 @@ interface Transaction {
     userId: string;
     amount: string;
     status: string;
-    timestamp: string; // Add timestamp
+    timestamp: string;
 }
 
 interface Withdrawal {
@@ -17,7 +17,7 @@ interface Withdrawal {
     userId: string;
     amount: string;
     status: string;
-    timestamp: string; // Add timestamp
+    timestamp: string;
 }
 export default function History() {
     const [approvedTransactions, setApprovedTransactions] = useState<Transaction[]>([]);
@@ -46,14 +46,14 @@ export default function History() {
                 'Deposit': transaction.amount,
                 'Withdraw': '',
                 'Status': transaction.status,
-                'Timestamp': transaction.timestamp // Add timestamp
+                'Timestamp': transaction.timestamp 
             })),
             ...approvedWithdrawals.map(withdrawal => ({
                 'User ID': withdrawal.userId,
                 'Deposit': '',
                 'Withdraw': withdrawal.amount,
                 'Status': withdrawal.status,
-                'Timestamp': withdrawal.timestamp // Add timestamp
+                'Timestamp': withdrawal.timestamp 
             }))
         ];
 
@@ -62,7 +62,7 @@ export default function History() {
             'Deposit',
             'Withdraw',
             'Status',
-            'Timestamp' // Add timestamp header
+            'Timestamp' 
         ];
 
         const workbook = XLSX.utils.book_new();
@@ -76,7 +76,7 @@ export default function History() {
             { wch: 15 },
             { wch: 15 },
             { wch: 15 },
-            { wch: 20 } // Add column width for timestamp
+            { wch: 20 } 
         ];
 
         worksheet['!cols'] = columnWidths;

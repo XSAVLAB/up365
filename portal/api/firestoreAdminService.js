@@ -74,8 +74,8 @@ export const fetchTransactions = async () => {
   try {
     const transactionsCollectionRef = collection(db, "transactions");
     const transactionsQuery = query(
-      transactionsCollectionRef,
-      orderBy("timestamp", "asc")
+      transactionsCollectionRef
+      // orderBy("timestamp", "asc")
     );
     const transactionsSnapshot = await getDocs(transactionsQuery);
     const transactionsData = transactionsSnapshot.docs.map((doc) => ({
@@ -123,8 +123,8 @@ export const fetchWithdrawals = async () => {
   try {
     const withdrawalsCollectionRef = collection(db, "withdrawals");
     const withdrawalsQuery = query(
-      withdrawalsCollectionRef,
-      orderBy("timestamp", "asc")
+      withdrawalsCollectionRef
+      // orderBy("timestamp", "asc")
     );
     const withdrawalsSnapshot = await getDocs(withdrawalsQuery);
     const withdrawalsData = withdrawalsSnapshot.docs.map((doc) => ({
@@ -177,8 +177,8 @@ export const fetchApprovedTransactions = async () => {
     const transactionsCollection = collection(db, "transactions");
     const q = query(
       transactionsCollection,
-      where("status", "==", "approved"),
-      orderBy("timestamp", "asc")
+      where("status", "==", "approved")
+      // orderBy("timestamp", "asc")
     );
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({
@@ -197,8 +197,8 @@ export const fetchApprovedWithdrawals = async () => {
     const withdrawalsCollection = collection(db, "withdrawals");
     const q = query(
       withdrawalsCollection,
-      where("status", "==", "approved"),
-      orderBy("timestamp", "asc")
+      where("status", "==", "approved")
+      // orderBy("timestamp", "asc")
     );
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({

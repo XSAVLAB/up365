@@ -30,11 +30,11 @@ export const dashboardTabs = [
     icon: <IconCricket
       className="ti ti-user fs-five n5-color" />,
   },
-  {
-    id: 6,
-    tabname: "Logout",
-    icon: <IconLogout
-      className="ti ti-settings fs-five n5-color" />,
-  },
+  // {
+  //   id: 6,
+  //   tabname: "Logout",
+  //   icon: <IconLogout
+  //     className="ti ti-settings fs-five n5-color" />,
+  // },
 
 ];
