@@ -48,7 +48,7 @@ function ActiveLotteryBets() {
                                 {/* <th>Bet-ID</th> */}
                                 <th>Game Name</th>
                                 <th>Date</th>
-                                <th>Time</th>
+                                {/* <th>Time</th> */}
                                 {/* <th>User-ID</th> */}
                                 <th>Bet Amount</th>
                                 <th>Bet Number</th>
@@ -64,8 +64,9 @@ function ActiveLotteryBets() {
                                         <td>{index + 1}</td>
                                         {/* <td>{row.betID}</td> */}
                                         <td>{row.gameType}</td>
-                                        <td>{format(date, 'dd/MM/yyyy')}</td>
-                                        <td>{format(date, 'HH:mm:ss')}</td>
+                                        {/* <td>{format(date, 'dd/MM/yyyy')}</td>
+                                        <td>{format(date, 'HH:mm:ss')}</td> */}
+                                        <td>{row.timestamp}</td>
                                         {/* <td>{row.userID}</td> */}
                                         <td>{row.betAmount}</td>
                                         <td>{row.betNumber}</td>
@@ -82,7 +83,7 @@ function ActiveLotteryBets() {
                                 <td>-</td>
                                 <td>-</td>
                                 <td>-</td>
-                                <td>-</td>
+                                {/* <td>-</td> */}
                             </tr>
                         </tbody>
                     </table>
