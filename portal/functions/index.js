@@ -5,44 +5,44 @@ const db = admin.firestore();
 
 // Settle Single Digit Lottery Bets every 120 seconds
 exports.settleSingleDigitLotteryBets = functions.pubsub
-  .schedule("every 2 minutes")
-  .onRun(async (context) => {
-    await settleLotteryBets("Single Digit Lottery");
-  });
+    .schedule("every 2 minutes")
+    .onRun(async (context) => {
+      await settleLotteryBets("Single Digit Lottery");
+    });
 
 // Settle Double Digit Lottery Bets every 300 seconds (5 minutes)
 exports.settleDoubleDigitLotteryBets = functions.pubsub
-  .schedule("every 5 minutes")
-  .onRun(async (context) => {
-    await settleLotteryBets("Double Digit Lottery");
-  });
+    .schedule("every 5 minutes")
+    .onRun(async (context) => {
+      await settleLotteryBets("Double Digit Lottery");
+    });
 
 // Settle Triple Digit Lottery Bets every 900 seconds (15 minutes)
 exports.settleTripleDigitLotteryBets = functions.pubsub
-  .schedule("every 15 minutes")
-  .onRun(async (context) => {
-    await settleLotteryBets("Triple Digit Lottery");
-  });
+    .schedule("every 15 minutes")
+    .onRun(async (context) => {
+      await settleLotteryBets("Triple Digit Lottery");
+    });
 
 // Settle Color Ball Game Bets every 900 seconds (15 minutes)
 exports.settleColorBallBets = functions.pubsub
-  .schedule("every 15 minutes")
-  .onRun(async (context) => {
-    await settleColorBallBets();
-  });
+    .schedule("every 15 minutes")
+    .onRun(async (context) => {
+      await settleColorBallBets();
+    });
 
 const settleLotteryBets = async (gameType) => {
   try {
     const gameBetsRef = db.collection("gameBets");
     const unsettledBetsQuery = gameBetsRef
-      .where("settled", "==", false)
-      .where("gameType", "==", gameType);
+        .where("settled", "==", false)
+        .where("gameType", "==", gameType);
     const snapshot = await unsettledBetsQuery.get();
     const bets = [];
     const betCount = {};
     snapshot.forEach((betDoc) => {
       const betData = betDoc.data();
-      bets.push({ id: betDoc.id, ...betData });
+      bets.push({id: betDoc.id, ...betData});
       betCount[betData.betNumber] = (betCount[betData.betNumber] || 0) + 1;
     });
     if (bets.length > 0) {
@@ -65,7 +65,7 @@ const settleLotteryBets = async (gameType) => {
           const userDoc = await userRef.get();
           const userWallet = userDoc.data().wallet;
           const updatedWallet = (parseInt(userWallet) + reward).toString();
-          await userRef.update({ wallet: updatedWallet });
+          await userRef.update({wallet: updatedWallet});
           await betRef.update({
             rewardAmount: reward,
             settled: true,
@@ -89,8 +89,8 @@ const settleColorBallBets = async () => {
   try {
     const gameBetsRef = db.collection("gameBets");
     const unsettledBetsQuery = gameBetsRef
-      .where("settled", "==", false)
-      .where("gameType", "==", "Color Ball Game");
+        .where("settled", "==", false)
+        .where("gameType", "==", "Color Ball Game");
     const snapshot = await unsettledBetsQuery.get();
     const bets = [];
     const betCount = {};
@@ -98,9 +98,9 @@ const settleColorBallBets = async () => {
     snapshot.forEach((betDoc) => {
       const betData = betDoc.data();
       const combo = `${betData.ballColor}-${betData.betNumber}`;
-      bets.push({ id: betDoc.id, ...betData });
+      bets.push({id: betDoc.id, ...betData});
       if (!betCount[combo]) {
-        betCount[combo] = { count: 0, firstTimestamp: betData.timestamp };
+        betCount[combo] = {count: 0, firstTimestamp: betData.timestamp};
       }
       betCount[combo].count += 1;
       if (betData.timestamp < betCount[combo].firstTimestamp) {
@@ -128,9 +128,9 @@ const settleColorBallBets = async () => {
         winningCombination = null;
       }
 
-      const [winningColor, winningNumber] = winningCombination
-        ? winningCombination.split("-")
-        : [null, null];
+      const [winningColor, winningNumber] = winningCombination?
+        winningCombination.split("-"):
+        [null, null];
 
       bets.forEach(async (bet) => {
         const betRef = db.collection("gameBets").doc(bet.id);
@@ -144,7 +144,7 @@ const settleColorBallBets = async () => {
           const userDoc = await userRef.get();
           const userWallet = userDoc.data().wallet;
           const updatedWallet = (parseInt(userWallet) + reward).toString();
-          await userRef.update({ wallet: updatedWallet });
+          await userRef.update({wallet: updatedWallet});
           await betRef.update({
             rewardAmount: reward,
             settled: true,
