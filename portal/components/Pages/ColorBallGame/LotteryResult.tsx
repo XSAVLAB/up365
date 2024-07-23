@@ -15,19 +15,25 @@ function LotteryResult() {
     setShowBets(!showBets);
   };
 
+  const fetchBets = async (uid: string) => {
+    try {
+      const fetchedWinningBets = await fetchWinningBets(uid, 'Color Ball Game');
+      setWinningBets(fetchedWinningBets);
+      if (!fetchedWinningBets.length) {
+        console.error("No Winning Bets Found.");
+      }
+    } catch (error) {
+      console.error('Error fetching winning bets data:', error);
+    }
+  }
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        try {
-          const fetchedWinningBets = await fetchWinningBets(currentUser.uid, 'Color Ball Game');
-          setWinningBets(fetchedWinningBets);
-          if (!fetchedWinningBets.length) {
-            console.error("No Winning Bets Found.");
-          }
-        } catch (error) {
-          console.error('Error fetching winning bets data:', error);
-        }
+        fetchBets(currentUser.uid);
+        const interval = setInterval(() => fetchBets(currentUser.uid), 10000);
+        return () => clearInterval(interval);
       } else {
         setUser(null);
       }
@@ -65,7 +71,6 @@ function LotteryResult() {
                   <td>{info.winningNumber || '-'} {info.winningColor || '-'}</td>
                   <td>{info.rewardAmount || '-'}</td>
                 </tr>
-
               ))}
             </tbody>
           </table>

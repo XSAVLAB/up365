@@ -15,19 +15,25 @@ function LotteryResult() {
     setShowBets(!showBets);
   };
 
+  const fetchBets = async (uid: string) => {
+    try {
+      const fetchedWinningBets = await fetchWinningBets(uid, 'Single Digit Lottery');
+      setWinningBets(fetchedWinningBets);
+      if (!fetchedWinningBets.length) {
+        console.error("No Winning Bets Found.");
+      }
+    } catch (error) {
+      console.error('Error fetching winning bets data:', error);
+    }
+  };
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        try {
-          const fetchedWinningBets = await fetchWinningBets(currentUser.uid, 'Single Digit Lottery');
-          setWinningBets(fetchedWinningBets);
-          if (!fetchedWinningBets.length) {
-            console.error("No Winning Bets Found.");
-          }
-        } catch (error) {
-          console.error('Error fetching winning bets data:', error);
-        }
+        fetchBets(currentUser.uid);
+        const interval = setInterval(() => fetchBets(currentUser.uid), 10000);
+        return () => clearInterval(interval);
       } else {
         setUser(null);
       }
@@ -60,13 +66,12 @@ function LotteryResult() {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{info.gameType}</td>
-                  <td>{format(info.timestamp, 'dd/MM/yyyy')}</td>
-                  <td>{format(info.timestamp, 'HH:mm:ss')}</td>
+                  <td>{format(new Date(info.timestamp * 1000), 'dd/MM/yyyy')}</td>
+                  <td>{format(new Date(info.timestamp * 1000), 'HH:mm:ss')}</td>
                   <td>{info.winningNumber || '-'}</td>
                   <td>{info.rewardAmount || '-'}</td>
                 </tr>
-              )
-              )}
+              ))}
             </tbody>
           </table>
         </div>

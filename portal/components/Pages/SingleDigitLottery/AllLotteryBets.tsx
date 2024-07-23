@@ -6,8 +6,6 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchAllLotteryBets } from '../../../api/firestoreService';
 
-
-
 function AllLotteryBets() {
     const [user, setUser] = useState<User | null>(null);
     const [myBetsTable, setMyBetsTable] = useState<any[]>([]);
@@ -17,26 +15,30 @@ function AllLotteryBets() {
         setShowBets(!showBets);
     }
 
+    const fetchBets = async (uid: string) => {
+        try {
+            const fetchedBets = await fetchAllLotteryBets(uid);
+            setMyBetsTable(fetchedBets);
+            if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
+        } catch (error) {
+            console.error('Error fetching my bets data:', error);
+        }
+    }
+
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
                 console.log('User:', currentUser);
-                try {
-                    const fetchedBets = await fetchAllLotteryBets(currentUser.uid);
-                    setMyBetsTable(fetchedBets);
-                    if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
-                } catch (error) {
-                    console.error('Error fetching my bets data:', error);
-                }
+                fetchBets(currentUser.uid);
+                const interval = setInterval(() => fetchBets(currentUser.uid), 10000);
+                return () => clearInterval(interval);
             } else {
                 setUser(null);
             }
         });
         return () => unsubscribe();
     }, []);
-
-
 
     return (
         <div className="bets-table-container">
@@ -51,13 +53,9 @@ function AllLotteryBets() {
                             <tr>
                                 <th>ID</th>
                                 <th>Game Name</th>
-                                {/* <th>Bet-ID</th> */}
-                                {/* <th>Date</th> */}
                                 <th>Time</th>
-                                {/* <th>User-ID</th> */}
                                 <th>Bet Amount</th>
                                 <th>Bet</th>
-
                                 <th>Reward</th>
                                 <th>Result</th>
                             </tr>
@@ -67,10 +65,7 @@ function AllLotteryBets() {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{row.gameType}</td>
-                                    {/* <td>{row.betID}</td> */}
-                                    {/* <td>{format(new Date(row.timestamp * 1000), 'dd/MM/yyyy')}</td> */}
                                     <td>{row.timestamp}</td>
-                                    {/* <td>{row.userID}</td> */}
                                     <td>{row.betAmount}</td>
                                     <td>{row.betNumber} {row.ballColor}</td>
                                     <td>{row.rewardAmount}</td>

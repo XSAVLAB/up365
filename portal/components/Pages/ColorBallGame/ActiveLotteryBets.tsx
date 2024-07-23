@@ -15,21 +15,28 @@ function ActiveLotteryBets() {
         setShowBets(!showBets);
     }
 
+    const fetchBets = async (uid: string) => {
+        try {
+            const fetchedBets = await fetchLotteryBets(uid, 'Color Ball Game');
+            setMyBetsTable(fetchedBets);
+            if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
+        } catch (error) {
+            console.error('Error fetching my bets data:', error);
+        }
+    }
+
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                try {
-                    const fetchedBets = await fetchLotteryBets(currentUser.uid, 'Color Ball Game');
-                    setMyBetsTable(fetchedBets);
-                    if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
-                } catch (error) {
-                    console.error('Error fetching my bets data:', error);
-                }
+                fetchBets(currentUser.uid);
+                const interval = setInterval(() => fetchBets(currentUser.uid), 10000);
+                return () => clearInterval(interval);
             } else {
                 setUser(null);
             }
         });
+
         return () => unsubscribe();
     }, []);
 

@@ -15,17 +15,23 @@ function ActiveLotteryBets() {
         setShowBets(!showBets);
     }
 
+    const fetchBets = async (uid: string) => {
+        try {
+            const fetchedBets = await fetchLotteryBets(uid, 'Double Digit Lottery');
+            setMyBetsTable(fetchedBets);
+            if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
+        } catch (error) {
+            console.error('Error fetching my bets data:', error);
+        }
+    }
+
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                try {
-                    const fetchedBets = await fetchLotteryBets(currentUser.uid, 'Double Digit Lottery');
-                    setMyBetsTable(fetchedBets);
-                    if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
-                } catch (error) {
-                    console.error('Error fetching my bets data:', error);
-                }
+                fetchBets(currentUser.uid);
+                const interval = setInterval(() => fetchBets(currentUser.uid), 10000);
+                return () => clearInterval(interval);
             } else {
                 setUser(null);
             }
@@ -45,11 +51,8 @@ function ActiveLotteryBets() {
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                {/* <th>Bet-ID</th> */}
                                 <th>Game Name</th>
                                 <th>Date</th>
-                                <th>Time</th>
-                                {/* <th>User-ID</th> */}
                                 <th>Bet Amount</th>
                                 <th>Bet Number</th>
                                 <th>Reward</th>
@@ -62,11 +65,8 @@ function ActiveLotteryBets() {
                                 return (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
-                                        {/* <td>{row.betID}</td> */}
                                         <td>{row.gameType}</td>
-                                        <td>{format(date, 'dd/MM/yyyy')}</td>
-                                        <td>{format(date, 'HH:mm:ss')}</td>
-                                        {/* <td>{row.userID}</td> */}
+                                        <td>{row.timestamp}</td>
                                         <td>{row.betAmount}</td>
                                         <td>{row.betNumber}</td>
                                         <td>{row.rewardAmount}</td>
@@ -75,7 +75,6 @@ function ActiveLotteryBets() {
                                 );
                             })}
                             <tr>
-                                <td>-</td>
                                 <td>-</td>
                                 <td>-</td>
                                 <td>-</td>
