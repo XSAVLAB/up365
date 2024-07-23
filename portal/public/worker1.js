@@ -10,7 +10,7 @@ onmessage = function (e) {
     setInterval(() => {
       if (countdownTimer === 0) {
         postMessage({ command: "settleBets" });
-        countdownTimer = 90;
+        countdownTimer = 120;
         cooldown = 10;
       } else if (cooldown !== 0) {
         cooldown -= 1;

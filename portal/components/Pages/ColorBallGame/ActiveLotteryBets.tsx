@@ -70,7 +70,7 @@ function ActiveLotteryBets() {
                                         <td>{row.betAmount}</td>
                                         <td>{row.betNumber} & {row.ballColor}</td>
                                         <td>{row.rewardAmount}</td>
-                                        <td>{row.winningNumber} & {row.ballColor}</td>
+                                        <td>{row.winningNumber} & {row.winningColor}</td>
                                     </tr>
                                 );
                             })}

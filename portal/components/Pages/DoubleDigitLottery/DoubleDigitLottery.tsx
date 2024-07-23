@@ -7,7 +7,7 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets, fetchProfileData } from '../../../api/firestoreService';
 
-const gameTimer = 270;
+const gameTimer = 300;
 
 function formatTimer(seconds: number) {
     const minutes = Math.floor(seconds / 60);
@@ -23,10 +23,10 @@ function calculateTimeToNextInterval() {
     nextInterval.setSeconds(0);
     nextInterval.setMilliseconds(0);
 
-    if (now.getSeconds() % 270 === 0) {
+    if (now.getSeconds() % 300 === 0) {
         return gameTimer;
     } else {
-        const seconds = now.getSeconds() + (270 - (now.getSeconds() % 270));
+        const seconds = now.getSeconds() + (300 - (now.getSeconds() % 300));
         nextInterval.setSeconds(seconds);
         return Math.floor((nextInterval.getTime() - now.getTime()) / 1000);
     }
@@ -108,7 +108,7 @@ function DoubleDigitLottery() {
                 localStorage.setItem('countdownTimer', timer);
                 localStorage.setItem('cooldown', coolDown);
             } else if (command === 'settleBets') {
-                settleLotteryBets('Double Digit Lottery');
+                // settleLotteryBets('Double Digit Lottery');
                 setCounter((prevCounter) => prevCounter + 1);
                 setBetCount(0);
                 localStorage.setItem('countdownTimer', gameTimer.toString());

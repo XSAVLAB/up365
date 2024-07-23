@@ -112,7 +112,7 @@ function ColorBallGame() {
                 localStorage.setItem('countdownTimer', timer);
                 localStorage.setItem('cooldown', coolDown);
             } else if (command === 'settleBets') {
-                settleColorBallBets();
+                // settleColorBallBets();
                 setCounter((prevCounter) => prevCounter + 1);
                 setBetCount(0);
                 localStorage.setItem('countdownTimer', gameTimer.toString());

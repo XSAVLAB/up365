@@ -111,7 +111,7 @@ function TripleDigitLottery() {
                 localStorage.setItem('countdownTimer', timer);
                 localStorage.setItem('cooldown', coolDown);
             } else if (command === 'settleBets') {
-                settleLotteryBets('Triple Digit Lottery');
+                // settleLotteryBets('Triple Digit Lottery');
                 setCounter((prevCounter) => prevCounter + 1);
                 setBetCount(0);
                 localStorage.setItem('countdownTimer', gameTimer.toString());

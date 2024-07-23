@@ -6,7 +6,7 @@ import { MdArrowDropDownCircle } from 'react-icons/md';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets, fetchProfileData } from '../../../api/firestoreService';
-const gameTimer = 90;
+const gameTimer = 120;
 
 function formatTimer(seconds: number) {
     const minutes = Math.floor(seconds / 60);
@@ -22,10 +22,10 @@ function calculateTimeToNextInterval() {
     nextInterval.setSeconds(0);
     nextInterval.setMilliseconds(0);
 
-    if (now.getSeconds() % 90 === 0) {
+    if (now.getSeconds() % 120 === 0) {
         return gameTimer;
     } else {
-        const seconds = now.getSeconds() + (90 - (now.getSeconds() % 90));
+        const seconds = now.getSeconds() + (120 - (now.getSeconds() % 120));
         nextInterval.setSeconds(seconds);
         return Math.floor((nextInterval.getTime() - now.getTime()) / 1000);
     }
@@ -110,7 +110,7 @@ function SingleDigitLottery() {
                 localStorage.setItem('countdownTimer', timer);
                 localStorage.setItem('cooldown', coolDown);
             } else if (command === 'settleBets') {
-                settleLotteryBets('Single Digit Lottery');
+                // settleLotteryBets('Single Digit Lottery');
                 setCounter((prevCounter) => prevCounter + 1);
                 setBetCount(0);
                 localStorage.setItem('countdownTimer', gameTimer.toString());
