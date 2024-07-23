@@ -5,11 +5,12 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { addWithdrawalRequest, fetchUserWallet } from '@/api/firestoreService';
 
 export default function WithdrawalAmount() {
-    const [activeItem, setActiveItem] = useState(dashboardAmmount[0]);
+    const [activeItem, setActiveItem] = useState<{ id: number; amount: string } | null>(dashboardAmmount[0]);
     const [user, setUser] = useState<any>(null);
     const [walletBalance, setWalletBalance] = useState(0);
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [customAmount, setCustomAmount] = useState('');
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -41,26 +42,33 @@ export default function WithdrawalAmount() {
         }
     }, [successMessage, errorMessage]);
 
-    const handleClick = (itemName: any) => {
+    const handleClick = (itemName: { id: number; amount: string }) => {
         setActiveItem(itemName);
+        setCustomAmount('');
     };
 
-    const getItemStyle = (itemName: any) => {
+    const getItemStyle = (itemName: { id: number; amount: string }) => {
         return {
             border: `1px solid ${activeItem === itemName ? '#35C31E' : '#2C3655'}`,
         };
     };
 
+    const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const numericValue = value.replace(/\D/g, ''); // Only allow numeric input
+        setCustomAmount(numericValue);
+        setActiveItem(null);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Submitting with active item:', activeItem);
+        const withdrawalAmount = activeItem ? parseFloat(activeItem.amount) : parseFloat(customAmount);
 
         if (user) {
-            const withdrawalAmount = parseFloat(activeItem.amount);
             if (walletBalance >= withdrawalAmount) {
                 try {
-                    await addWithdrawalRequest(user.uid, activeItem.amount);
-                    setSuccessMessage(`Withdrawal request for ₹${activeItem.amount} submitted successfully.`);
+                    await addWithdrawalRequest(user.uid, withdrawalAmount.toString());
+                    setSuccessMessage(`Withdrawal request for ₹${withdrawalAmount} submitted successfully.`);
                     setErrorMessage('');
                 } catch (error) {
                     setErrorMessage('Error storing withdrawal request!');
@@ -94,9 +102,17 @@ export default function WithdrawalAmount() {
                             </div>
                         </div>
                     ))}
+                    <div className="d-flex w-100 p1-bg rounded-8">
+                        <input
+                            type="text"
+                            placeholder="Custom amount"
+                            value={customAmount}
+                            onChange={handleCustomAmountChange}
+                        />
+                    </div>
                 </div>
                 <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">
-                    Withdraw ₹{activeItem.amount}
+                    Withdraw ₹{activeItem ? activeItem.amount : customAmount}
                 </button>
             </form>
             <div className="text-center mt-4">
