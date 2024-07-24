@@ -6,6 +6,30 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchLotteryBets } from '../../../api/firestoreService';
 
+const colorMapping: { [key: string]: string } = {
+    'Red': 'red',
+    'Blue': 'blue',
+    'Green': 'green',
+    'Yellow': 'yellow',
+    'Purple': 'purple',
+};
+
+function ColorBall({ color }: { color: string }) {
+    const colorCode = colorMapping[color] || 'transparent';
+    return (
+        <div
+            style={{
+                backgroundColor: colorCode,
+                borderRadius: '50%',
+                width: '20px',
+                height: '20px',
+                display: 'inline-block',
+                verticalAlign: 'middle',
+            }}
+        ></div>
+    );
+}
+
 function ActiveLotteryBets() {
     const [user, setUser] = useState<User | null>(null);
     const [myBetsTable, setMyBetsTable] = useState<any[]>([]);
@@ -52,11 +76,8 @@ function ActiveLotteryBets() {
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                {/* <th>Bet-ID</th> */}
                                 <th>Game Name</th>
                                 <th>Date</th>
-                                <th>Time</th>
-                                {/* <th>User-ID</th> */}
                                 <th>Bet Amount</th>
                                 <th>Bet Number</th>
                                 <th>Reward</th>
@@ -69,20 +90,20 @@ function ActiveLotteryBets() {
                                 return (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
-                                        {/* <td>{row.betID}</td> */}
                                         <td>{row.gameType}</td>
-                                        <td>{format(date, 'dd/MM/yyyy')}</td>
-                                        <td>{format(date, 'HH:mm:ss')}</td>
-                                        {/* <td>{row.userID}</td> */}
+                                        <td>{row.timestamp}</td>
                                         <td>{row.betAmount}</td>
-                                        <td>{row.betNumber} & {row.ballColor}</td>
+                                        <td>
+                                            {row.betNumber} <ColorBall color={row.ballColor} />
+                                        </td>
                                         <td>{row.rewardAmount}</td>
-                                        <td>{row.winningNumber} & {row.winningColor}</td>
+                                        <td>
+                                            {row.winningNumber}  <ColorBall color={row.winningColor} />
+                                        </td>
                                     </tr>
                                 );
                             })}
                             <tr>
-                                <td>-</td>
                                 <td>-</td>
                                 <td>-</td>
                                 <td>-</td>

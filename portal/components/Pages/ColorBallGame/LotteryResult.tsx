@@ -6,6 +6,30 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchWinningBets } from '../../../api/firestoreService';
 
+const colorMapping: { [key: string]: string } = {
+  'Red': 'red',
+  'Blue': 'blue',
+  'Green': 'green',
+  'Yellow': 'yellow',
+  'Purple': 'purple',
+};
+
+function ColorBall({ color }: { color: string }) {
+  const colorCode = colorMapping[color] || 'transparent';
+  return (
+    <div
+      style={{
+        backgroundColor: colorCode,
+        borderRadius: '50%',
+        width: '20px',
+        height: '20px',
+        display: 'inline-block',
+        verticalAlign: 'middle',
+      }}
+    ></div>
+  );
+}
+
 function LotteryResult() {
   const [user, setUser] = useState<User | null>(null);
   const [winningBets, setWinningBets] = useState<any[]>([]);
@@ -68,7 +92,9 @@ function LotteryResult() {
                   <td>{info.gameType}</td>
                   <td>{format(info.timestamp, 'dd/MM/yyyy')}</td>
                   <td>{format(info.timestamp, 'HH:mm:ss')}</td>
-                  <td>{info.winningNumber || '-'} {info.winningColor || '-'}</td>
+                  <td>
+                    {info.winningNumber || '-'} <ColorBall color={info.winningColor || 'transparent'} />
+                  </td>
                   <td>{info.rewardAmount || '-'}</td>
                 </tr>
               ))}

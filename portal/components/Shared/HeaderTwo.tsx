@@ -170,7 +170,7 @@ export default function HeaderTwo() {
                         <i className="ti ti-menu-deep left-nav-icon n8-color order-2 order-lg-0 d-none">
                         </i>
                         <Link className="navbar-brand d-center text-center gap-1 gap-lg-2 ms-lg-4" href="/">
-                            <Image className="logo" width={32} height={34} src="/images/logo.png" alt="Logo" />
+                            <Image className="logo" width={102} height={34} src="/images/logo.png" alt="Logo" />
                             <Image className="logo d-none d-xl-block" width={64} height={24} src="/images/logo-text.png" alt="Logo" />
                         </Link>
                     </div>
