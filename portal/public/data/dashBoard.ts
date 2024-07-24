@@ -102,15 +102,15 @@ export const dashboardAmmount = [
 
   },
   { id: 2, 
-    amount: "100", 
-
-  },
-  { id: 3, 
     amount: "500", 
 
   },
-  { id: 4, 
+  { id: 3, 
     amount: "1000", 
+
+  },
+  { id: 4, 
+    amount: "10000", 
 
   },
 ];
