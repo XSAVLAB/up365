@@ -144,7 +144,7 @@ function ColorBallGame() {
                 </div>
 
             </div>
-            <div className='form-game-name'>Single Digit Lottery</div>
+            <div className='form-game-name'>Color Ball Game</div>
             <div className="form-bets">
                 <div className="form-bets-header">Place Your Bets</div>
                 <div className="form-bets-content">
