@@ -335,7 +335,7 @@ export const fetchLotteryBets = async (userId, gameType) => {
     const q = query(
       collection(db, "gameBets"),
       where("userID", "==", userId),
-      // where("settled", "==", true),
+      where("settled", "==", false),
       where("gameType", "==", gameType)
     );
     const betsSnapshot = await getDocs(q);
@@ -350,10 +350,15 @@ export const fetchLotteryBets = async (userId, gameType) => {
 };
 
 // Fetch all lottery bets
-export const fetchAllLotteryBets = async (userId) => {
+export const fetchAllLotteryBets = async (userId,gameType) => {
   try {
     const db = getFirestore();
-    const q = query(collection(db, "gameBets"), where("userID", "==", userId));
+    const q = query(
+      collection(db, "gameBets"),
+      where("userID", "==", userId),
+      where("settled", "==", true),
+      where("gameType", "==", gameType)
+    );
     const betsSnapshot = await getDocs(q);
     return betsSnapshot.docs.map((doc) => ({
       id: doc.id,

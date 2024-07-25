@@ -17,7 +17,7 @@ function AllLotteryBets() {
 
     const fetchBets = async (uid: string) => {
         try {
-            const fetchedBets = await fetchAllLotteryBets(uid);
+            const fetchedBets = await fetchAllLotteryBets(uid, "Triple Digit Lottery");
             setMyBetsTable(fetchedBets);
             if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
         } catch (error) {
