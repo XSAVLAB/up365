@@ -350,7 +350,7 @@ export const fetchLotteryBets = async (userId, gameType) => {
 };
 
 // Fetch all lottery bets
-export const fetchAllLotteryBets = async (userId,gameType) => {
+export const fetchAllLotteryBets = async (userId, gameType) => {
   try {
     const db = getFirestore();
     const q = query(
@@ -553,7 +553,7 @@ export const fetchWinningBets = async (userId, gameType) => {
   }
 };
 
-// Fetch all transaction (Statement) of the user
+// Fetch all transactions (Statements) of the user
 export const fetchUserStatement = async (userId) => {
   try {
     const transactionsCollectionRef = collection(db, "transactions");
@@ -600,29 +600,25 @@ export const fetchUserStatement = async (userId) => {
       userId: doc.data().userId,
     }));
 
-    const betsData = betsSnapshot.docs
-      .map((doc) => ({
-        id: doc.id,
-        type: "Bet",
-        amount: doc.data().betAmount,
-        rewardAmount: doc.data().possibleWin,
-        status: doc.data().settled ? "settled" : "unsettled",
-        timestamp: doc.data().timestamp,
-        userId: doc.data().userId,
-      }))
-      .filter((bet) => bet.rewardAmount > 0);
+    const betsData = betsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      type: "Bet",
+      amount: doc.data().betAmount,
+      rewardAmount: doc.data().possibleWin,
+      status: doc.data().settled ? "settled" : "unsettled",
+      timestamp: doc.data().timestamp,
+      userId: doc.data().userId,
+    }));
 
-    const gameBetsData = gameBetsSnapshot.docs
-      .map((doc) => ({
-        id: doc.id,
-        type: "Game Bet",
-        amount: doc.data().betAmount,
-        rewardAmount: doc.data().rewardAmount,
-        status: doc.data().settled ? "settled" : "unsettled",
-        timestamp: doc.data().timestamp,
-        userId: doc.data().userID,
-      }))
-      .filter((gameBet) => gameBet.rewardAmount > 0);
+    const gameBetsData = gameBetsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      type: "Game Bet",
+      amount: doc.data().betAmount,
+      rewardAmount: doc.data().rewardAmount,
+      status: doc.data().settled ? "settled" : "unsettled",
+      timestamp: doc.data().timestamp,
+      userId: doc.data().userID,
+    }));
 
     const combinedData = [
       ...transactionsData,
@@ -630,7 +626,32 @@ export const fetchUserStatement = async (userId) => {
       ...betsData,
       ...gameBetsData,
     ];
-    return combinedData;
+
+    // Sort combinedData by timestamp
+    combinedData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    // Calculate balance for each transaction
+    let balance = 0;
+    const combinedDataWithBalance = combinedData.map((entry) => {
+      if (entry.type === "Deposit") {
+        balance += entry.amount;
+      } else if (
+        entry.type === "Withdrawal" ||
+        entry.type === "Bet" ||
+        entry.type === "Game Bet"
+      ) {
+        balance -= entry.amount;
+      }
+      if (entry.rewardAmount) {
+        balance += entry.rewardAmount;
+      }
+      return {
+        ...entry,
+        balance,
+      };
+    });
+
+    return combinedDataWithBalance;
   } catch (error) {
     console.error("Error fetching balance history: ", error);
     throw error;

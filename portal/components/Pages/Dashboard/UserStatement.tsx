@@ -15,6 +15,7 @@ interface Transaction {
     timestamp: string;
     type: string;
     rewardAmount?: number;
+    balance: number; // Added balance property
 }
 
 interface UserStatementProps {
@@ -24,8 +25,10 @@ interface UserStatementProps {
 export default function UserStatement({ userId }: UserStatementProps) {
     const [balanceHistory, setBalanceHistory] = useState<Transaction[]>([]);
     const [filteredData, setFilteredData] = useState<Transaction[]>([]);
-    const [fromDate, setFromDate] = useState<Date | null>(new Date());
-    const [toDate, setToDate] = useState<Date | null>(new Date());
+    const [fromDate, setFromDate] = useState<Date | null>(null);
+    const [toDate, setToDate] = useState<Date | null>(null);
+    const [tempFromDate, setTempFromDate] = useState<Date | null>(new Date());
+    const [tempToDate, setTempToDate] = useState<Date | null>(new Date());
 
     useEffect(() => {
         const fetchApprovedData = async () => {
@@ -53,6 +56,16 @@ export default function UserStatement({ userId }: UserStatementProps) {
         }
     }, [fromDate, toDate, balanceHistory]);
 
+    const handleApply = () => {
+        setFromDate(tempFromDate);
+        setToDate(tempToDate);
+    };
+
+    const handleCancel = () => {
+        setTempFromDate(fromDate);
+        setTempToDate(toDate);
+    };
+
     const handleDownloadExcel = () => {
         const data = filteredData.map(entry => ({
             'Timestamp': entry.timestamp,
@@ -61,6 +74,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
             'Bet': entry.type === 'Bet' ? entry.amount : '',
             'Game Bet': entry.type === 'Game Bet' ? entry.amount : '',
             'Reward': (entry.type === 'Bet' || entry.type === 'Game Bet') ? entry.rewardAmount : '',
+            'Balance': entry.balance, // Added balance column
         }));
 
         const headers = [
@@ -70,6 +84,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
             'Sports Bet Debit',
             'Game Bet Debit',
             'Rewards',
+            'Balance', // Added balance column
         ];
 
         const workbook = XLSX.utils.book_new();
@@ -97,7 +112,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
 
     const handleDownloadPDF = () => {
         const doc = new jsPDF();
-        const tableColumn = ["Timestamp", "Deposit", "Withdraw", "Sports Bet Debit", "Game Bet Debit", "Rewards"];
+        const tableColumn = ["Timestamp", "Deposit", "Withdraw", "Sports Bet Debit", "Game Bet Debit", "Rewards", "Balance"];
         const tableRows: (string | number | undefined)[][] = [];
 
         filteredData.forEach(entry => {
@@ -108,6 +123,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
                 entry.type === 'Bet' ? entry.amount : '',
                 entry.type === 'Game Bet' ? entry.amount : '',
                 (entry.type === 'Bet' || entry.type === 'Game Bet') ? entry.rewardAmount : '',
+                entry.balance // Added balance column
             ];
             tableRows.push(entryData);
         });
@@ -124,19 +140,27 @@ export default function UserStatement({ userId }: UserStatementProps) {
                     <label>
                         From:
                         <DatePicker
-                            selected={fromDate}
-                            onChange={(date: Date | null) => setFromDate(date)}
+                            selected={tempFromDate}
+                            onChange={(date: Date | null) => setTempFromDate(date)}
                             dateFormat="dd/MM/yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            dropdownMode="select"
                         />
                     </label>
                     <label>
                         To:
                         <DatePicker
-                            selected={toDate}
-                            onChange={(date: Date | null) => setToDate(date)}
+                            selected={tempToDate}
+                            onChange={(date: Date | null) => setTempToDate(date)}
                             dateFormat="dd/MM/yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            dropdownMode="select"
                         />
                     </label>
+                    <button onClick={handleApply} className="btn btn-primary ml-2">Apply</button>
+                    <button onClick={handleCancel} className="btn btn-secondary ml-2">Cancel</button>
                 </div>
                 <button onClick={handleDownloadExcel} className="btn btn-primary mb-4">Download Excel</button>
                 <button onClick={handleDownloadPDF} className="btn btn-primary mb-4">Download PDF</button>
@@ -149,6 +173,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
                             <th>Sports Bet Debit</th>
                             <th>Game Bet Debit</th>
                             <th>Rewards</th>
+                            <th>Balance</th> {/* Added balance column */}
                         </tr>
                     </thead>
                     <tbody>
@@ -160,6 +185,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
                                 <td>{entry.type === 'Bet' ? entry.amount : '-'}</td>
                                 <td>{entry.type === 'Game Bet' ? entry.amount : '-'}</td>
                                 <td>{entry.rewardAmount ? entry.rewardAmount : '-'}</td>
+                                <td>{entry.balance}</td> {/* Added balance value */}
                             </tr>
                         ))}
                     </tbody>

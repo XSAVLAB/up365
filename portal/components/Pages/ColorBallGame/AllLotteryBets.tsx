@@ -5,6 +5,30 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchAllLotteryBets } from '../../../api/firestoreService';
 
+const colorMapping: { [key: string]: string } = {
+    'Red': 'red',
+    'Blue': 'blue',
+    'Green': 'green',
+    'Yellow': 'yellow',
+    'Purple': 'purple',
+};
+
+function ColorBall({ color }: { color: string }) {
+    const colorCode = colorMapping[color] || 'transparent';
+    return (
+        <div
+            style={{
+                backgroundColor: colorCode,
+                borderRadius: '50%',
+                width: '20px',
+                height: '20px',
+                display: 'inline-block',
+                verticalAlign: 'middle',
+            }}
+        ></div>
+    );
+}
+
 function AllLotteryBets() {
     const [user, setUser] = useState<User | null>(null);
     const [myBetsTable, setMyBetsTable] = useState<any[]>([]);
@@ -66,9 +90,13 @@ function AllLotteryBets() {
                                     <td>{row.gameType}</td>
                                     <td>{row.timestamp}</td>
                                     <td>{row.betAmount}</td>
-                                    <td>{row.betNumber} {row.ballColor}</td>
+                                    <td>
+                                        {row.betNumber} <ColorBall color={row.ballColor} />
+                                    </td>
                                     <td>{row.rewardAmount}</td>
-                                    <td>{row.winningNumber} {row.ballColor}</td>
+                                    <td>
+                                        {row.winningNumber} <ColorBall color={row.winningColor} />
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
