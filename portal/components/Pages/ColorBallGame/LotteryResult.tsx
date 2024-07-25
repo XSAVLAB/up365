@@ -80,7 +80,6 @@ function LotteryResult() {
                 <th>ID</th>
                 <th>Game Name</th>
                 <th>Date</th>
-                <th>Time</th>
                 <th>Winning Combination</th>
                 <th>Total Amount Won</th>
               </tr>
@@ -90,8 +89,7 @@ function LotteryResult() {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{info.gameType}</td>
-                  <td>{format(info.timestamp, 'dd/MM/yyyy')}</td>
-                  <td>{format(info.timestamp, 'HH:mm:ss')}</td>
+                  <td>{info.timestamp}</td>
                   <td>
                     {info.winningNumber || '-'} <ColorBall color={info.winningColor || 'transparent'} />
                   </td>

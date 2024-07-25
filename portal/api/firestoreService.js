@@ -526,37 +526,22 @@ export const fetchWinningBets = async (userId, gameType) => {
       where("gameType", "==", gameType)
     );
     const snapshot = await getDocs(settledBetsQuery);
-    const winningBets = new Map();
+    const winningBets = [];
 
     snapshot.forEach((betDoc) => {
       const betData = betDoc.data();
       if (betData.rewardAmount > 0) {
-        // Only consider winning bets
-        const betTimestamp = new Date(betData.timestamp);
-
-        const minutes = betTimestamp.getMinutes();
-        const roundedMinutes = Math.floor(minutes / 5) * 5;
-        betTimestamp.setMinutes(roundedMinutes, 0, 0);
-
-        const intervalKey = `${betTimestamp.toISOString()}-${
-          betData.winningNumber
-        }-${betData.winningColor}`;
-
-        if (!winningBets.has(intervalKey)) {
-          winningBets.set(intervalKey, {
-            gameType: betData.gameType,
-            winningNumber: betData.winningNumber,
-            winningColor: betData.winningColor,
-            rewardAmount: betData.rewardAmount,
-            timestamp: betTimestamp,
-          });
-        } else {
-          winningBets.get(intervalKey).rewardAmount += betData.rewardAmount;
-        }
+        winningBets.push({
+          gameType: betData.gameType,
+          winningNumber: betData.winningNumber,
+          winningColor: betData.winningColor,
+          rewardAmount: betData.rewardAmount,
+          timestamp: betData.timestamp,
+        });
       }
     });
 
-    return Array.from(winningBets.values());
+    return winningBets;
   } catch (error) {
     console.error("Error fetching winning bets: ", error);
     throw error;

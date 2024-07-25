@@ -61,7 +61,6 @@ function ActiveLotteryBets() {
                         </thead>
                         <tbody>
                             {myBetsTable.map((row, index) => {
-                                const date = row.timestamp;
                                 return (
                                     <tr key={index}>
                                         <td>{index + 1}</td>

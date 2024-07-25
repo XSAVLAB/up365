@@ -56,7 +56,6 @@ function LotteryResult() {
                 <th>ID</th>
                 <th>Game Name</th>
                 <th>Date</th>
-                <th>Time</th>
                 <th>Winning Number</th>
                 <th>Total Amount Won</th>
               </tr>
@@ -66,8 +65,7 @@ function LotteryResult() {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{info.gameType}</td>
-                  <td>{format(new Date(info.timestamp * 1000), 'dd/MM/yyyy')}</td>
-                  <td>{format(new Date(info.timestamp * 1000), 'HH:mm:ss')}</td>
+                  <td>{info.timestamp}</td>
                   <td>{info.winningNumber || '-'}</td>
                   <td>{info.rewardAmount || '-'}</td>
                 </tr>

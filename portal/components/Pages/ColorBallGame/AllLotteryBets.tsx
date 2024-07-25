@@ -52,10 +52,7 @@ function AllLotteryBets() {
                             <tr>
                                 <th>ID</th>
                                 <th>Game Name</th>
-                                {/* <th>Bet-ID</th> */}
-                                {/* <th>Date</th> */}
-                                <th>Time</th>
-                                {/* <th>User-ID</th> */}
+                                <th>Date</th>
                                 <th>Bet Amount</th>
                                 <th>Bet</th>
                                 <th>Reward</th>
@@ -67,10 +64,7 @@ function AllLotteryBets() {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{row.gameType}</td>
-                                    {/* <td>{row.betID}</td> */}
                                     <td>{row.timestamp}</td>
-                                    {/* <td>{format(new Date(row.timestamp * 1000), 'dd/MM/yyyy')}</td> */}
-                                    {/* <td>{row.userID}</td> */}
                                     <td>{row.betAmount}</td>
                                     <td>{row.betNumber} {row.ballColor}</td>
                                     <td>{row.rewardAmount}</td>

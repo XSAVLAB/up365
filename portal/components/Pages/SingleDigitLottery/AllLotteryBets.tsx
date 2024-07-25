@@ -53,7 +53,7 @@ function AllLotteryBets() {
                             <tr>
                                 <th>ID</th>
                                 <th>Game Name</th>
-                                <th>Time</th>
+                                <th>Date</th>
                                 <th>Bet Amount</th>
                                 <th>Bet</th>
                                 <th>Reward</th>
