@@ -485,7 +485,17 @@ export default function Dashboard() {
                                                                                 name="expiration"
                                                                                 placeholder="MM/YY"
                                                                                 value={formSettingsData.expiration}
-                                                                                onChange={handleChange(formSettingsData, setFormSettingsData)}
+                                                                                onChange={(e) => {
+                                                                                    let value = e.target.value.replace(/\D/g, '');
+                                                                                    if (value.length > 2) {
+                                                                                        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                                                                                    }
+                                                                                    if (value.length > 5) {
+                                                                                        value = value.slice(0, 5);
+                                                                                    }
+                                                                                    setFormSettingsData({ ...formSettingsData, expiration: value });
+                                                                                }}
+                                                                                maxLength={5}
                                                                             />
                                                                         </div>
                                                                         <div className="d-flex align-items-center justify-content-end">

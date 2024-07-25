@@ -74,6 +74,12 @@ export default function HeaderTwo() {
                 setUser(currentUser);
                 fetchWallet(currentUser.uid);
                 fetchDetails(currentUser.uid);
+
+                const intervalId = setInterval(() => {
+                    fetchWallet(currentUser.uid);
+                }, 10000);
+
+                return () => clearInterval(intervalId);
             } else {
                 setUser(null);
                 setWalletBalance(null);

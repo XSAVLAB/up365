@@ -240,14 +240,23 @@ export default function DepositAmount() {
                                         <div className="d-flex align-items-center justify-content-end">
                                             <div className="d-flex align-items-center justify-content-end">
                                                 <input
-                                                    className="w-80"
+                                                    className="w-75"
                                                     type="text"
-                                                    id="expiration"
+                                                    id="expiration2"
                                                     name="expiration"
                                                     placeholder="MM/YY"
                                                     value={formDepositData.expiration}
-                                                    required
-                                                    onChange={handleCardDetailsChange}
+                                                    onChange={(e) => {
+                                                        let value = e.target.value.replace(/\D/g, '');
+                                                        if (value.length > 2) {
+                                                            value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                                                        }
+                                                        if (value.length > 5) {
+                                                            value = value.slice(0, 5);
+                                                        }
+                                                        setFormDepositData({ ...formDepositData, expiration: value });
+                                                    }}
+                                                    maxLength={5}
                                                 />
                                             </div>
                                             <div className="d-flex align-items-center justify-content-end">
