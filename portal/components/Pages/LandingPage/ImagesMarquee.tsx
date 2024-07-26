@@ -8,7 +8,7 @@ import img8 from '../../../public/images/3DLottery.webp';
 import lottery from '../../../public/images/lotteryBg.webp';
 import ludo from '../../../public/images/ludoBgImg.webp';
 import poker from '../../../public/images/pokerBg.webp';
-import andarbahar from '../../../public/images/andarbaharBg.webp';
+import andarbahar from '../../../../portal/public/images/andarBaharBg.webp';
 import teenpatti from '../../../public/images/teenpattiBg.webp';
 import colorball from '../../../public/images/colorballBg.webp';
 import { useRouter } from 'next/navigation';
