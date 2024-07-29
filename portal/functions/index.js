@@ -5,69 +5,91 @@ const db = admin.firestore();
 
 // Settle Single Digit Lottery Bets every 120 seconds
 exports.settleSingleDigitLotteryBets = functions.pubsub
-    .schedule("every 2 minutes")
-    .onRun(async (context) => {
-      await settleLotteryBets("Single Digit Lottery");
-    });
+  .schedule("every 15 minutes")
+  .onRun(async (context) => {
+    await settleLotteryBets("Single Digit Lottery", 1, 9);
+  });
 
 // Settle Double Digit Lottery Bets every 300 seconds (5 minutes)
 exports.settleDoubleDigitLotteryBets = functions.pubsub
-    .schedule("every 5 minutes")
-    .onRun(async (context) => {
-      await settleLotteryBets("Double Digit Lottery");
-    });
+  .schedule("every 15 minutes")
+  .onRun(async (context) => {
+    await settleLotteryBets("Double Digit Lottery", 10, 99);
+  });
 
 // Settle Triple Digit Lottery Bets every 900 seconds (15 minutes)
 exports.settleTripleDigitLotteryBets = functions.pubsub
-    .schedule("every 15 minutes")
-    .onRun(async (context) => {
-      await settleLotteryBets("Triple Digit Lottery");
-    });
+  .schedule("every 15 minutes")
+  .onRun(async (context) => {
+    await settleLotteryBets("Triple Digit Lottery", 100, 999);
+  });
 
 // Settle Color Ball Game Bets every 900 seconds (15 minutes)
 exports.settleColorBallBets = functions.pubsub
-    .schedule("every 15 minutes")
-    .onRun(async (context) => {
-      await settleColorBallBets();
-    });
+  .schedule("every 15 minutes")
+  .onRun(async (context) => {
+    await settleColorBallBets();
+  });
 
-const settleLotteryBets = async (gameType) => {
+const settleLotteryBets = async (gameType, minNumber, maxNumber) => {
   try {
-    const gameBetsRef = db.collection("gameBets");
-    const unsettledBetsQuery = gameBetsRef
+    const betAmounts = [100, 250, 500, 750, 1000];
+
+    for (const amount of betAmounts) {
+      const betsSnapshot = await db
+        .collection("gameBets")
         .where("settled", "==", false)
-        .where("gameType", "==", gameType);
-    const snapshot = await unsettledBetsQuery.get();
-    const bets = [];
-    const betCount = {};
-    snapshot.forEach((betDoc) => {
-      const betData = betDoc.data();
-      bets.push({id: betDoc.id, ...betData});
-      betCount[betData.betNumber] = (betCount[betData.betNumber] || 0) + 1;
-    });
-    if (bets.length > 0) {
+        .where("gameType", "==", gameType)
+        .where("betAmount", "==", amount)
+        .get();
+
+      if (betsSnapshot.empty) continue;
+
+      const bets = [];
+      const betCount = {};
+      let totalBetAmount = 0;
+
+      betsSnapshot.forEach((betDoc) => {
+        const betData = betDoc.data();
+        bets.push({ id: betDoc.id, ...betData });
+        betCount[betData.betNumber] = (betCount[betData.betNumber] || 0) + 1;
+        totalBetAmount += betData.betAmount;
+      });
+
       let winningNumber = null;
       let minBets = Infinity;
-      for (const number in betCount) {
-        if (betCount[number] < minBets) {
+      const numbersWithNoBets = [];
+
+      for (let number = minNumber; number <= maxNumber; number++) {
+        if (!betCount[number]) {
+          numbersWithNoBets.push(number);
+        } else if (betCount[number] < minBets) {
           minBets = betCount[number];
-          winningNumber = parseInt(number, 10);
+          winningNumber = number;
         }
       }
-      if (Object.keys(betCount).length === 1) {
-        winningNumber = null;
+
+      if (Object.keys(betCount).length === 1 || minBets === Infinity) {
+        winningNumber =
+          numbersWithNoBets.length > 0 ? numbersWithNoBets[0] : winningNumber;
       }
-      bets.forEach(async (bet) => {
+
+      const winners = bets.filter((bet) => bet.betNumber === winningNumber);
+      const totalWinningAmount = (totalBetAmount * 0.8) / winners.length;
+
+      for (const bet of bets) {
         const betRef = db.collection("gameBets").doc(bet.id);
         const userRef = db.collection("users").doc(bet.userID);
-        if (bet.betNumber === winningNumber) {
-          const reward = bet.betAmount * 8;
-          const userDoc = await userRef.get();
-          const userWallet = userDoc.data().wallet;
-          const updatedWallet = (parseInt(userWallet) + reward).toString();
-          await userRef.update({wallet: updatedWallet});
+        const userDoc = await userRef.get();
+        const userWallet = userDoc.data().wallet;
+
+        if (winners.includes(bet)) {
+          const updatedWallet = (
+            parseInt(userWallet) + totalWinningAmount
+          ).toString();
+          await userRef.update({ wallet: updatedWallet });
           await betRef.update({
-            rewardAmount: reward,
+            rewardAmount: totalWinningAmount,
             settled: true,
             winningNumber,
           });
@@ -78,7 +100,7 @@ const settleLotteryBets = async (gameType) => {
             rewardAmount: 0,
           });
         }
-      });
+      }
     }
   } catch (error) {
     console.error("Error settling bets: ", error);
@@ -89,8 +111,8 @@ const settleColorBallBets = async () => {
   try {
     const gameBetsRef = db.collection("gameBets");
     const unsettledBetsQuery = gameBetsRef
-        .where("settled", "==", false)
-        .where("gameType", "==", "Color Ball Game");
+      .where("settled", "==", false)
+      .where("gameType", "==", "Color Ball Game");
     const snapshot = await unsettledBetsQuery.get();
     const bets = [];
     const betCount = {};
@@ -98,9 +120,9 @@ const settleColorBallBets = async () => {
     snapshot.forEach((betDoc) => {
       const betData = betDoc.data();
       const combo = `${betData.ballColor}-${betData.betNumber}`;
-      bets.push({id: betDoc.id, ...betData});
+      bets.push({ id: betDoc.id, ...betData });
       if (!betCount[combo]) {
-        betCount[combo] = {count: 0, firstTimestamp: betData.timestamp};
+        betCount[combo] = { count: 0, firstTimestamp: betData.timestamp };
       }
       betCount[combo].count += 1;
       if (betData.timestamp < betCount[combo].firstTimestamp) {
@@ -128,9 +150,9 @@ const settleColorBallBets = async () => {
         winningCombination = null;
       }
 
-      const [winningColor, winningNumber] = winningCombination?
-        winningCombination.split("-"):
-        [null, null];
+      const [winningColor, winningNumber] = winningCombination
+        ? winningCombination.split("-")
+        : [null, null];
 
       bets.forEach(async (bet) => {
         const betRef = db.collection("gameBets").doc(bet.id);
@@ -144,7 +166,7 @@ const settleColorBallBets = async () => {
           const userDoc = await userRef.get();
           const userWallet = userDoc.data().wallet;
           const updatedWallet = (parseInt(userWallet) + reward).toString();
-          await userRef.update({wallet: updatedWallet});
+          await userRef.update({ wallet: updatedWallet });
           await betRef.update({
             rewardAmount: reward,
             settled: true,

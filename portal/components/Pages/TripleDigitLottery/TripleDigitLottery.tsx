@@ -167,14 +167,14 @@ function TripleDigitLottery() {
                             <option value="1000">1000</option>
                         </select>
                     </div>
-                    <div className="form-bet-option">
+                    {/* <div className="form-bet-option">
                         <div>Custom Bet</div>
                         <div>
                             <input type='number' onChange={(e) => setBetAmount(parseInt(e.target.value, 10))}
                                 value={betAmount} placeholder='100, 200, etc.'
                                 className='bet-input' />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="form-actions">
                     <div onClick={handleSubmitBet} className="bet-button">

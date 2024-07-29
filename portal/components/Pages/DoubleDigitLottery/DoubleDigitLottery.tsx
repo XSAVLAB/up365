@@ -7,7 +7,7 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets, fetchProfileData } from '../../../api/firestoreService';
 
-const gameTimer = 300;
+const gameTimer = 900;
 
 function formatTimer(seconds: number) {
     const minutes = Math.floor(seconds / 60);
@@ -23,10 +23,10 @@ function calculateTimeToNextInterval() {
     nextInterval.setSeconds(0);
     nextInterval.setMilliseconds(0);
 
-    if (now.getSeconds() % 300 === 0) {
+    if (now.getSeconds() % 900 === 0) {
         return gameTimer;
     } else {
-        const seconds = now.getSeconds() + (300 - (now.getSeconds() % 300));
+        const seconds = now.getSeconds() + (900 - (now.getSeconds() % 900));
         nextInterval.setSeconds(seconds);
         return Math.floor((nextInterval.getTime() - now.getTime()) / 1000);
     }
@@ -164,14 +164,14 @@ function DoubleDigitLottery() {
                             <option value="1000">1000</option>
                         </select>
                     </div>
-                    <div className="form-bet-option">
+                    {/* <div className="form-bet-option">
                         <div>Custom Bet</div>
                         <div>
                             <input type='number' onChange={(e) => setBetAmount(parseInt(e.target.value, 10))}
                                 value={betAmount} placeholder='100, 200, etc.'
                                 className='bet-input' />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="form-actions">
                     <div onClick={handleSubmitBet} className="bet-button">

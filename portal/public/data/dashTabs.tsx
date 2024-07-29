@@ -56,10 +56,10 @@ export const dashboardTabs = [
   //   icon: <IconBellRinging
   //     className="ti ti-bell-ringing fs-five n5-color" />,
   // },
-  {
-    id: 8,
-    tabname: "Log out",
-    icon: <IconLogout
-      className="ti ti-logout fs-five n5-color" />,
-  },
+  // {
+  //   id: 8,
+  //   tabname: "Log out",
+  //   icon: <IconLogout
+  //     className="ti ti-logout fs-five n5-color" />,
+  // },
 ];

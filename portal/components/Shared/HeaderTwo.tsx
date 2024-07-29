@@ -94,24 +94,22 @@ export default function HeaderTwo() {
         }
     };
 
-    function handleLogout(): React.MouseEventHandler<HTMLButtonElement> | undefined {
-        return async () => {
+    const handleLogout = async () => {
+        const confirmation = window.confirm('Are you sure you want to logout?');
+        if (confirmation) {
             await auth.signOut();
             setUser(null);
             window.location.href = '/login';
-        };
-    }
+        }
+    };
 
-    function handleProfileClick(): React.MouseEventHandler<HTMLButtonElement> | undefined {
-        return () => {
-            if (user) {
-                window.location.href = '/dashboard';
-            }
-            else {
-                window.location.href = '/login';
-            }
-        };
-    }
+    const handleProfileClick = () => {
+        if (user) {
+            window.location.href = '/dashboard';
+        } else {
+            window.location.href = '/login';
+        }
+    };
 
     return (
         <>
@@ -131,7 +129,7 @@ export default function HeaderTwo() {
                                 <li className="dropdown show-dropdown d-block d-sm-none">
                                     <div className="d-flex align-items-center flex-wrap gap-3">
                                         <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link>
-                                        <button onClick={() => auth.signOut()} className="cmn-btn px-xxl-11">Log Out</button>
+                                        <button onClick={handleLogout} className="cmn-btn px-xxl-11">Log Out</button>
                                     </div>
                                 </li>
                             )}
@@ -148,16 +146,16 @@ export default function HeaderTwo() {
                             <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleWhatsAppClick}>
                                 <FaWhatsapp height={24} width={24} className="ti ti-whatsapp fs-four" />
                             </button>
-                            <div className="cart-area search-area d-flex">
-                                {/* <HeaderTwoChat /> */}
-                                <button type="button" className="py-1 px-2 n11-bg rounded-5" onClick={handleProfileClick()}>
-                                    <IconUserCircle height={24} width={24} className="ti ti-user-circle fs-four" />
-                                </button>
-                                <button type="button" className="py-1 px-2 n11-bg rounded-5" onClick={handleLogout()}>
-                                    <IconLogout height={24} width={24} className="ti ti-user-circle fs-four" />
-                                </button>
+                            {/* <div className="cart-area search-area d-flex"> */}
+                            {/* <HeaderTwoChat /> */}
+                            <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleProfileClick}>
+                                <IconUserCircle height={24} width={24} className="ti ti-user-circle fs-four" />
+                            </button>
+                            <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleLogout}>
+                                <IconLogout height={24} width={24} className="ti ti-user-circle fs-four" />
+                            </button>
 
-                            </div>
+                            {/* </div> */}
                         </div>
                         <button onClick={toggleCard} className="navbar-toggler navbar-toggler-two mt-1 mt-sm-2 mt-lg-0" type="button" data-bs-toggle="collapse" aria-label="Navbar Toggler"
                             data-bs-target="#navbar-content" aria-expanded="true" id="nav-icon3">
@@ -181,7 +179,7 @@ export default function HeaderTwo() {
                         <SideNav />
                     </div>
                 </div>
-            </header >
+            </header>
             <button onClick={toggleMiddle} type="button" className="middle-iconfixed position-fixed top-50 start-0 left-nav-icon">
                 <IconAdjustmentsHorizontal width={38} height={38} className="ti ti-adjustments-horizontal n8-color d-block d-lg-none fs-two" />
             </button>
