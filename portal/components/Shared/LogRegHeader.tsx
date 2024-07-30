@@ -53,7 +53,7 @@ export default function HeaderMain() {
                 <nav className="navbar navbar-expand-lg position-relative py-md-3 py-lg-6 workready">
                     <div className={`collapse navbar-collapse justify-content-between  ${isCardExpanded ? "show" : "hide"}`} id="navbar-content">
                         <ul className="navbar-nav2fixed  navbar-nav d-flex align-items-lg-center gap-4 gap-sm-5  py-2 py-lg-0 align-self-center p2-bg">
-                            <NavItem />
+                            {/* <NavItem /> */}
                             {!user && (
                                 <li className="dropdown show-dropdown d-block d-sm-none">
                                     <div className="d-flex align-items-center flex-wrap gap-3">

@@ -1,7 +1,6 @@
 "use client"
 import React, { useState } from 'react';
 import { TiThMenu } from 'react-icons/ti';
-import { FaWindowClose } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import './styles.css'; // Import the custom CSS file
 
@@ -18,10 +17,7 @@ function LandingPageNavbar() {
             return null;
         }
         return (
-            <div className="menu">
-                <div onClick={navigateNull}>
-                    <img src='/images/up365LogoDark.webp' alt="UP365 Gaming" />
-                </div>
+            <div className="dropdown-menu">
                 <div className="menu-content">
                     <ul className="menu-buttons">
                         <li>
@@ -36,9 +32,7 @@ function LandingPageNavbar() {
                         </li>
                     </ul>
                 </div>
-                <button onClick={handleMenuClick} className="menu-close-button">
-                    <FaWindowClose />
-                </button>
+
             </div>
         );
     };
