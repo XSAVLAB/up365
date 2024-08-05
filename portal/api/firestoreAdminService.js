@@ -255,3 +255,41 @@ export const updateUserBlockStatus = async (
     throw error;
   }
 };
+
+// Fetch all complaints
+export const fetchComplaints = async () => {
+  try {
+      const complaintsCollection = collection(db, 'complaints');
+      const complaintsSnapshot = await getDocs(complaintsCollection);
+      const complaintsList = complaintsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+      }));
+      return complaintsList;
+  } catch (error) {
+      console.error('Error fetching complaints:', error);
+      throw error;
+  }
+};
+
+// Update complaint status
+export const updateComplaintStatus = async (complaintId, status) => {
+  try {
+      const complaintRef = doc(db, 'complaints', complaintId);
+      await updateDoc(complaintRef, { status });
+  } catch (error) {
+      console.error('Error updating complaint status:', error);
+      throw error;
+  }
+};
+
+// Update complaint remarks
+export const updateComplaintRemark = async (complaintId, adminRemarks) => {
+  try {
+      const complaintRef = doc(db, 'complaints', complaintId);
+      await updateDoc(complaintRef, { adminRemarks });
+  } catch (error) {
+      console.error('Error updating complaint remarks:', error);
+      throw error;
+  }
+};

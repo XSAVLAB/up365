@@ -6,7 +6,7 @@ import { dashboardTabs } from '@/public/data/adminTabs';
 import { doSignOut } from '../../../../firebase/auth';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth, isAdmin as checkIsAdmin } from '@/firebaseConfig';
-import { fetchAllUsers, deleteUser, fetchUserRole, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus } from '../../../../api/firestoreAdminService';
+import { fetchAllUsers, deleteUser, fetchUserRole, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus, updateComplaintStatus, updateComplaintRemark, fetchComplaints } from '../../../../api/firestoreAdminService';
 import EditUserForm from '../UserManagement/EditUserForm';
 import History from '../Dashboard/History';
 
@@ -43,7 +43,16 @@ interface Withdrawal {
     status: string;
     timestamp: string;
 }
-
+interface Complaint {
+    id: string;
+    adminRemarks: string;
+    complaintType: string;
+    createdAt: string;
+    description: string;
+    game: string;
+    status: string;
+    userId: string;
+}
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
     const [user, setUser] = useState<FirebaseUser | null>(null);
@@ -51,6 +60,7 @@ export default function Dashboard() {
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
+    const [complaints, setComplaints] = useState<Complaint[]>([]);
     const [series, setSeries] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const router = useRouter();
@@ -107,11 +117,20 @@ export default function Dashboard() {
                 console.error('Error fetching series:', error);
             }
         };
+        const fetchComplaintsData = async () => {
+            try {
+                const complaintsData = await fetchComplaints();
+                setComplaints(complaintsData);
+            } catch (error) {
+                console.error('Error fetching complaints:', error);
+            }
+        };
 
         fetchUsers();
         fetchTransactionsData();
         fetchWithdrawalsData();
         fetchSeriesData();
+        fetchComplaintsData();
         return () => unsubscribe();
     }, [router]);
 
@@ -213,6 +232,31 @@ export default function Dashboard() {
             setUserDetails(userDetails.map((user) => user.id === userId ? { ...user, isBlocked: false, blockComment: '' } : user));
         } catch (error) {
             console.error('Error unblocking user:', error);
+        }
+    };
+
+    // Complaint section
+    const handleUpdateComplaintStatus = async (complaintId: string, status: string) => {
+        try {
+            await updateComplaintStatus(complaintId, status);
+            setComplaints(complaints.map((complaint) => complaint.id === complaintId ? { ...complaint, status } : complaint));
+        } catch (error) {
+            console.error('Error updating complaint status:', error);
+        }
+    };
+
+    const handleUpdateComplaintRemark = (complaintId: string, remark: string) => {
+        setComplaints(complaints.map((complaint) => complaint.id === complaintId ? { ...complaint, adminRemarks: remark } : complaint));
+    };
+
+    const handleSubmitComplaintRemark = async (complaintId: string) => {
+        try {
+            const complaint = complaints.find((complaint) => complaint.id === complaintId);
+            if (complaint) {
+                await updateComplaintRemark(complaintId, complaint.adminRemarks);
+            }
+        } catch (error) {
+            console.error('Error submitting complaint remark:', error);
         }
     };
 
@@ -422,6 +466,57 @@ export default function Dashboard() {
                                                                                 <button onClick={() => handleToggleSeries(seriesItem.id, seriesItem.active)} className="btn btn-primary">
                                                                                     {seriesItem.active ? 'Deactivate' : 'Activate'}
                                                                                 </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    <div className="pay_method__tabletwo">
+                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                            <table className="w-100 text-center p2-bg">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Created At</th>
+                                                                        <th>User Name</th>
+                                                                        <th>Complaint Type</th>
+                                                                        <th>Description</th>
+                                                                        <th>Game</th>
+                                                                        <th>Status</th>
+                                                                        <th>Admin Remarks</th>
+                                                                        <th>Submit Remark</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {complaints.map((complaint) => (
+                                                                        <tr key={complaint.id}>
+                                                                            <td className="text-nowrap">{new Date(complaint.createdAt).toLocaleDateString()}</td>
+                                                                            <td className="text-nowrap">{getUserNameById(complaint.userId)}</td>
+                                                                            <td className="text-nowrap">{complaint.complaintType}</td>
+                                                                            <td className="text-balance">{complaint.description}</td>
+                                                                            <td className="text-nowrap">{complaint.game}</td>
+                                                                            <td>
+                                                                                <select
+                                                                                    value={complaint.status}
+                                                                                    onChange={(e) => handleUpdateComplaintStatus(complaint.id, e.target.value)}
+                                                                                >
+                                                                                    <option value="Pending">Pending</option>
+                                                                                    <option value="Resolved">Resolved</option>
+                                                                                    <option value="Rejected">Rejected</option>
+                                                                                </select>
+                                                                            </td>
+                                                                            <td className="text-balance">
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={complaint.adminRemarks}
+                                                                                    onChange={(e) => handleUpdateComplaintRemark(complaint.id, e.target.value)}
+                                                                                />
+                                                                            </td>
+                                                                            <td className="text-nowrap">
+                                                                                <button className="btn btn-primary" onClick={() => handleSubmitComplaintRemark(complaint.id)}>Submit</button>
                                                                             </td>
                                                                         </tr>
                                                                     ))}
