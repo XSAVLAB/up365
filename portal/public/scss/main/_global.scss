@@ -2251,3 +2251,118 @@ input[type=radio] {
 }
 
 /* Warning Popup Landing Page ends */
+
+// User Complaints Form Starts
+.complaint-form-container {
+	background-color: #080f25;
+	padding: 20px;
+	border-radius: 10px;
+	max-width: 500px;
+	margin: 0 auto;
+	width: 90%;
+	box-sizing: border-box;
+  
+	h2 {
+	  color: #fff;
+	  margin-bottom: 20px;
+	  text-align: center;
+	}
+  
+	.form-group {
+	  margin-bottom: 15px;
+  
+	  label {
+		display: block;
+		color: #fff;
+		margin-bottom: 5px;
+	  }
+  
+	  select,
+	  textarea {
+		width: 100%;
+		padding: 10px;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		background-color: #0f1b42;
+		color: #fff;
+		box-sizing: border-box;
+	  }
+  
+	  textarea {
+		height: 100px;
+		resize: none;
+	  }
+	}
+  
+	button {
+	  width: 100%;
+	  padding: 10px;
+	  border: none;
+	  border-radius: 5px;
+	  background-color: #28a745;
+	  color: #fff;
+	  cursor: pointer;
+	  font-size: 16px;
+	  box-sizing: border-box;
+	}
+  
+	button:hover {
+	  background-color: #218838;
+	}
+  
+	@media (max-width: 768px) {
+	  padding: 15px;
+	  
+	  h2 {
+		font-size: 1.5rem;
+	  }
+  
+	  .form-group {
+		margin-bottom: 10px;
+  
+		label {
+		  font-size: 0.9rem;
+		}
+  
+		select,
+		textarea {
+		  padding: 8px;
+		  font-size: 0.9rem;
+		}
+	  }
+  
+	  button {
+		padding: 8px;
+		font-size: 0.9rem;
+	  }
+	}
+  
+	@media (max-width: 480px) {
+	  padding: 10px;
+  
+	  h2 {
+		font-size: 1.2rem;
+	  }
+  
+	  .form-group {
+		margin-bottom: 8px;
+  
+		label {
+		  font-size: 0.8rem;
+		}
+  
+		select,
+		textarea {
+		  padding: 6px;
+		  font-size: 0.8rem;
+		}
+	  }
+  
+	  button {
+		padding: 6px;
+		font-size: 0.8rem;
+	  }
+	}
+  }
+  
+// User Complaints Form Ends

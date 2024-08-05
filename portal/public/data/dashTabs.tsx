@@ -1,4 +1,6 @@
 import { IconBellRinging, IconCreditCard, IconCreditCardOff, IconHistory, IconLogout, IconMoneybag, IconReportMoney, IconSettings, IconUser, IconWallet } from "@tabler/icons-react";
+import { TbProgressHelp } from "react-icons/tb";
+import { FaHandsHelping } from "react-icons/fa";
 import React from "react";
 
 export const dashboardTabs = [
@@ -49,6 +51,20 @@ export const dashboardTabs = [
     tabname: "Statement",
     icon: <IconMoneybag
       className="ti ti-bell-ringing fs-five n5-color" />,
+  },
+  {
+    id: 8,
+    tabname: "Register Complaint",
+    icon: <TbProgressHelp
+      className="ti ti-bell-ringing fs-five n5-color"
+    />
+  },
+  {
+    id: 9,
+    tabname: "Complaints History",
+    icon: <FaHandsHelping
+      className="ti ti-bell-ringing fs-five n5-color"
+    />
   },
   // {
   //   id: 7,

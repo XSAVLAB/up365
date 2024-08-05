@@ -657,3 +657,51 @@ export const fetchUserStatement = async (userId) => {
     throw error;
   }
 };
+
+// Complaints Section
+
+// Submit complaint
+export const submitComplaint = async (
+  userId,
+  game,
+  complaintType,
+  description
+  // status
+) => {
+  try {
+    const complaintsCollectionRef = collection(db, "complaints");
+    const complaintData = {
+      userId,
+      game,
+      complaintType,
+      description,
+      status: "pending",
+      adminRemarks: "",
+      createdAt: new Date().toISOString(),
+    };
+    const docRef = await addDoc(complaintsCollectionRef, complaintData);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error submitting complaint: ", error);
+    throw error;
+  }
+};
+
+// Fetch user complaints
+export const fetchUserComplaints = async (userId) => {
+  try {
+    const complaintsCollectionRef = collection(db, "complaints");
+    const q = query(complaintsCollectionRef, where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+
+    const complaintsData = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return complaintsData;
+  } catch (error) {
+    console.error("Error fetching user complaints: ", error);
+    throw error;
+  }
+};

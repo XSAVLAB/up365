@@ -9,8 +9,9 @@ import { dashboardTabs } from '@/public/data/dashTabs';
 import { doSignOut } from '../../../firebase/auth';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchBalanceHistory, fetchProfileData, fetchUserBets, fetchUserWallet, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
+import { fetchBalanceHistory, fetchProfileData, fetchUserBets, fetchUserComplaints, fetchUserWallet, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
 import UserStatement from './UserStatement';
+import ComplaintForm from './Complaints';
 
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
@@ -20,6 +21,7 @@ export default function Dashboard() {
     const [walletBalance, setWalletBalance] = useState('0');
     const [errorMessage, setErrorMessage] = useState('');
     const [userBets, setUserBets] = useState<any[]>([]);
+    const [complaintsHistory, setComplaintsHistory] = useState<any[]>([]);
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
@@ -40,6 +42,7 @@ export default function Dashboard() {
                     .then(data => setWalletBalance(data))
                     .catch(error => console.error('Error fetching wallet balance: ', error));
                 fetchBets(currentUser.uid);
+                fetchComplaints(currentUser.uid);
             } else {
                 setUser(null);
                 setUserBets([]);
@@ -127,6 +130,16 @@ export default function Dashboard() {
             setSuccessMessage("");
         }
     };
+    // Fetch Complaints
+    const fetchComplaints = async (userId: string) => {
+        try {
+            const complaints = await fetchUserComplaints(userId);
+            setComplaintsHistory(complaints);
+        } catch (error) {
+            console.error('Error fetching complaints history:', error);
+        }
+    };
+
     // Logout
     const handleLogout = async () => {
         try {
@@ -623,7 +636,45 @@ export default function Dashboard() {
                                                     </div>
                                                 </Tab.Panel>
                                                 <Tab.Panel>
-                                                    <UserStatement userId={user?.uid} />
+                                                    {user && <UserStatement userId={user.uid} />}
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    {user && <ComplaintForm userId={user.uid} />}
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    <div>
+                                                        <h2>Complaint History</h2>
+                                                        <div className="pay_method__tabletwo">
+                                                            <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                                <table className="w-100 text-left p2-bg">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th className="text-nowrap">Date</th>
+                                                                            <th className="text-nowrap">Game</th>
+                                                                            <th className="text-nowrap">Complaint Type</th>
+                                                                            <th className="text-nowrap">Description</th>
+                                                                            <th className="text-nowrap">Admin Remarks</th>
+                                                                            <th className="text-nowrap">Status</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {complaintsHistory.map((complaint) => (
+                                                                            <tr key={complaint.id}>
+                                                                                <td className="text-nowrap">{new Date(complaint.createdAt).toLocaleDateString()}</td>
+                                                                                <td className="text-nowrap">{complaint.game}</td>
+                                                                                <td className="text-nowrap">{complaint.complaintType}</td>
+                                                                                <td className="text-balance">{complaint.description}</td>
+                                                                                <td className="text-nowrap">{complaint.adminRemarks}</td>
+                                                                                <td className={`fw-normal cpoint text-nowrap ${complaint.status === 'Resolved' ? 'g1-color' : 'r1-color'}`}>
+                                                                                    {complaint.status}
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </Tab.Panel>
                                                 {/* <Tab.Panel>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
