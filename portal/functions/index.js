@@ -114,74 +114,102 @@ const settleColorBallBets = async () => {
         .where("settled", "==", false)
         .where("gameType", "==", "Color Ball Game");
     const snapshot = await unsettledBetsQuery.get();
-    const bets = [];
-    const betCount = {};
+
+    const betGroups = {}; // Group bets by amount
 
     snapshot.forEach((betDoc) => {
       const betData = betDoc.data();
       const combo = `${betData.ballColor}-${betData.betNumber}`;
-      bets.push({id: betDoc.id, ...betData});
-      if (!betCount[combo]) {
-        betCount[combo] = {count: 0, firstTimestamp: betData.timestamp};
+      const amount = betData.betAmount;
+
+      if (!betGroups[amount]) {
+        betGroups[amount] = {bets: [], betCount: {}, totalBetAmount: 0};
       }
-      betCount[combo].count += 1;
-      if (betData.timestamp < betCount[combo].firstTimestamp) {
-        betCount[combo].firstTimestamp = betData.timestamp;
+
+      betGroups[amount].bets.push({id: betDoc.id, ...betData});
+      if (!betGroups[amount].betCount[combo]) {
+        betGroups[amount].betCount[combo] = {
+          count: 0,
+          firstTimestamp: betData.timestamp,
+        };
       }
+      betGroups[amount].betCount[combo].count += 1;
+      if (
+        betData.timestamp < betGroups[amount].betCount[combo].firstTimestamp
+      ) {
+        betGroups[amount].betCount[combo].firstTimestamp = betData.timestamp;
+      }
+      betGroups[amount].totalBetAmount += betData.betAmount;
     });
 
-    if (bets.length > 0) {
-      let winningCombination = null;
-      let minBets = Infinity;
+    for (const amount in betGroups) {
+      if (Object.prototype.hasOwnProperty.call(betGroups, amount)) {
+        const {bets, betCount, totalBetAmount} = betGroups[amount];
 
-      for (const combo in betCount) {
-        if (
-          betCount[combo].count < minBets ||
-          (betCount[combo].count === minBets &&
-            betCount[combo].firstTimestamp <
-              betCount[winningCombination].firstTimestamp)
-        ) {
-          minBets = betCount[combo].count;
-          winningCombination = combo;
+        if (bets.length > 0) {
+          let winningCombination = null;
+          let minBets = Infinity;
+
+          for (const combo in betCount) {
+            if (Object.prototype.hasOwnProperty.call(betCount, combo)) {
+              if (
+                betCount[combo].count < minBets ||
+                (betCount[combo].count === minBets &&
+                  betCount[combo].firstTimestamp <
+                    betCount[winningCombination].firstTimestamp)
+              ) {
+                minBets = betCount[combo].count;
+                winningCombination = combo;
+              }
+            }
+          }
+
+          if (Object.keys(betCount).length === 1) {
+            winningCombination = null;
+          }
+
+          const [winningColor, winningNumber] = winningCombination ?
+            winningCombination.split("-") :
+            [null, null];
+
+          const totalRewardAmount = totalBetAmount * 0.8;
+          const winners = bets.filter(
+              (bet) =>
+                bet.ballColor === winningColor &&
+              bet.betNumber === parseInt(winningNumber, 10),
+          );
+
+          const rewardPerWinner =
+            winners.length > 0 ? totalRewardAmount / winners.length : 0;
+
+          for (const bet of bets) {
+            const betRef = db.collection("gameBets").doc(bet.id);
+            const userRef = db.collection("users").doc(bet.userID);
+
+            if (winners.includes(bet)) {
+              const userDoc = await userRef.get();
+              const userWallet = userDoc.data().wallet;
+              const updatedWallet = (
+                parseInt(userWallet) + rewardPerWinner
+              ).toString();
+              await userRef.update({wallet: updatedWallet});
+              await betRef.update({
+                rewardAmount: rewardPerWinner,
+                settled: true,
+                winningColor,
+                winningNumber: parseInt(winningNumber, 10),
+              });
+            } else {
+              await betRef.update({
+                settled: true,
+                winningColor,
+                winningNumber: parseInt(winningNumber, 10),
+                rewardAmount: 0,
+              });
+            }
+          }
         }
       }
-
-      if (Object.keys(betCount).length === 1) {
-        winningCombination = null;
-      }
-
-      const [winningColor, winningNumber] = winningCombination ?
-        winningCombination.split("-") :
-        [null, null];
-
-      bets.forEach(async (bet) => {
-        const betRef = db.collection("gameBets").doc(bet.id);
-        const userRef = db.collection("users").doc(bet.userID);
-
-        if (
-          bet.ballColor === winningColor &&
-          bet.betNumber === parseInt(winningNumber, 10)
-        ) {
-          const reward = bet.betAmount * 8;
-          const userDoc = await userRef.get();
-          const userWallet = userDoc.data().wallet;
-          const updatedWallet = (parseInt(userWallet) + reward).toString();
-          await userRef.update({wallet: updatedWallet});
-          await betRef.update({
-            rewardAmount: reward,
-            settled: true,
-            winningColor,
-            winningNumber: parseInt(winningNumber, 10),
-          });
-        } else {
-          await betRef.update({
-            settled: true,
-            winningColor,
-            winningNumber: parseInt(winningNumber, 10),
-            rewardAmount: 0,
-          });
-        }
-      });
     }
   } catch (error) {
     console.error("Error settling bets: ", error);
