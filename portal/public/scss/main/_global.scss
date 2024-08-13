@@ -2461,6 +2461,8 @@ input[type=radio] {
 	height: 12px;
 	border-radius: 50%;
 	border: 1px solid black;
+	box-sizing: border-box;
+	z-index: 1;
 	position: absolute;
   }
   
@@ -2480,30 +2482,113 @@ input[type=radio] {
 	background-color: yellow;
   }
   
-  .top-red {
-	top: 78px;
-	left: 37.5px;
+//   .top-red {
+// 	top: 78px;
+// 	left: 37.5px;
+//   }
+  
+//   .top-green {
+// 	top: 78px;
+// 	left: 76px;
+//   }
+  
+//   .bottom-blue {
+// 	top: 36px;
+// 	left: 37.5px;
+//   }
+  
+//   .bottom-yellow {
+// 	top: 36px;
+// 	left: 76px;
+//   }
+
+
+// Player Pieces 
+  .P1.piece1 {
+	bottom: 26%;
+	left: 12.5%;
   }
   
-  .top-green {
-	top: 78px;
-	left: 76px;
+  .P1.piece2 {
+	bottom: 26%;
+	left: 25%;
   }
   
-  .bottom-blue {
-	top: 36px;
-	left: 37.5px;
+  .P1.piece3 {
+	bottom: 12%;
+	left: 12.5%;
   }
   
-  .bottom-yellow {
-	top: 36px;
-	left: 76px;
+  .P1.piece4 {
+	bottom: 12%;
+	left: 25%;
+  }
+
+  .P2.piece1 {
+	top: 12%;
+	left: 12.5%;
   }
   
+  .P2.piece2 {
+	top: 12%;
+	left: 25%;
+  }
+  
+  .P2.piece3 {
+	top: 25.5%;
+	left: 12.5%;
+  }
+  
+  .P2.piece4 {
+	top: 25.5%;
+	left: 25%;
+  }
+  
+  .P3.piece1 {
+	top: 12%;
+	right: 25%;
+  }
+  
+  .P3.piece2 {
+	top: 12%;
+	right: 12.5%;
+  }
+  
+  .P3.piece3 {
+	top: 25.5%;
+	right: 25%;
+  }
+  
+  .P3.piece4 {
+	top: 25.5%;
+	right: 12.5%;
+  }
+  
+  .P4.piece1 {
+	bottom: 26%;
+	right: 25%;
+  }
+  
+  .P4.piece2 {
+	bottom: 26%;
+	right: 12.5%;
+  }
+  
+  .P4.piece3 {
+	bottom: 12%;
+	right: 25%;
+  }
+  
+  .P4.piece4 {
+	bottom: 12%;
+	right: 12.5%;
+  }
+
+
   .home {
 	position: absolute;
-	width: 10px;
-	height: 10px;
+	width: 40%;
+	height: 40%;
   }
   
   .red-home {
@@ -2513,15 +2598,16 @@ input[type=radio] {
   
   .green-home {
 	top: 0;
-	left: 179px;
+	right: 0;
   }
   
   .yellow-home {
-	bottom: 116.5px;
-	right: 116.5px;
+	bottom: 0;
+	right: 0;
   }
   
   .blue-home {
-	bottom: 116.5px;
+	bottom: 0;
 	left: 0;
   }
+  
