@@ -24,7 +24,13 @@ async function fetchCricketData() {
 // Group cricket matches by series
 function groupMatchesBySeries(matches) {
   return matches.reduce((acc, match) => {
-    const seriesName = match.series;
+    const seriesName = match.series
+      .replace(/[^\w\s]/gi, "")
+      .replace(/\s+/g, "_"); // Replace invalid characters
+    if (!seriesName) {
+      console.error("Invalid series name:", match.series);
+      return acc;
+    }
     if (!acc[seriesName]) {
       acc[seriesName] = [];
     }

@@ -2610,4 +2610,204 @@ input[type=radio] {
 	bottom: 0;
 	left: 0;
   }
+
+
+// Ludo Section Ends
+
+// Coming Soon Section Starts
+.coming-soon {
+	margin-left: 150px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	background: linear-gradient(135deg, #080f25, rgb(43, 102, 82));
+	color: #fff;
+	font-family: 'Arial', sans-serif;
+	text-align: center;
   
+	.content {
+	  background-color: rgba(255, 255, 255, 0.1);
+	  padding: 2rem 3rem;
+	  border-radius: 15px;
+	  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  
+	  h1 {
+		font-size: 3rem;
+		margin-bottom: 1rem;
+		animation: fadeInDown 2s ease-in-out;
+	  }
+  
+	  p {
+		font-size: 1.2rem;
+		margin-bottom: 2rem;
+		animation: fadeInUp 2s ease-in-out;
+	  }
+  
+	  .timer {
+		display: flex;
+		justify-content: center;
+		gap: 1.5rem;
+  
+		.timer-item {
+		  background-color: rgba(255, 255, 255, 0.2);
+		  padding: 1rem;
+		  border-radius: 10px;
+		  min-width: 80px;
+		  animation: fadeIn 1.5s ease-in-out;
+  
+		  span {
+			display: block;
+			font-size: 2rem;
+			font-weight: bold;
+		  }
+  
+		  &:nth-child(2n) {
+			background-color: rgba(0, 0, 0, 0.2);
+		  }
+  
+		  span:last-child {
+			font-size: 1rem;
+			margin-top: 0.5rem;
+		  }
+		}
+	  }
+	}
+  }
+  
+  /* Media Queries for Responsiveness */
+  
+  /* Large Screens */
+  @media (max-width: 1200px) {
+	.coming-soon {
+	  margin-left: 50px;
+	}
+  
+	.content h1 {
+	  font-size: 2.5rem;
+	}
+  
+	.content p {
+	  font-size: 1.1rem;
+	}
+  
+	.timer .timer-item {
+	  min-width: 70px;
+  
+	  span {
+		font-size: 1.8rem;
+	  }
+  
+	  span:last-child {
+		font-size: 0.9rem;
+	  }
+	}
+  }
+  
+  /* Medium Screens */
+  @media (max-width: 768px) {
+	.coming-soon {
+	  margin-left: 0;
+	  height: auto;
+	  padding: 2rem;
+	  margin-top: 20px; /* Adds top margin for medium screens */
+	}
+  
+	.content {
+	  padding: 1.5rem 2rem;
+	}
+  
+	.content h1 {
+	  font-size: 2rem;
+	}
+  
+	.content p {
+	  font-size: 1rem;
+	}
+  
+	.timer {
+	  gap: 1rem;
+  
+	  .timer-item {
+		min-width: 60px;
+		
+		span {
+		  font-size: 1.5rem;
+		}
+  
+		span:last-child {
+		  font-size: 0.8rem;
+		}
+	  }
+	}
+  }
+  
+  /* Small Screens */
+  @media (max-width: 480px) {
+	.coming-soon {
+	  padding: 1rem;
+	  margin-top: 30px; /* Adds top margin for small screens */
+	}
+  
+	.content {
+	  padding: 1rem 1.5rem;
+	}
+  
+	.content h1 {
+	  font-size: 1.5rem;
+	}
+  
+	.content p {
+	  font-size: 0.9rem;
+	}
+  
+	.timer {
+	  flex-direction: column;
+	  gap: 0.5rem;
+  
+	  .timer-item {
+		min-width: 50px;
+  
+		span {
+		  font-size: 1.3rem;
+		}
+  
+		span:last-child {
+		  font-size: 0.7rem;
+		}
+	  }
+	}
+  }
+  
+  /* Animations */
+  @keyframes fadeInDown {
+	from {
+	  opacity: 0;
+	  transform: translateY(-20px);
+	}
+	to {
+	  opacity: 1;
+	  transform: translateY(0);
+	}
+  }
+  
+  @keyframes fadeInUp {
+	from {
+	  opacity: 0;
+	  transform: translateY(20px);
+	}
+	to {
+	  opacity: 1;
+	  transform: translateY(0);
+	}
+  }
+  
+  @keyframes fadeIn {
+	from {
+	  opacity: 0;
+	}
+	to {
+	  opacity: 1;
+	}
+  }
+// Coming Soon Section Ends

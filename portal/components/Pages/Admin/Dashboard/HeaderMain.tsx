@@ -56,7 +56,7 @@ export default function HeaderTwo() {
 
                             <li className="dropdown show-dropdown d-block d-sm-none">
                                 <div className="d-flex align-items-center flex-wrap gap-3">
-                                    <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link>
+                                    {/* <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link> */}
                                     <button onClick={() => auth.signOut()} className="cmn-btn px-xxl-11">Log Out</button>
                                 </div>
                             </li>
@@ -82,7 +82,7 @@ export default function HeaderTwo() {
                     <div className="logo-area slide-toggle3 trader-list position-fixed top-0 d-flex align-items-center justify-content-center pt-6 pt-md-8 gap-sm-4 gap-md-5 gap-lg-7 px-4 px-lg-8">
                         <i className="ti ti-menu-deep left-nav-icon n8-color order-2 order-lg-0 d-none">
                         </i>
-                        <Link className="navbar-brand d-center text-center gap-1 gap-lg-2 ms-lg-4" href="/">
+                        <Link className="navbar-brand d-center text-center gap-1 gap-lg-2 ms-lg-4" href="/admin">
                             <Image className="logo" width={102} height={34} src="/images/logo.png" alt="Logo" />
                             <Image className="logo d-none d-xl-block" width={50} height={24} src="/images/logo-text.png" alt="Logo" />
                         </Link>

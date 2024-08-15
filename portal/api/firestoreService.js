@@ -158,7 +158,6 @@ export const addWithdrawalRequest = async (userId, amount) => {
 export const fetchUserWallet = async (userId) => {
   console.log("userId", userId);
   try {
-    console.log("userId", userId);
     const userDocRef = doc(db, "users", userId);
     const userDoc = await getDoc(userDocRef);
     if (userDoc.exists()) {

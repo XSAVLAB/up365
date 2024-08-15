@@ -233,7 +233,7 @@ function ColorBallGame() {
                         </div>
                     </div> */}
                 </div>
-                <div className="form-actions">npm run dev
+                <div className="form-actions">
                     <div onClick={handleSubmitBet} className="bet-button">
                         Place Bet
                     </div>
