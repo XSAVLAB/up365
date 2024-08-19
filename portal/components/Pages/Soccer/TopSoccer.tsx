@@ -13,8 +13,8 @@ export default function TopSoccer() {
     const getMatchData = async () => {
       try {
         const matchData = await fetchFootballMatches();
-        console.log("Football match data:");
-        console.log(matchData);
+        // console.log("Football match data:");
+        // console.log(matchData);
         setMatches(matchData);
       } catch (error) {
         console.error("Error fetching data! " + error);

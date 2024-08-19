@@ -156,7 +156,6 @@ export const addWithdrawalRequest = async (userId, amount) => {
 
 // Fetch user wallet by user ID
 export const fetchUserWallet = async (userId) => {
-  console.log("userId", userId);
   try {
     const userDocRef = doc(db, "users", userId);
     const userDoc = await getDoc(userDocRef);
@@ -171,21 +170,69 @@ export const fetchUserWallet = async (userId) => {
   }
 };
 
+// ==================TESTING==================
+
 // Fetch active series match data from Firestore
 export const fetchCricketMatches = async () => {
   try {
+    // Fetch cricketData collection
     const matchDataCollection = collection(db, "cricketData");
-    const q = query(matchDataCollection, where("active", "==", true));
-    const matchDataSnapshot = await getDocs(q);
-    const matchData = matchDataSnapshot.docs.flatMap(
-      (doc) => doc.data().matches
+    const cricketDataQuery = query(
+      matchDataCollection,
+      where("active", "==", true)
     );
-    return matchData;
+    const matchDataSnapshot = await getDocs(cricketDataQuery);
+    const cricketMatches = matchDataSnapshot.docs.flatMap((doc) => {
+      const matches = doc.data().matches;
+      return matches.map((match) => ({
+        ...match,
+        t1: match.t1.replace(/\s*\[.*?\]/, ""), // Clean t1
+        t2: match.t2.replace(/\s*\[.*?\]/, ""), // Clean t2
+      }));
+    });
+
+    // Fetch oddsCricket collection
+    const oddsCricketCollection = collection(db, "oddsCricket");
+    const oddsCricketSnapshot = await getDocs(oddsCricketCollection);
+    const oddsMatches = oddsCricketSnapshot.docs.map((doc) => doc.data());
+
+    // Compare matches and log h2h prices
+    cricketMatches.forEach((cricketMatch) => {
+      oddsMatches.forEach((oddsMatch) => {
+        const isSameMatch =
+          (cricketMatch.t1 === oddsMatch.away_team &&
+            cricketMatch.t2 === oddsMatch.home_team) ||
+          (cricketMatch.t1 === oddsMatch.home_team &&
+            cricketMatch.t2 === oddsMatch.away_team);
+
+        if (isSameMatch) {
+          console.log(
+            `Matching match found: ${cricketMatch.t1} vs ${cricketMatch.t2}`
+          );
+          oddsMatch.bookmakers.forEach((bookmaker) => {
+            const h2hMarket = bookmaker.markets.find(
+              (market) => market.key === "h2h"
+            );
+            if (h2hMarket) {
+              console.log(`Bookmaker: ${bookmaker.title}`);
+              h2hMarket.outcomes.forEach((outcome) => {
+                console.log(`Team: ${outcome.name}, Price: ${outcome.price}`);
+              });
+            }
+          });
+        }
+      });
+    });
+
+    return cricketMatches;
   } catch (error) {
     console.error("Error fetching match data: ", error);
     throw error;
   }
 };
+
+// ==================TESTING==================
+
 // Fetch active series match data from Firestore
 export const fetchFootballMatches = async () => {
   try {

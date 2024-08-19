@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import SingleDigitLottery from '@/components/Pages/SingleDigitLottery/SingleDigitLottery';
+import HomePage from '@/components/Pages/HomePage/HomePage';
 
 export default function Page() {
   const [user, setUser] = useState<User | null>(null);
@@ -57,7 +58,8 @@ export default function Page() {
           <HeaderMain />
           {/* <TopSlider />
           <TopCricket /> */}
-          <SingleDigitLottery />
+          {/* <SingleDigitLottery /> */}
+          <HomePage />
         </>
       ) : (
         <Home />

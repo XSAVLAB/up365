@@ -1,54 +1,31 @@
 "use client";
-import Image from 'next/image';
-import Link from 'next/link';
-import { Navigate } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../contexts/authContext';
+import Image from 'next/image'
+import Link from 'next/link'
+import { Navigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import { useAuth } from '../../../contexts/authContext'
 import { useRouter } from 'next/navigation';
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
-import { doCreateUserWithEmailAndPassword, doSignInWithGoogle } from '../../../firebase/auth';
-import { createProfile } from '../../../api/firestoreService';
-import firebase from "firebase/app";
-import "firebase/auth";
+import { doCreateUserWithEmailAndPassword, doSignInWithGoogle } from '../../../firebase/auth'
+import { createProfile } from '../../../api/firestoreService'
 
 const CreateAccount = () => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
+    const [phoneNumber, setphoneNumber] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-    const [otp, setOtp] = useState('');
-    const [verificationId, setVerificationId] = useState(null);
     const router = useRouter();
 
     const { userLoggedIn } = useAuth() || {};
 
-    useEffect(() => {
-        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-            'size': 'invisible',
-            'callback': (response) => {
-                console.log('Recaptcha verified', response);
-            }
-        });
-    }, []);
+    const onSubmit = async (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        setMessage("");
 
-    const sendOtp = () => {
-        const appVerifier = window.recaptchaVerifier;
-        firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
-            .then(confirmationResult => {
-                setVerificationId(confirmationResult.verificationId);
-                setMessage('OTP sent. Please check your phone.');
-            }).catch(error => {
-                setMessage(error.message);
-                console.log(error);
-            });
-    };
-
-    const verifyOtpAndCreateAccount = async () => {
-        const credential = firebase.auth.PhoneAuthProvider.credential(verificationId, otp);
         try {
-            const userCredential = await firebase.auth().signInWithCredential(credential);
+            const userCredential = await doCreateUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
 
             const profileData = {
@@ -64,19 +41,14 @@ const CreateAccount = () => {
 
             router.push('/');
         } catch (e) {
-            setMessage('Failed to verify OTP. Please try again.');
+            setMessage('User Already Registered! Please Log in');
             console.log(e);
         }
     };
 
-    const onSubmit = async (e) => {
+    const onGoogleSignIn = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
         e.preventDefault();
-        setMessage("");
-        sendOtp();
-    };
 
-    const onGoogleSignIn = async (e) => {
-        e.preventDefault();
         try {
             const userCredential = await doSignInWithGoogle();
             const user = userCredential.user;
@@ -148,7 +120,7 @@ const CreateAccount = () => {
                                                         type="text"
                                                         required
                                                         value={phoneNumber}
-                                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                                        onChange={(e) => setphoneNumber(e.target.value)}
                                                     />
                                                 </div>
                                                 <div className="mb-5 mb-md-6">
@@ -179,20 +151,6 @@ const CreateAccount = () => {
                                                 </div>
                                                 <button className="cmn-btn px-5 py-3 mb-6 w-100" type="submit">Sign Up</button>
                                             </form>
-                                            {verificationId && (
-                                                <div className="mb-5 mb-md-6">
-                                                    <input
-                                                        className="n11-bg"
-                                                        name="otp"
-                                                        placeholder="OTP"
-                                                        type="text"
-                                                        required
-                                                        value={otp}
-                                                        onChange={(e) => setOtp(e.target.value)}
-                                                    />
-                                                    <button className="cmn-btn px-5 py-3 mb-6 w-100" onClick={verifyOtpAndCreateAccount}>Verify OTP</button>
-                                                </div>
-                                            )}
                                         </div>
                                         <div className="login_section__socialmedia text-center mb-6">
                                             <span className="mb-6">Or continue with</span>
@@ -216,9 +174,8 @@ const CreateAccount = () => {
                     </div>
                 </div>
             </div>
-            <div id="recaptcha-container"></div>
         </section>
-    );
-};
+    )
+}
 
-export default CreateAccount;
+export default CreateAccount

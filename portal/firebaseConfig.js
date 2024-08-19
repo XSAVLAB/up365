@@ -12,8 +12,6 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-console.log(firebaseConfig)
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -23,8 +21,6 @@ const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 // const isAdmin = (userEmail) => userEmail === adminEmail;
 // This one is not working
 const isAdmin = (userEmail) => {
-  console.log("userEmail", userEmail);
-  console.log("adminEmail", adminEmail);
   return userEmail === adminEmail;
 };
 

@@ -29,7 +29,6 @@ function AllLotteryBets() {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                console.log('User:', currentUser);
                 fetchBets(currentUser.uid);
                 const interval = setInterval(() => fetchBets(currentUser.uid), 10000);
                 return () => clearInterval(interval);

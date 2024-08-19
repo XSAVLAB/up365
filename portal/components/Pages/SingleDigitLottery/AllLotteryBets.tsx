@@ -17,7 +17,7 @@ function AllLotteryBets() {
 
     const fetchBets = async (uid: string) => {
         try {
-            const fetchedBets = await fetchAllLotteryBets(uid,"Single Digit Lottery");
+            const fetchedBets = await fetchAllLotteryBets(uid, "Single Digit Lottery");
             setMyBetsTable(fetchedBets);
             if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
         } catch (error) {
@@ -29,7 +29,7 @@ function AllLotteryBets() {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                console.log('User:', currentUser);
+                // console.log('User:', currentUser);
                 fetchBets(currentUser.uid);
                 const interval = setInterval(() => fetchBets(currentUser.uid), 10000);
                 return () => clearInterval(interval);
