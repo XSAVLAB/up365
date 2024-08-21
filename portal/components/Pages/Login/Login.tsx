@@ -49,45 +49,83 @@ export default function Login() {
             const userCredential = await doSignInWithGoogle();
             const user = userCredential.user;
 
+            // Check if the user document exists
             const userDoc = await getDoc(doc(db, "users", user.uid));
-            const userData = userDoc.data();
-            if (userData?.isBlocked === false) {
-                if (userData) {
+
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+
+                // Check if the user is blocked
+                if (userData?.isBlocked === false) {
                     if (userData.role === 'admin') {
                         router.push('/admin');
                     } else {
                         router.push('/');
                     }
                 } else {
-                    const profileData = {
-                        firstName: user.displayName?.split(' ')[0] || '',
-                        lastName: user.displayName?.split(' ')[1] || '',
-                        phoneNumber: '',
-                        email: user.email,
-                        wallet: '1000',
-                        role: "user"
-                    };
-                    await createProfile(user.uid, profileData);
-                    router.push('/');
+                    setMessage('You are suspended from the system');
                 }
             } else {
-                setMessage('You are suspended from the system');
+                const profileData = {
+                    firstName: user.displayName?.split(' ')[0] || '',
+                    lastName: user.displayName?.split(' ')[1] || '',
+                    phoneNumber: '',
+                    email: user.email,
+                    wallet: '0',
+                    role: "user",
+                    isBlocked: false
+                };
+                await createProfile(user.uid, profileData);
+                router.push('/');
             }
         } catch (e) {
             console.log(e);
         }
-    }
+    };
 
-    const handleFacebookLogin = () => {
-        const provider = new FacebookAuthProvider();
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                const user = result.user;
-                console.log(user);
+
+    const handleFacebookLogin = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        e.preventDefault();
+
+        try {
+            const provider = new FacebookAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            // Check if the user document exists
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+
+                // Check if the user is blocked
+                if (userData?.isBlocked === false) {
+                    if (userData.role === 'admin') {
+                        router.push('/admin');
+                    } else {
+                        router.push('/');
+                    }
+                } else {
+                    setMessage('You are suspended from the system');
+                }
+            } else {
+                // If user does not exist, create a new profile
+                const profileData = {
+                    firstName: user.displayName?.split(' ')[0] || '',
+                    lastName: user.displayName?.split(' ')[1] || '',
+                    phoneNumber: '',
+                    email: user.email,
+                    wallet: '0',
+                    role: "user",
+                    isBlocked: false
+                };
+                await createProfile(user.uid, profileData);
                 router.push('/');
-            }).catch((error) => {
-                console.error(error);
-            });
+            }
+        } catch (error) {
+            // console.error(error);
+            setMessage('User Already Registered via Google! Please use Google to signin');
+        }
     };
 
     const handleTwitterLogin = () => {
@@ -168,9 +206,9 @@ export default function Login() {
                                                 <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleFacebookLogin}>
                                                     <IconBrandFacebookFilled className="ti ti-brand-facebook-filled fs-four" />
                                                 </Link>
-                                                <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleTwitterLogin}>
+                                                {/* <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleTwitterLogin}>
                                                     <IconBrandTwitterFilled className="ti ti-brand-twitter-filled fs-four" />
-                                                </Link>
+                                                </Link> */}
                                                 <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={onGoogleSignIn}>
                                                     <IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" />
                                                 </Link>

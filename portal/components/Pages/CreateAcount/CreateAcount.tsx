@@ -8,6 +8,9 @@ import { useRouter } from 'next/navigation';
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
 import { doCreateUserWithEmailAndPassword, doSignInWithGoogle } from '../../../firebase/auth'
 import { createProfile } from '../../../api/firestoreService'
+import { FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth, db } from '@/firebaseConfig';
+import { getDoc, doc } from 'firebase/firestore';
 
 const CreateAccount = () => {
     const [firstName, setFirstName] = useState('');
@@ -33,7 +36,7 @@ const CreateAccount = () => {
                 lastName,
                 phoneNumber,
                 email,
-                wallet: '1000',
+                wallet: '0',
                 role: "user",
                 isBlocked: false
             };
@@ -53,23 +56,83 @@ const CreateAccount = () => {
             const userCredential = await doSignInWithGoogle();
             const user = userCredential.user;
 
-            const profileData = {
-                firstName: user.displayName?.split(' ')[0] || '',
-                lastName: user.displayName?.split(' ')[1] || '',
-                phoneNumber: '',
-                email: user.email,
-                wallet: '1000',
-                role: "user",
-                isBlocked: false
-            };
-            await createProfile(user.uid, profileData);
+            // Check if the user document exists
+            const userDoc = await getDoc(doc(db, "users", user.uid));
 
-            window.location.replace('/');
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+
+                // Check if the user is blocked
+                if (userData?.isBlocked === false) {
+                    if (userData.role === 'admin') {
+                        router.push('/admin');
+                    } else {
+                        router.push('/');
+                    }
+                } else {
+                    setMessage('You are suspended from the system');
+                }
+            } else {
+                const profileData = {
+                    firstName: user.displayName?.split(' ')[0] || '',
+                    lastName: user.displayName?.split(' ')[1] || '',
+                    phoneNumber: '',
+                    email: user.email,
+                    wallet: '0',
+                    role: "user",
+                    isBlocked: false
+                };
+                await createProfile(user.uid, profileData);
+                router.push('/');
+            }
         } catch (e) {
             console.log(e);
         }
     };
 
+    const onFacebookSignin = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        e.preventDefault();
+
+        try {
+            const provider = new FacebookAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            // Check if the user document exists
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+
+                // Check if the user is blocked
+                if (userData?.isBlocked === false) {
+                    if (userData.role === 'admin') {
+                        router.push('/admin');
+                    } else {
+                        router.push('/');
+                    }
+                } else {
+                    setMessage('You are suspended from the system');
+                }
+            } else {
+                // If user does not exist, create a new profile
+                const profileData = {
+                    firstName: user.displayName?.split(' ')[0] || '',
+                    lastName: user.displayName?.split(' ')[1] || '',
+                    phoneNumber: '',
+                    email: user.email,
+                    wallet: '0',
+                    role: "user",
+                    isBlocked: false
+                };
+                await createProfile(user.uid, profileData);
+                router.push('/');
+            }
+        } catch (error) {
+            // console.error(error);
+            setMessage('User Already Registered via Google! Please use Google to signin');
+        }
+    };
     return (
         <section className="login_section pt-120 p3-bg">
             {userLoggedIn && (<Navigate to={'/'} replace={true} />)}
@@ -155,7 +218,7 @@ const CreateAccount = () => {
                                         <div className="login_section__socialmedia text-center mb-6">
                                             <span className="mb-6">Or continue with</span>
                                             <div className="login_section__social d-center gap-3">
-                                                <Link href="#" className="n11-bg px-3 py-2 rounded-5">
+                                                <Link href="#" onClick={(e) => { onFacebookSignin(e) }} className="n11-bg px-3 py-2 rounded-5">
                                                     <IconBrandFacebookFilled className="ti ti-brand-facebook-filled fs-four" />
                                                 </Link>
                                                 <Link href="#" className="n11-bg px-3 py-2 rounded-5">
