@@ -221,9 +221,9 @@ const CreateAccount = () => {
                                                 <Link href="#" onClick={(e) => { onFacebookSignin(e) }} className="n11-bg px-3 py-2 rounded-5">
                                                     <IconBrandFacebookFilled className="ti ti-brand-facebook-filled fs-four" />
                                                 </Link>
-                                                <Link href="#" className="n11-bg px-3 py-2 rounded-5">
+                                                {/* <Link href="#" className="n11-bg px-3 py-2 rounded-5">
                                                     <IconBrandTwitterFilled className="ti ti-brand-twitter-filled fs-four" />
-                                                </Link>
+                                                </Link> */}
                                                 <Link href="#" onClick={(e) => { onGoogleSignIn(e) }} className="n11-bg px-3 py-2 rounded-5">
                                                     <IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" />
                                                 </Link>
