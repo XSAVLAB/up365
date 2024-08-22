@@ -129,8 +129,8 @@ const CreateAccount = () => {
                 router.push('/');
             }
         } catch (error) {
-            // console.error(error);
-            setMessage('User Already Registered via Google! Please use Google to signin');
+            console.error(error);
+            // setMessage('User Already Registered via Google! Please use Google to signin');
         }
     };
     return (
