@@ -3007,6 +3007,7 @@ input[type=radio] {
   .cell-9, .cell-10, .cell-11, .cell-12, .cell-13, .cell-14, .cell-24,.cell-29,  .cell-39, .cell-44, .cell-54, .cell-59, .cell-69, .cell-74, .cell-84, .cell-85, .cell-86, .cell-87, .cell-88, .cell-89 , .cell-23, .cell-22, .cell-37, .cell-52, .cell-67, .cell-82{
 	background-color: #15872f;
   }
+  
 // Blue Home Area
   
   .cell-144, .cell-145, .cell-146, .cell-147, .cell-148, .cell-149, .cell-159, .cell-164, .cell-174,  .cell-179, .cell-189,  .cell-194, .cell-204,  .cell-209, .cell-219, .cell-220, .cell-221, .cell-222, .cell-223, .cell-224, .cell-133, .cell-118, .cell-117, .cell-116, .cell-115, .cell-114 {
@@ -3107,5 +3108,79 @@ input[type=radio] {
 	left: 50%;  
 	transform: translateX(-50%);
   }
+
+  .controls {
+	position: absolute;
+	width: 120px;
+	height: 80px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	border-radius: 10px;
+	
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+	border: 1px solid #ddd;
+  }
+  
+  .controls.top-left {
+	bottom: 180px;
+	right: 50px;
+	background: linear-gradient(to bottom, #ae434d, #b78f8f);
+	border: 2px rgba(251, 11, 11, 0.2901960784) solid;
+	transform: translate(-50%, -50%);
+  }
+  
+  .controls.top-right {
+	bottom: 180px;
+	left: 50px;
+	background: linear-gradient(to bottom, #77ff67, #a8f2bb);
+	border: 2px rgba(21, 135, 47, 0.2901960784) solid;
+	transform: translate(50%, -50%);
+  }
+  
+  .controls.bottom-left {
+	top: 180px;
+	right: 50px;
+	background: linear-gradient(to bottom, #feff4d, #fff9b4);
+	border: 2px rgba(71, 184, 209, 0.2901960784) solid;
+  
+	transform: translate(-50%, 50%);
+  }
+  
+  .controls.bottom-right {
+	top: 180px;
+	left: 50px;
+	background: linear-gradient(to bottom, #3f8efc, #a8dbfb);
+	border: 2px rgba(241, 231, 20, 0.2901960784) solid;
+	
+	transform: translate(50%, 50%);
+  }
+  
+
+/* Ludo Dice */
+.dice {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.dice:hover {
+    transform: scale(1.1);
+}
+
+.diceImage {
+    width: 50px;
+    height: 50px;
+}
+
+
 // ================Ludo Testing================== //
 
