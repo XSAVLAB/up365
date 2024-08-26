@@ -170,69 +170,6 @@ export const fetchUserWallet = async (userId) => {
   }
 };
 
-// ==================TESTING==================
-
-// Fetch active series match data from Firestore
-export const fetchCricketMatches = async () => {
-  try {
-    // Fetch cricketData collection
-    const matchDataCollection = collection(db, "cricketData");
-    const cricketDataQuery = query(
-      matchDataCollection,
-      where("active", "==", true)
-    );
-    const matchDataSnapshot = await getDocs(cricketDataQuery);
-    const cricketMatches = matchDataSnapshot.docs.flatMap((doc) => {
-      const matches = doc.data().matches;
-      return matches.map((match) => ({
-        ...match,
-        t1: match.t1.replace(/\s*\[.*?\]/, ""), // Clean t1
-        t2: match.t2.replace(/\s*\[.*?\]/, ""), // Clean t2
-      }));
-    });
-
-    // Fetch oddsCricket collection
-    const oddsCricketCollection = collection(db, "oddsCricket");
-    const oddsCricketSnapshot = await getDocs(oddsCricketCollection);
-    const oddsMatches = oddsCricketSnapshot.docs.map((doc) => doc.data());
-
-    // Compare matches and log h2h prices
-    cricketMatches.forEach((cricketMatch) => {
-      oddsMatches.forEach((oddsMatch) => {
-        const isSameMatch =
-          (cricketMatch.t1 === oddsMatch.away_team &&
-            cricketMatch.t2 === oddsMatch.home_team) ||
-          (cricketMatch.t1 === oddsMatch.home_team &&
-            cricketMatch.t2 === oddsMatch.away_team);
-
-        if (isSameMatch) {
-          console.log(
-            `Matching match found: ${cricketMatch.t1} vs ${cricketMatch.t2}`
-          );
-          oddsMatch.bookmakers.forEach((bookmaker) => {
-            const h2hMarket = bookmaker.markets.find(
-              (market) => market.key === "h2h"
-            );
-            if (h2hMarket) {
-              console.log(`Bookmaker: ${bookmaker.title}`);
-              h2hMarket.outcomes.forEach((outcome) => {
-                console.log(`Team: ${outcome.name}, Price: ${outcome.price}`);
-              });
-            }
-          });
-        }
-      });
-    });
-
-    return cricketMatches;
-  } catch (error) {
-    console.error("Error fetching match data: ", error);
-    throw error;
-  }
-};
-
-// ==================TESTING==================
-
 // Fetch active series match data from Firestore
 export const fetchFootballMatches = async () => {
   try {
@@ -751,3 +688,75 @@ export const fetchUserComplaints = async (userId) => {
     throw error;
   }
 };
+
+// ==================TESTING==================
+
+// Fetch active series match data from Firestore
+export const fetchCricketMatches = async () => {
+  try {
+    // Fetch cricketData collection
+    const matchDataCollection = collection(db, "cricketData");
+    const cricketDataQuery = query(
+      matchDataCollection,
+      where("active", "==", true)
+    );
+    const matchDataSnapshot = await getDocs(cricketDataQuery);
+    const cricketMatches = matchDataSnapshot.docs.flatMap((doc) => {
+      const matches = doc.data().matches;
+      return matches.map((match) => ({
+        ...match,
+        t1: match.t1.replace(/\s*\[.*?\]/, ""), // Clean t1
+        t2: match.t2.replace(/\s*\[.*?\]/, ""), // Clean t2
+      }));
+    });
+
+    // Fetch oddsCricket collection
+    const oddsCricketCollection = collection(db, "oddsCricket");
+    const oddsCricketSnapshot = await getDocs(oddsCricketCollection);
+    const oddsMatches = oddsCricketSnapshot.docs.map((doc) => doc.data());
+
+    // Combine cricket matches with odds data
+    const cricketMatchesWithOdds = cricketMatches.map((cricketMatch) => {
+      const matchingOdds = oddsMatches.find((oddsMatch) => {
+        const isSameMatch =
+          (cricketMatch.t1 === oddsMatch.away_team &&
+            cricketMatch.t2 === oddsMatch.home_team) ||
+          (cricketMatch.t1 === oddsMatch.home_team &&
+            cricketMatch.t2 === oddsMatch.away_team);
+
+        return isSameMatch;
+      });
+
+      // If a matching odds entry is found, include bookmaker data
+      if (matchingOdds) {
+        const bookmakers = matchingOdds.bookmakers.map((bookmaker) => {
+          const h2hMarket = bookmaker.markets.find(
+            (market) => market.key === "h2h"
+          );
+          return {
+            title: bookmaker.title,
+            outcomes: h2hMarket ? h2hMarket.outcomes : [],
+          };
+        });
+
+        return {
+          ...cricketMatch,
+          bookmakers,
+        };
+      }
+
+      // If no matching odds entry, return match without bookmaker data
+      return {
+        ...cricketMatch,
+        bookmakers: [],
+      };
+    });
+
+    return cricketMatchesWithOdds;
+  } catch (error) {
+    console.error("Error fetching match data: ", error);
+    throw error;
+  }
+};
+
+// ==================TESTING==================

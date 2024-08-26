@@ -4,7 +4,7 @@ const games = [
     { name: 'Single Digit Lottery', image: '/images/single-digit-lottery.jpg', video: "https://www.youtube.com/embed/sT1FEs2j120?si=MFnIhark0ZbnY8LW", playUrl: '/single-digit-lottery' },
     { name: 'Double Digit Lottery', image: '/images/double-digit-lottery.jpg', video: "https://www.youtube.com/embed/fqFtA7bkrp4?si=dNIA52HpLN3aUmZE", playUrl: '/double-digit-lottery' },
     { name: 'Triple Digit Lottery', image: '/images/triple-digit-lottery.jpg', video: "https://www.youtube.com/embed/cQITIWkjphY?si=zIfp0XM09CVMkb7K", playUrl: '/triple-digit-lottery' },
-    { name: 'Color Ball Lottery', image: '/images/color-ball-game.jpg', video: "https://www.youtube.com/embed/D8zpUhe3r5g?si=-ij1sUn64CVDRBdX", playUrl: '/color-ball-game' },
+    { name: 'Color Ball Lottery', image: '/images/color-ball-game.jpg', video: "https://www.youtube.com/embed/D8zpUhe3r5g?si=-ij1sUn64CVDRBdX", playUrl: '/colorball-game' },
     { name: 'Ludo', image: '/images/ludo.jpg', video: "https://www.youtube.com/embed/qcJFkx5NDWM?si=1Va946zPG1Ts1iXD&amp;controls=0", playUrl: '/ludo' },
     { name: 'Teen Patti', image: '/images/teen-patti.jpg', video: "https://www.youtube.com/embed/qcJFkx5NDWM?si=1Va946zPG1Ts1iXD&amp;controls=0", playUrl: '/teen-patti' },
     { name: 'Poker', image: '/images/poker.jpg', video: "https://www.youtube.com/embed/qcJFkx5NDWM?si=1Va946zPG1Ts1iXD&amp;controls=0", playUrl: '/poker' },

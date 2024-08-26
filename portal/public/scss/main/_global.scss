@@ -2370,252 +2370,391 @@ input[type=radio] {
   
 // User Complaints Form Ends
 
-/* Ludo Section Starts */
-.ludoContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100vh;
-    background-image: url("/images/ludo-background.jpg");
-}
 
-.controls {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.controls.top-left {
-	bottom: 250px;
-	left: 55px;
-	border: 5px #fb0b0b4a solid;
-	border-bottom:0px;
-	border-radius:5px;
-	transform: translate(-50%, -50%);
-  }
+// // Ludo Game Section Starts
+// .form-container1 {
+// 	display: flex;
+// 	flex-direction: column;
+// 	padding: 20px;
+// 	background-color: #000616;
+// 	color: #fff;
+// 	border-radius: 10px;
+// 	margin: 20px;
+// 	margin-left: 288px; 
+// 	margin-top: 90px; 
   
-  .controls.top-right {
-	bottom: 250px;
-	left: 150px;
-	border: 5px #15872f4a solid;
-	border-bottom:0px;
-	transform: translate(50%, -50%);
-  }
+// 	@include maxQuery(1024px) {
+// 		margin-left: 0;
+// 	}
   
-  .controls.bottom-left {
-	top: 255px;
-	left: 55px;
-	border: 5px #47b8d14a solid;
-	border-top:0px;
-	transform: translate(-50%, 50%);
-  }
+// 	@include maxQuery(768px) {
+// 		margin-left: 180px;
+// 	}
   
-  .controls.bottom-right {
-	top: 255px;
-	right: 55px;
-	border: 5px #f1e7144a solid;
-	border-top:0px;
-	transform: translate(50%, 50%);
-  }
-/* Ludo Board */
-.ludoBoard {
-    width: 315px;
-    height: 100%;
-    max-width: 600px;
-    position: relative;
-    background-image: url("/images/ludo-background2.jpg");
-    background-size: cover;
-    background-position: center;
-}
-
-.boardImage {
-    width: 305px;
-    height: 305px;
-    display: block;
-    margin: 0 auto;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-/* Ludo Dice */
-.dice {
-    cursor: pointer;
-    transition: transform 0.3s;
-    &:hover {
-        transform: scale(1.1);
-    }
-}
-
-.diceImage {
-    width: 50px;
-    height: 50px;
-}
-
-// Player Styles
-.ludo-player {
-	width: 12px;
-	height: 12px;
-	border-radius: 50%;
-	border: 1px solid black;
-	box-sizing: border-box;
-	z-index: 1;
-	position: absolute;
-  }
-  
-  .red {
-	background-color: red;
-  }
-  
-  .green {
-	background-color: green;
-  }
-  
-  .blue {
-	background-color: #45b8d3;
-  }
-  
-  .yellow {
-	background-color: yellow;
-  }
-  
-//   .top-red {
-// 	top: 78px;
-// 	left: 37.5px;
+// 	@include maxQuery(480px) {
+// 		margin-left: 0;
+// 		margin: 10px;
+// 	}
 //   }
   
-//   .top-green {
-// 	top: 78px;
-// 	left: 76px;
+//   .form-game-name, .form-header {
+// 	text-align: center;
+// 	font-size: 24px;
+// 	font-weight: bold;
+// 	margin-bottom: 20px;
+  
+// 	@include maxQuery(480px) {
+// 		font-size: 20px;
+// 	}
 //   }
   
-//   .bottom-blue {
-// 	top: 36px;
-// 	left: 37.5px;
+//   .rooms {
+// 	display: flex;
+// 	flex-direction: column;
+// 	width: 100%;
+// 	max-width: 600px;
+// 	margin: 0 auto;
 //   }
   
-//   .bottom-yellow {
-// 	top: 36px;
-// 	left: 76px;
+//   .room {
+// 	display: flex;
+// 	justify-content: space-between;
+// 	align-items: center;
+// 	background-color: #161b22;
+// 	color: #ffffff;
+// 	border: 1px solid #30363d;
+// 	border-radius: 8px;
+// 	padding: 10px 20px;
+// 	margin: 10px 0;
+// 	cursor: pointer;
+// 	transition: background-color 0.3s;
+  
+// 	&:hover {
+// 		background-color: #1f2329;
+// 	}
+  
+// 	.prize-pool, .entry-fee {
+// 		font-size: 18px;
+// 	}
+  
+// 	.entry-fee {
+// 		background-color: #238636;
+// 		border-radius: 5px;
+// 		padding: 5px 10px;
+// 	}
+//   }
+  
+//   @media (max-width: 1024px) {
+// 	.form-container1 {
+// 		margin-left: 0px;
+// 	}
+  
+// 	.rooms {
+// 		margin-top: 80px;
+// 	}
+//   }
+  
+//   @media (max-width: 768px) {
+// 	.form-container1 {
+// 		margin-left: 180px;
+// 	}
+//   }
+  
+//   @media (max-width: 480px) {
+// 	.form-container1 {
+// 		margin-left: 0;
+// 		margin: 10px;
+// 	}
+  
+// 	.room .prize-pool, .room .entry-fee {
+// 		font-size: 14px;
+// 	}
+//   }
+  
+  
+  
+//   // Ludo Waiting Room Section Starts
+  
+//   .waiting-room-container {
+// 	display: flex;
+// 	flex-direction: column;
+// 	justify-content: center;
+// 	align-items: center;
+// 	height: 100vh;
+// 	background-color: #000616;
+// 	color: #fff;
+//   }
+  
+//   .spinner {
+// 	border: 8px solid #f3f3f3;
+// 	border-top: 8px solid #3498db;
+// 	border-radius: 50%;
+// 	width: 60px;
+// 	height: 60px;
+// 	animation: spin 2s linear infinite;
+// 	margin-bottom: 20px;
+//   }
+  
+//   .waiting-text {
+// 	font-size: 24px;
+// 	text-align: center;
+//   }
+  
+//   @keyframes spin {
+// 	0% { transform: rotate(0deg); }
+// 	100% { transform: rotate(360deg); }
+//   }
+  
+  
+//   // Ludo Waiting Room Section Ends
+  
+
+// /* Ludo Section Starts */
+// .ludoContainer {
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     justify-content: center;
+//     width: 100%;
+//     height: 100vh;
+//     background-image: url("/images/ludo-background.jpg");
+// }
+
+// .controls {
+//     position: absolute;
+//     width: 100px;
+//     height: 100px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+// }
+
+// .controls.top-left {
+// 	bottom: 250px;
+// 	left: 55px;
+// 	border: 5px #fb0b0b4a solid;
+// 	border-bottom:0px;
+// 	border-radius:5px;
+// 	transform: translate(-50%, -50%);
+//   }
+  
+//   .controls.top-right {
+// 	bottom: 250px;
+// 	left: 150px;
+// 	border: 5px #15872f4a solid;
+// 	border-bottom:0px;
+// 	transform: translate(50%, -50%);
+//   }
+  
+//   .controls.bottom-left {
+// 	top: 255px;
+// 	left: 55px;
+// 	border: 5px #47b8d14a solid;
+// 	border-top:0px;
+// 	transform: translate(-50%, 50%);
+//   }
+  
+//   .controls.bottom-right {
+// 	top: 255px;
+// 	right: 55px;
+// 	border: 5px #f1e7144a solid;
+// 	border-top:0px;
+// 	transform: translate(50%, 50%);
+//   }
+// /* Ludo Board */
+// .ludoBoard {
+//     width: 315px;
+//     height: 100%;
+//     max-width: 600px;
+//     position: relative;
+//     background-image: url("/images/ludo-background2.jpg");
+//     background-size: cover;
+//     background-position: center;
+// }
+
+// .boardImage {
+//     width: 305px;
+//     height: 305px;
+//     display: block;
+//     margin: 0 auto;
+//     position: absolute;
+//     top: 50%;
+//     left: 50%;
+//     transform: translate(-50%, -50%);
+// }
+
+// /* Ludo Dice */
+// .dice {
+//     cursor: pointer;
+//     transition: transform 0.3s;
+//     &:hover {
+//         transform: scale(1.1);
+//     }
+// }
+
+// .diceImage {
+//     width: 50px;
+//     height: 50px;
+// }
+
+// // Ludo Player Styles
+// .ludo-player {
+// 	width: 12px;
+// 	height: 12px;
+// 	border-radius: 50%;
+// 	border: 1px solid black;
+// 	box-sizing: border-box;
+// 	z-index: 1;
+// 	position: absolute;
+//   }
+  
+//   .red {
+// 	background-color: red;
+//   }
+  
+//   .green {
+// 	background-color: green;
+//   }
+  
+//   .blue {
+// 	background-color: #45b8d3;
+//   }
+  
+//   .yellow {
+// 	background-color: yellow;
+//   }
+  
+// //   .top-red {
+// // 	top: 78px;
+// // 	left: 37.5px;
+// //   }
+  
+// //   .top-green {
+// // 	top: 78px;
+// // 	left: 76px;
+// //   }
+  
+// //   .bottom-blue {
+// // 	top: 36px;
+// // 	left: 37.5px;
+// //   }
+  
+// //   .bottom-yellow {
+// // 	top: 36px;
+// // 	left: 76px;
+// //   }
+
+
+// // Player Pieces 
+//   .P1.piece1 {
+// 	bottom: 26%;
+// 	left: 12.5%;
+//   }
+  
+//   .P1.piece2 {
+// 	bottom: 26%;
+// 	left: 25%;
+//   }
+  
+//   .P1.piece3 {
+// 	bottom: 12%;
+// 	left: 12.5%;
+//   }
+  
+//   .P1.piece4 {
+// 	bottom: 12%;
+// 	left: 25%;
+//   }
+
+//   .P2.piece1 {
+// 	top: 12%;
+// 	left: 12.5%;
+//   }
+  
+//   .P2.piece2 {
+// 	top: 12%;
+// 	left: 25%;
+//   }
+  
+//   .P2.piece3 {
+// 	top: 25.5%;
+// 	left: 12.5%;
+//   }
+  
+//   .P2.piece4 {
+// 	top: 25.5%;
+// 	left: 25%;
+//   }
+  
+//   .P3.piece1 {
+// 	top: 12%;
+// 	right: 25%;
+//   }
+  
+//   .P3.piece2 {
+// 	top: 12%;
+// 	right: 12.5%;
+//   }
+  
+//   .P3.piece3 {
+// 	top: 25.5%;
+// 	right: 25%;
+//   }
+  
+//   .P3.piece4 {
+// 	top: 25.5%;
+// 	right: 12.5%;
+//   }
+  
+//   .P4.piece1 {
+// 	bottom: 26%;
+// 	right: 25%;
+//   }
+  
+//   .P4.piece2 {
+// 	bottom: 26%;
+// 	right: 12.5%;
+//   }
+  
+//   .P4.piece3 {
+// 	bottom: 12%;
+// 	right: 25%;
+//   }
+  
+//   .P4.piece4 {
+// 	bottom: 12%;
+// 	right: 12.5%;
 //   }
 
 
-// Player Pieces 
-  .P1.piece1 {
-	bottom: 26%;
-	left: 12.5%;
-  }
+//   .home {
+// 	position: absolute;
+// 	width: 40%;
+// 	height: 40%;
+//   }
   
-  .P1.piece2 {
-	bottom: 26%;
-	left: 25%;
-  }
+//   .red-home {
+// 	top: 0;
+// 	left: 0;
+//   }
   
-  .P1.piece3 {
-	bottom: 12%;
-	left: 12.5%;
-  }
+//   .green-home {
+// 	top: 0;
+// 	right: 0;
+//   }
   
-  .P1.piece4 {
-	bottom: 12%;
-	left: 25%;
-  }
-
-  .P2.piece1 {
-	top: 12%;
-	left: 12.5%;
-  }
+//   .yellow-home {
+// 	bottom: 0;
+// 	right: 0;
+//   }
   
-  .P2.piece2 {
-	top: 12%;
-	left: 25%;
-  }
-  
-  .P2.piece3 {
-	top: 25.5%;
-	left: 12.5%;
-  }
-  
-  .P2.piece4 {
-	top: 25.5%;
-	left: 25%;
-  }
-  
-  .P3.piece1 {
-	top: 12%;
-	right: 25%;
-  }
-  
-  .P3.piece2 {
-	top: 12%;
-	right: 12.5%;
-  }
-  
-  .P3.piece3 {
-	top: 25.5%;
-	right: 25%;
-  }
-  
-  .P3.piece4 {
-	top: 25.5%;
-	right: 12.5%;
-  }
-  
-  .P4.piece1 {
-	bottom: 26%;
-	right: 25%;
-  }
-  
-  .P4.piece2 {
-	bottom: 26%;
-	right: 12.5%;
-  }
-  
-  .P4.piece3 {
-	bottom: 12%;
-	right: 25%;
-  }
-  
-  .P4.piece4 {
-	bottom: 12%;
-	right: 12.5%;
-  }
+//   .blue-home {
+// 	bottom: 0;
+// 	left: 0;
+//   }
 
 
-  .home {
-	position: absolute;
-	width: 40%;
-	height: 40%;
-  }
-  
-  .red-home {
-	top: 0;
-	left: 0;
-  }
-  
-  .green-home {
-	top: 0;
-	right: 0;
-  }
-  
-  .yellow-home {
-	bottom: 0;
-	right: 0;
-  }
-  
-  .blue-home {
-	bottom: 0;
-	left: 0;
-  }
-
-
-// Ludo Section Ends
+// // Ludo Section Ends
 
 // Coming Soon Section Starts
 .coming-soon {
@@ -2814,3 +2953,159 @@ input[type=radio] {
 	}
   }
 // Coming Soon Section Ends
+
+
+// ================Ludo Testing================== //
+
+.ludoContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100vh;
+	background-image: url("/images/ludo-background.jpg");
+}
+
+.ludoBoardContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 350px;
+	height: 100vh;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url("/images/ludo-background2.jpg");
+	// opacity: 0.7;
+
+}
+
+.ludoBoard {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+    width: 350px;
+    height: 350px;
+    border: 2px solid black;
+    background-color: white;
+}
+
+// Cells with different colors and styles based on their index
+
+.cell {
+	position: relative; 
+	overflow: visible;
+  }
+
+// Red Home Area
+.cell-0, .cell-1, .cell-2, .cell-3, .cell-4, .cell-5, .cell-15, .cell-20, .cell-30, .cell-35, .cell-45, .cell-50, .cell-60, .cell-65, .cell-75, .cell-76, .cell-77, .cell-78, .cell-79, .cell-80 , .cell-91, .cell-106, .cell-107, .cell-108, .cell-109, .cell-110{
+	background-color: #fb0b0c;
+  }
+// Green Home Area
+  
+  .cell-9, .cell-10, .cell-11, .cell-12, .cell-13, .cell-14, .cell-24,.cell-29,  .cell-39, .cell-44, .cell-54, .cell-59, .cell-69, .cell-74, .cell-84, .cell-85, .cell-86, .cell-87, .cell-88, .cell-89 , .cell-23, .cell-22, .cell-37, .cell-52, .cell-67, .cell-82{
+	background-color: #15872f;
+  }
+// Blue Home Area
+  
+  .cell-144, .cell-145, .cell-146, .cell-147, .cell-148, .cell-149, .cell-159, .cell-164, .cell-174,  .cell-179, .cell-189,  .cell-194, .cell-204,  .cell-209, .cell-219, .cell-220, .cell-221, .cell-222, .cell-223, .cell-224, .cell-133, .cell-118, .cell-117, .cell-116, .cell-115, .cell-114 {
+	background-color: #45b8d3;
+  }
+// Yellow Home Area
+  
+  .cell-135, .cell-136, .cell-137, .cell-138, .cell-139, .cell-140, .cell-150,  .cell-155, .cell-165,  .cell-170, .cell-180,  .cell-185, .cell-195, .cell-200, .cell-210, .cell-211, .cell-212, .cell-213, .cell-214, .cell-215, .cell-201, .cell-202, .cell-187, .cell-172, .cell-157, .cell-142 {
+	background-color: #f1e714;
+  }
+
+//   Borders for the cells except home and center
+  .cell-6,.cell-7,.cell-8,.cell-21,.cell-22,.cell-23,.cell-36,.cell-37,.cell-38,.cell-51,.cell-52,.cell-53,.cell-66,.cell-67,.cell-68,.cell-81,.cell-82,.cell-83,.cell-90,.cell-91,.cell-92,.cell-93,.cell-94,.cell-95,.cell-99,.cell-100,.cell-101,.cell-102,.cell-103,.cell-104,.cell-105,.cell-106,.cell-107,.cell-108,.cell-109,.cell-110,.cell-114,.cell-115,.cell-116,.cell-117,.cell-118,.cell-119,.cell-120,.cell-121,.cell-122,.cell-123,.cell-124,.cell-125,.cell-129,.cell-130,.cell-131,.cell-132,.cell-133,.cell-134,.cell-141,.cell-142,.cell-143,.cell-156,.cell-157,.cell-158,.cell-171,.cell-172,.cell-173,.cell-186,.cell-187,.cell-188,.cell-201,.cell-202,.cell-203,.cell-216,.cell-217,.cell-218{
+	border: 1px solid black;
+  }
+
+
+
+// Player pieces placement
+.cell-32,.cell-33,.cell-47,.cell-48{
+	background-color: #fb0b0c;
+  }
+  .cell-41,.cell-42,.cell-56,.cell-57{
+	background-color: #15872f;
+  }
+  .cell-167,.cell-168,.cell-182,.cell-183{
+	background-color: #f1e714;
+  }
+  .cell-176,.cell-177,.cell-191,.cell-192{
+	background-color: #45b8d3;
+  }
+
+.cell-32, .cell-33, .cell-47, .cell-48,
+.cell-41, .cell-42, .cell-56, .cell-57,
+.cell-167, .cell-168, .cell-182, .cell-183,
+.cell-176, .cell-177, .cell-191, .cell-192 {
+  border: 1px solid black;
+  border-radius: 50%;
+  margin: 3px;
+}
+
+
+// Arrows
+.cell-105 {
+    background-color: white;
+    &:after {
+        content: "→";
+        font-size: 1rem;
+        color: #fb0b0c;
+    }
+}
+.cell-7 {
+    background-color: white;
+    &:after {
+        content: "↓";
+        font-size: 1rem;
+        color: #15872f;
+    }
+}
+.cell-217 {
+    background-color: white;
+    &:after {
+        content: "↑";
+        font-size: 1rem;
+        color: #f1e714;
+    }
+}
+.cell-119 {
+    background-color: white;
+    &:after {
+        content: "←";
+        font-size: 1rem;
+        color: #45b8d3;
+    }
+}
+
+// Stars
+.cell-102, .cell-122, .cell-36, .cell-188 {
+	background-color: white;
+	display: flex;
+	justify-content: center; 
+	align-items: center; 
+	position: relative;
+  }
+  
+  .cell-102:before, .cell-122:before, .cell-36:before, .cell-188:before {
+	content: "★";
+	font-size: 1.2rem;
+	color: #000000;
+  }
+
+// Player Pile
+.player-pile {
+	position: absolute;
+	width: 100px;  
+	height: auto;
+	bottom: 30%;
+	left: 50%;  
+	transform: translateX(-50%);
+  }
+// ================Ludo Testing================== //
+
