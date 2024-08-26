@@ -4,7 +4,7 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation';
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
-import { auth, db } from '../../../firebaseConfig';
+import { auth, db, isAdmin } from '../../../firebaseConfig';
 import { signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, signInWithPopup } from "firebase/auth";
 import { doPasswordReset, doSignInWithGoogle } from '@/firebase/auth';
 import { getDoc, doc } from 'firebase/firestore';
@@ -23,21 +23,20 @@ export default function Login() {
                 const user = userCredential.user;
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 const userData = userDoc.data();
-                if (userData?.isBlocked === false) {
-                    if (userData?.role === 'admin') {
-                        router.push('/admin');
-                    } else {
-                        router.push('/');
-                    }
+
+                if (isAdmin(user.email)) {
+                    router.push('/admin');
                 } else {
-                    setMessage('You are suspended from the system');
+                    if (userData?.isBlocked === false) {
+                        router.push('/');
+                    } else {
+                        setMessage('You are suspended from the system' + user.email);
+                    }
                 }
+
             })
             .catch((error) => {
                 const errorCode = error.code;
-                const errorMessage = error.message;
-                console.error(errorCode, errorMessage);
-                setMessage('Error signing in. Please check your credentials.');
             });
     };
 
