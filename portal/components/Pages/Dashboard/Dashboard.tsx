@@ -9,9 +9,11 @@ import { dashboardTabs } from '@/public/data/dashTabs';
 import { doSignOut } from '../../../firebase/auth';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchBalanceHistory, fetchProfileData, fetchUserBets, fetchUserComplaints, fetchUserWallet, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
+import { fetchBalanceHistory, fetchProfileData, fetchUserBets, fetchUserComplaints, fetchUserWallet, handleChange, updatePasswordInFirebase, updateProfile, updateSettings } from '../../../api/firestoreService';
 import UserStatement from './UserStatement';
 import ComplaintForm from './Complaints';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
 
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
@@ -22,6 +24,9 @@ export default function Dashboard() {
     const [errorMessage, setErrorMessage] = useState('');
     const [userBets, setUserBets] = useState<any[]>([]);
     const [complaintsHistory, setComplaintsHistory] = useState<any[]>([]);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
@@ -96,6 +101,48 @@ export default function Dashboard() {
         state: '',
         zipCode: '',
     });
+    // Update Password
+    const [formPasswordData, setFormPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+    });
+
+    const onPasswordSubmit = async (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        if (formPasswordData.newPassword !== formPasswordData.confirmPassword) {
+            setErrorMessage("Passwords do not match!");
+            return;
+        }
+        try {
+            if (user) {
+                const result = await updatePasswordInFirebase(
+                    user.email,
+                    formPasswordData.currentPassword,
+                    formPasswordData.newPassword
+                );
+                if (result.success) {
+                    setSuccessMessage("Password updated successfully!");
+                    setErrorMessage("");
+                } else {
+                    setErrorMessage("Please enter correct current password!");
+                }
+            } else {
+                setErrorMessage("No user found");
+            }
+        } catch (error) {
+            setErrorMessage("Error updating password!");
+        }
+    };
+    const togglePasswordVisibility = (type: string) => {
+        if (type === 'current') {
+            setShowCurrentPassword(!showCurrentPassword);
+        } else if (type === 'new') {
+            setShowNewPassword(!showNewPassword);
+        } else if (type === 'confirm') {
+            setShowConfirmPassword(!showConfirmPassword);
+        }
+    };
 
     const onSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -467,6 +514,90 @@ export default function Dashboard() {
 
                                                 <Tab.Panel >
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                        <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mt-6">
+                                                            <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                                                                <h5 className="n10-color">Update Your Password</h5>
+                                                            </div>
+                                                            <div className="pay_method__formarea">
+                                                                <form onSubmit={onPasswordSubmit}>
+                                                                    {/* Current Password */}
+                                                                    <div className="d-flex align-items-center w-100 p1-bg ps-3 rounded-8 mb-5">
+                                                                        <input
+                                                                            type={showCurrentPassword ? "text" : "password"}
+                                                                            name="currentPassword"
+                                                                            placeholder="Current Password"
+                                                                            value={formPasswordData.currentPassword}
+                                                                            onChange={(e) =>
+                                                                                setFormPasswordData({
+                                                                                    ...formPasswordData,
+                                                                                    currentPassword: e.target.value,
+                                                                                })
+                                                                            }
+                                                                            className="flex-grow-1"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn"
+                                                                            onClick={() => togglePasswordVisibility('current')}
+                                                                        >
+                                                                            {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+                                                                        </button>
+                                                                    </div>
+
+                                                                    {/* New Password */}
+                                                                    <div className="d-flex align-items-center w-100 p1-bg ps-3 rounded-8 mb-5">
+                                                                        <input
+                                                                            type={showNewPassword ? "text" : "password"}
+                                                                            name="newPassword"
+                                                                            placeholder="New Password"
+                                                                            value={formPasswordData.newPassword}
+                                                                            onChange={(e) =>
+                                                                                setFormPasswordData({
+                                                                                    ...formPasswordData,
+                                                                                    newPassword: e.target.value,
+                                                                                })
+                                                                            }
+                                                                            className="flex-grow-1"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn"
+                                                                            onClick={() => togglePasswordVisibility('new')}
+                                                                        >
+                                                                            {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                                                                        </button>
+                                                                    </div>
+
+                                                                    {/* Confirm Password */}
+                                                                    <div className="d-flex align-items-center w-100 p1-bg ps-3 rounded-8 mb-5">
+                                                                        <input
+                                                                            type={showConfirmPassword ? "text" : "password"}
+                                                                            name="confirmPassword"
+                                                                            placeholder="Confirm Password"
+                                                                            value={formPasswordData.confirmPassword}
+                                                                            onChange={(e) =>
+                                                                                setFormPasswordData({
+                                                                                    ...formPasswordData,
+                                                                                    confirmPassword: e.target.value,
+                                                                                })
+                                                                            }
+                                                                            className="flex-grow-1"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn"
+                                                                            onClick={() => togglePasswordVisibility('confirm')}
+                                                                        >
+                                                                            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">
+                                                                        Update Password
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
                                                         <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                                             <h5 className="n10-color">Enter your payment details</h5>
                                                         </div>

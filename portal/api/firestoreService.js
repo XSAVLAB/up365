@@ -13,6 +13,8 @@ import {
   increment,
   where,
 } from "firebase/firestore";
+import { auth } from "@/firebaseConfig";
+import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
 
 export const handleChange = (profileData, setProfileData) => (e) => {
   const { name, value } = e.target;
@@ -25,8 +27,14 @@ export const handleChange = (profileData, setProfileData) => (e) => {
 // Fetch balance history
 export const fetchBalanceHistory = async (userId) => {
   try {
-    const transactionsCollectionRef = collection(db, "transactions");
-    const withdrawalsCollectionRef = collection(db, "withdrawals");
+    const transactionsCollectionRef = query(
+      collection(db, "transactions"),
+      where("status", "==", "approved")
+    );
+    const withdrawalsCollectionRef = query(
+      collection(db, "withdrawals"),
+      where("status", "==", "approved")
+    );
 
     const transactionsSnapshot = await getDocs(transactionsCollectionRef);
     const withdrawalsSnapshot = await getDocs(withdrawalsCollectionRef);
@@ -100,6 +108,31 @@ export const updateSettings = async (userId, settingsData) => {
   } catch (error) {
     console.error("Error updating settings: ", error);
     throw error;
+  }
+};
+
+// Update Password
+
+export const updatePasswordInFirebase = async (
+  email,
+  currentPassword,
+  newPassword
+) => {
+  try {
+    // Re-authenticate user
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      currentPassword
+    );
+
+    // Update password
+    await updatePassword(userCredential.user, newPassword);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating password: ", error);
+    return { success: false, errorMessage: error.message };
   }
 };
 
