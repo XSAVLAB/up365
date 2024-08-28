@@ -65,12 +65,12 @@ export default function HeaderTwo() {
                     <div className="right-area custom-pos custom-postwo position-relative d-flex gap-3 gap-xl-7 align-items-center me-5 me-xl-10 align-items-center">
                         <div className="d-flex align-items-center gap-2 mt-1">
 
-                            <div className="cart-area search-area d-flex">
+                            {/* <div className="cart-area search-area d-flex">
                                 <button type="button" className="py-1 px-2 n11-bg rounded-5" onClick={handleLogout()}>
                                     <IconLogout height={24} width={24} className="ti ti-user-circle fs-four" />
                                 </button>
 
-                            </div>
+                            </div> */}
                         </div>
                         <button onClick={toggleCard} className="navbar-toggler navbar-toggler-two mt-1 mt-sm-2 mt-lg-0" type="button" data-bs-toggle="collapse" aria-label="Navbar Toggler"
                             data-bs-target="#navbar-content" aria-expanded="true" id="nav-icon3">

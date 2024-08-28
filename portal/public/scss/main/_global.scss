@@ -2212,7 +2212,7 @@ input[type=radio] {
 /* Warning Popup Landing Page starts */
 .warning-popup {
     position: fixed;
-    bottom: 0; /* Position at the bottom of the screen */
+    top: 320px; /* Position at the bottom of the screen */
     left: 0;
     width: 100%;
     height: auto; /* Adjust height based on content */
@@ -3175,7 +3175,10 @@ input[type=radio] {
 .dice:hover {
     transform: scale(1.1);
 }
-
+.dice.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
 .diceImage {
     width: 50px;
     height: 50px;
