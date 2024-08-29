@@ -19,7 +19,7 @@ function ActiveLotteryBets() {
         try {
             const fetchedBets = await fetchLotteryBets(uid, 'Triple Digit Lottery');
             setMyBetsTable(fetchedBets);
-            if (!fetchedBets.length) console.error("No Bets Found. Place Bets.");
+
         } catch (error) {
             console.error('Error fetching my bets data:', error);
         }

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { MdOutlineArrowDropDownCircle } from 'react-icons/md';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchAllLotteryBets } from '../../../api/firestoreService';
+import { fetchAllLotteryBetsHome } from '../../../api/firestoreService';
 
 const colorMapping: { [key: string]: string } = {
     'Red': 'red',
@@ -40,7 +40,7 @@ function AllLotteryBets() {
 
     const fetchBets = async (uid: string) => {
         try {
-            const fetchedBets = await fetchAllLotteryBets(uid, "Color Ball Game");
+            const fetchedBets = await fetchAllLotteryBetsHome(uid);
             setMyBetsTable(fetchedBets);
 
         } catch (error) {
@@ -64,45 +64,45 @@ function AllLotteryBets() {
     }, []);
 
     return (
-        <div className="bets-table-container">
-            <div onClick={handleShowBets} className="show-bets-button">
+        <div className="bets-table-container-home">
+            {/* <div onClick={handleShowBets} className="show-bets-button">
                 All Bets History
                 <MdOutlineArrowDropDownCircle size={30} />
             </div>
-            {showBets && (
-                <div className="table-responsive">
-                    <table className="bets-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Game Name</th>
-                                <th>Date</th>
-                                <th>Bet Amount</th>
-                                <th>Bet</th>
-                                <th>Reward</th>
-                                <th>Result</th>
+            {showBets && ( */}
+            <div className="table-responsive">
+                <table className="bets-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Game Name</th>
+                            <th>Date</th>
+                            <th>Bet Amount</th>
+                            <th>Bet</th>
+                            <th>Reward</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {myBetsTable.map((row, index) => (
+                            <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{row.gameType}</td>
+                                <td>{row.timestamp}</td>
+                                <td>{row.betAmount}</td>
+                                <td>
+                                    {row.betNumber} <ColorBall color={row.ballColor} />
+                                </td>
+                                <td>{row.rewardAmount}</td>
+                                <td>
+                                    {row.winningNumber} <ColorBall color={row.winningColor} />
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {myBetsTable.map((row, index) => (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{row.gameType}</td>
-                                    <td>{row.timestamp}</td>
-                                    <td>{row.betAmount}</td>
-                                    <td>
-                                        {row.betNumber} <ColorBall color={row.ballColor} />
-                                    </td>
-                                    <td>{row.rewardAmount}</td>
-                                    <td>
-                                        {row.winningNumber} <ColorBall color={row.winningColor} />
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            {/* )} */}
         </div>
     );
 }

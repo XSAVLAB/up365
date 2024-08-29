@@ -32,9 +32,19 @@ export default function HeaderTwo() {
                 setIsCardExpanded(false);
             }
         };
+
+        const handleScroll = () => {
+            if (isCardExpanded) {
+                setIsCardExpanded(false);
+            }
+        };
+
         document.body.addEventListener("click", handleClickOutside);
+        window.addEventListener("scroll", handleScroll);
+
         return () => {
             document.body.removeEventListener("click", handleClickOutside);
+            window.removeEventListener("scroll", handleScroll);
         };
     }, [isCardExpanded]);
 
@@ -151,9 +161,9 @@ export default function HeaderTwo() {
                             <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleProfileClick}>
                                 <IconUserCircle height={24} width={24} className="ti ti-user-circle fs-four" />
                             </button>
-                            {/* <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleLogout}>
+                            <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleLogout}>
                                 <IconLogout height={24} width={24} className="ti ti-user-circle fs-four" />
-                            </button> */}
+                            </button>
 
                             {/* </div> */}
                         </div>

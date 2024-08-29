@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react';
 import LandingPageImagesMarquee from './ImagesMarquee';
 import { useRouter } from 'next/navigation';
 import GamesCards from './GameCards';
+import AllLotteryBets from './AllLotteryBets';
 
 const HomePage: React.FC = () => {
     const router = useRouter();
@@ -21,6 +22,7 @@ const HomePage: React.FC = () => {
             <div ref={gamesRef}>
                 <GamesCards />
             </div>
+            <AllLotteryBets />
         </section >
     );
 };

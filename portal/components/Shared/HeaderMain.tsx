@@ -32,11 +32,22 @@ export default function HeaderTwo() {
                 setIsCardExpanded(false);
             }
         };
+
+        const handleScroll = () => {
+            if (isCardExpanded) {
+                setIsCardExpanded(false);
+            }
+        };
+
         document.body.addEventListener("click", handleClickOutside);
+        window.addEventListener("scroll", handleScroll);
+
         return () => {
             document.body.removeEventListener("click", handleClickOutside);
+            window.removeEventListener("scroll", handleScroll);
         };
     }, [isCardExpanded]);
+
 
     useEffect(() => {
         const handleClickOutsideMiddle = (event: any) => {

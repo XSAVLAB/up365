@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { auth } from "@/firebaseConfig";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
+import { parse } from "date-fns";
 
 export const handleChange = (profileData, setProfileData) => (e) => {
   const { name, value } = e.target;
@@ -355,17 +356,88 @@ export const fetchLotteryBets = async (userId, gameType) => {
       where("gameType", "==", gameType)
     );
     const betsSnapshot = await getDocs(q);
-    return betsSnapshot.docs.map((doc) => ({
+    const bets = betsSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
+
+    // Parse and sort the bets in descending order by timestamp
+    return bets.sort((a, b) => {
+      const dateA = parse(a.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
+      return dateB - dateA; // Descending order
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+// Fetch winning bets
+
+export const fetchWinningBets = async (userId, gameType) => {
+  try {
+    const db = getFirestore();
+    const gameBetsRef = collection(db, "gameBets");
+    const settledBetsQuery = query(
+      gameBetsRef,
+      where("settled", "==", true),
+      where("userID", "==", userId),
+      where("gameType", "==", gameType)
+    );
+    const snapshot = await getDocs(settledBetsQuery);
+    const winningBets = [];
+
+    snapshot.forEach((betDoc) => {
+      const betData = betDoc.data();
+      if (betData.rewardAmount > 0) {
+        winningBets.push({
+          gameType: betData.gameType,
+          winningNumber: betData.winningNumber,
+          winningColor: betData.winningColor,
+          rewardAmount: betData.rewardAmount,
+          timestamp: betData.timestamp,
+        });
+      }
+    });
+
+    // Parse and sort the winning bets in descending order by timestamp
+    return winningBets.sort((a, b) => {
+      const dateA = parse(a.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
+      return dateB - dateA; // Descending order
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+// Fetch all lottery bets
+export const fetchAllLotteryBetsHome = async (userId) => {
+  try {
+    const db = getFirestore();
+    const q = query(
+      collection(db, "gameBets"),
+      where("userID", "==", userId),
+      where("settled", "==", true)
+    );
+    const betsSnapshot = await getDocs(q);
+    const bets = betsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // Parse and sort the bets in descending order by timestamp
+    const sortedBets = bets.sort((a, b) => {
+      const dateA = parse(a.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
+
+      return dateB - dateA; // Descending order
+    });
+
+    return sortedBets;
   } catch (error) {
     console.error("Error fetching user bets: ", error);
     throw error;
   }
 };
-
-// Fetch all lottery bets
 export const fetchAllLotteryBets = async (userId, gameType) => {
   try {
     const db = getFirestore();
@@ -376,10 +448,20 @@ export const fetchAllLotteryBets = async (userId, gameType) => {
       where("gameType", "==", gameType)
     );
     const betsSnapshot = await getDocs(q);
-    return betsSnapshot.docs.map((doc) => ({
+    const bets = betsSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
+
+    // Parse and sort the bets in descending order by timestamp
+    const sortedBets = bets.sort((a, b) => {
+      const dateA = parse(a.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
+
+      return dateB - dateA; // Descending order
+    });
+
+    return sortedBets;
   } catch (error) {
     console.error("Error fetching user bets: ", error);
     throw error;
@@ -531,41 +613,6 @@ export const settleColorBallBets = async () => {
     }
   } catch (error) {
     console.error("Error settling bets: ", error);
-  }
-};
-
-// Fetch winning bets
-
-export const fetchWinningBets = async (userId, gameType) => {
-  try {
-    const db = getFirestore();
-    const gameBetsRef = collection(db, "gameBets");
-    const settledBetsQuery = query(
-      gameBetsRef,
-      where("settled", "==", true),
-      where("userID", "==", userId),
-      where("gameType", "==", gameType)
-    );
-    const snapshot = await getDocs(settledBetsQuery);
-    const winningBets = [];
-
-    snapshot.forEach((betDoc) => {
-      const betData = betDoc.data();
-      if (betData.rewardAmount > 0) {
-        winningBets.push({
-          gameType: betData.gameType,
-          winningNumber: betData.winningNumber,
-          winningColor: betData.winningColor,
-          rewardAmount: betData.rewardAmount,
-          timestamp: betData.timestamp,
-        });
-      }
-    });
-
-    return winningBets;
-  } catch (error) {
-    console.error("Error fetching winning bets: ", error);
-    throw error;
   }
 };
 

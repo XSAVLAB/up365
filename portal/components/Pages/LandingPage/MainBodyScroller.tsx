@@ -15,9 +15,9 @@ interface MainBodyScrollerProps {
 
 const MainBodyScroller: React.FC<MainBodyScrollerProps> = ({ scrollToGames }) => {
   const router = useRouter();
-  const navigateHomePage = () => {
-    router.push("/");
-  };
+  // const navigateHomePage = () => {
+  //   router.push("/");
+  // };
   const navigateGamesPage = () => {
     scrollToGames();
   };
@@ -36,10 +36,10 @@ const MainBodyScroller: React.FC<MainBodyScrollerProps> = ({ scrollToGames }) =>
     <nav className="main-body-scroller">
       <div className="container">
         <div className="nav-items">
-          <div className="nav-item" onClick={navigateHomePage}>
+          {/* <div className="nav-item" onClick={navigateHomePage}>
             <AiFillHome size={25} />
             <span>Home</span>
-          </div>
+          </div> */}
           <div className="nav-item" onClick={navigateGamesPage}>
             <FaGamepad size={25} />
             <span>Games</span>

@@ -19,9 +19,7 @@ function LotteryResult() {
     try {
       const fetchedWinningBets = await fetchWinningBets(uid, 'Single Digit Lottery');
       setWinningBets(fetchedWinningBets);
-      if (!fetchedWinningBets.length) {
-        console.error("No Winning Bets Found.");
-      }
+
     } catch (error) {
       console.error('Error fetching winning bets data:', error);
     }
