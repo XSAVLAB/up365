@@ -259,37 +259,132 @@ export const updateUserBlockStatus = async (
 // Fetch all complaints
 export const fetchComplaints = async () => {
   try {
-      const complaintsCollection = collection(db, 'complaints');
-      const complaintsSnapshot = await getDocs(complaintsCollection);
-      const complaintsList = complaintsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-      }));
-      return complaintsList;
+    const complaintsCollection = collection(db, "complaints");
+    const complaintsSnapshot = await getDocs(complaintsCollection);
+    const complaintsList = complaintsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return complaintsList;
   } catch (error) {
-      console.error('Error fetching complaints:', error);
-      throw error;
+    console.error("Error fetching complaints:", error);
+    throw error;
   }
 };
 
 // Update complaint status
 export const updateComplaintStatus = async (complaintId, status) => {
   try {
-      const complaintRef = doc(db, 'complaints', complaintId);
-      await updateDoc(complaintRef, { status });
+    const complaintRef = doc(db, "complaints", complaintId);
+    await updateDoc(complaintRef, { status });
   } catch (error) {
-      console.error('Error updating complaint status:', error);
-      throw error;
+    console.error("Error updating complaint status:", error);
+    throw error;
   }
 };
 
 // Update complaint remarks
 export const updateComplaintRemark = async (complaintId, adminRemarks) => {
   try {
-      const complaintRef = doc(db, 'complaints', complaintId);
-      await updateDoc(complaintRef, { adminRemarks });
+    const complaintRef = doc(db, "complaints", complaintId);
+    await updateDoc(complaintRef, { adminRemarks });
   } catch (error) {
-      console.error('Error updating complaint remarks:', error);
-      throw error;
+    console.error("Error updating complaint remarks:", error);
+    throw error;
+  }
+};
+
+// Function to update marquee text in Firestore
+export const updateMarqueeText = async (marqueeText) => {
+  try {
+    const marqueeTextRef = doc(db, "marqueeText", "marqueeText");
+    await updateDoc(marqueeTextRef, { marqueeText: marqueeText });
+  } catch (error) {
+    console.error("Error updating the marquee", error);
+  }
+};
+
+// Function to get today's date in the same format as stored timestamps
+const getTodayDate = () => {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, "0");
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const year = today.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+const parseDate = (timestamp) => {
+  const [datePart, timePart] = timestamp.split(", ");
+  const [day, month, year] = datePart.split("/").map(Number);
+  const [time, period] = timePart.split(" ");
+  let [hours, minutes, seconds] = time.split(":").map(Number);
+
+  // Convert 12-hour format to 24-hour format
+  if (period === "PM" && hours < 12) hours += 12;
+  if (period === "AM" && hours === 12) hours = 0;
+
+  return new Date(year, month - 1, day, hours, minutes, seconds);
+};
+
+// General function to fetch total amounts based on collection and time period
+export const fetchTotalAmount = async (collectionName, timePeriod) => {
+  try {
+    const transactionsCollection = collection(db, collectionName);
+    const q = query(transactionsCollection, where("status", "==", "approved"));
+    const querySnapshot = await getDocs(q);
+
+    const totalAmount = querySnapshot.docs
+      .filter((doc) => {
+        const timestamp = doc.data().timestamp;
+        const date = parseDate(timestamp);
+        const currentDate = new Date();
+
+        if (timePeriod === "day") {
+          return (
+            date.getDate() === currentDate.getDate() &&
+            date.getMonth() === currentDate.getMonth() &&
+            date.getFullYear() === currentDate.getFullYear()
+          );
+        } else if (timePeriod === "month") {
+          return (
+            date.getMonth() === currentDate.getMonth() &&
+            date.getFullYear() === currentDate.getFullYear()
+          );
+        } else if (timePeriod === "year") {
+          return date.getFullYear() === currentDate.getFullYear();
+        } else {
+          return false;
+        }
+      })
+      .reduce((acc, doc) => {
+        return acc + parseFloat(doc.data().amount);
+      }, 0);
+
+    return totalAmount;
+  } catch (error) {
+    console.error(`Error fetching total amount from ${collectionName}:`, error);
+    throw error;
+  }
+};
+
+// Function to fetch active users in a specific game
+export const fetchActiveUsersInGame = async (gameType) => {
+  try {
+    const betsRef = collection(db, "gameBets");
+    const q = query(betsRef, where("gameType", "==", gameType));
+    const querySnapshot = await getDocs(q);
+    const today = getTodayDate();
+    const activeUsers = new Set();
+    querySnapshot.forEach((doc) => {
+      const { timestamp, userID } = doc.data();
+      if (timestamp.startsWith(today)) {
+        activeUsers.add(userID);
+      }
+    });
+
+    return activeUsers;
+  } catch (error) {
+    console.error("Error fetching active users in game:", error);
+    return new Set(); 
   }
 };

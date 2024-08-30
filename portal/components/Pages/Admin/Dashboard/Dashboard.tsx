@@ -6,9 +6,10 @@ import { dashboardTabs } from '@/public/data/adminTabs';
 import { doSignOut } from '../../../../firebase/auth';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth, isAdmin as checkIsAdmin } from '@/firebaseConfig';
-import { fetchAllUsers, deleteUser, fetchUserRole, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus, updateComplaintStatus, updateComplaintRemark, fetchComplaints } from '../../../../api/firestoreAdminService';
+import { fetchAllUsers, deleteUser, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus, updateComplaintStatus, updateComplaintRemark, fetchComplaints, updateMarqueeText } from '../../../../api/firestoreAdminService';
 import EditUserForm from '../UserManagement/EditUserForm';
 import History from '../Dashboard/History';
+import Status from './Status';
 
 interface User {
     id: string;
@@ -63,6 +64,8 @@ export default function Dashboard() {
     const [complaints, setComplaints] = useState<Complaint[]>([]);
     const [series, setSeries] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const [marqueeText, setMarqueeText] = useState("");
+    const [message, setMessage] = useState("");
     const router = useRouter();
 
     useEffect(() => {
@@ -259,6 +262,17 @@ export default function Dashboard() {
             console.error('Error submitting complaint remark:', error);
         }
     };
+    const handleSubmitMarqueeText = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        try {
+            const marqueeText = event.currentTarget.marqueeText.value;
+            await updateMarqueeText(marqueeText);
+            setMessage("Marquee text updated successfully!");
+        } catch (error) {
+            console.error("Error updating marquee text", error);
+            setMessage("Failed to update marquee text.");
+        }
+    };
 
     const getStatusStyle = (status: string) => {
         switch (status) {
@@ -281,6 +295,7 @@ export default function Dashboard() {
     if (!isAdmin) {
         return <div>Loading...</div>;
     }
+
 
     return (
         <>
@@ -525,6 +540,40 @@ export default function Dashboard() {
                                                         </div>
                                                     </div>
                                                 </Tab.Panel>
+                                                <Tab.Panel>
+                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                        <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                                                            <h5 className="n10-color">Enter the Marquee Text</h5>
+                                                        </div>
+                                                        <div className="pay_method__formarea">
+                                                            <form onSubmit={handleSubmitMarqueeText}>
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                    <div className="w-100">
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="marqueeText"
+                                                                            placeholder="Enter Marquee Text"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <button className="cmn-btn py-3 px-10" type="submit">
+                                                                    Update
+                                                                </button>
+                                                            </form>
+                                                            {message && (
+                                                                <div className="mt-3 alert alert-success">
+                                                                    {message}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel>
+
+                                                <Tab.Panel>
+                                                    <Status />
+                                                </Tab.Panel>
+
                                             </Tab.Panels>
                                         </div>
                                     </div>

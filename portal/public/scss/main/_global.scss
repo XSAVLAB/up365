@@ -2209,29 +2209,33 @@ input[type=radio] {
 }
 
 // Floating Whatsapp logo ends
+/* Disable scrolling when no-scroll class is active */
+.no-scroll {
+    overflow: hidden;
+}
+
 /* Warning Popup Landing Page starts */
-.warning-popup {
+.warning-overlay {
     position: fixed;
-    top: 320px; /* Position at the bottom of the screen */
+    top: 0;
     left: 0;
     width: 100%;
-    height: auto; /* Adjust height based on content */
+    height: 100%;
     background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
-    padding: 20px; /* Add padding to ensure the popup does not touch the edges */
 }
 
-.warning-message {
+.warning-popup {
     background: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
-    width: 90%; /* Optional: Adjust width as needed */
-    max-width: 500px; /* Optional: Set a maximum width */
+    width: 90%;
+    max-width: 500px;
 }
 
 .warning-message p {
@@ -2252,8 +2256,8 @@ input[type=radio] {
 .agree-button:hover {
     background-color: darkgreen;
 }
-
 /* Warning Popup Landing Page ends */
+
 
 // User Complaints Form Starts
 .complaint-form-container {
@@ -2953,7 +2957,55 @@ input[type=radio] {
 	}
   }
 // Coming Soon Section Ends
+// Admin Status Section Starts
+.status__container {
+    background-color: #080f25;
+    border: 1px solid #ddd;
+    padding: 16px;
+    border-radius: 8px;
+}
 
+.status__title {
+    margin-bottom: 20px;
+
+    &-text {
+        font-size: 1.5rem;
+        color: #ffffff;
+        font-weight: bold;
+    }
+}
+
+.status__content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.status__item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &-title {
+        font-weight: 500;
+        color: #ffffff;
+    }
+
+    &-value {
+        font-weight: 700;
+		padding: 10px;
+		border-radius: 5px;
+        color: #ffffff;
+		background-color: #2b80ff;
+    }
+}
+
+// Admin Status Section Ends
 
 // ================Ludo Testing================== //
 

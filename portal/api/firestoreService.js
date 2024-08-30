@@ -24,6 +24,26 @@ export const handleChange = (profileData, setProfileData) => (e) => {
     [name]: value,
   }));
 };
+// Format timestamp
+
+const formatTimestamp = () => {
+  const now = new Date();
+  const hours = now.getHours();
+  const formattedHours = hours % 12 || 12;
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  const formattedTimestamp = `${String(now.getDate()).padStart(
+    2,
+    "0"
+  )}/${String(now.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}/${now.getFullYear()}, ${String(formattedHours).padStart(2, "0")}:${String(
+    now.getMinutes()
+  ).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${ampm}`;
+
+  return formattedTimestamp;
+};
 
 // Fetch balance history
 export const fetchBalanceHistory = async (userId) => {
@@ -104,7 +124,7 @@ export const updateSettings = async (userId, settingsData) => {
     const userDocRef = doc(db, "cardDetails", userId);
     await setDoc(userDocRef, {
       ...settingsData,
-      timestamp: new Date().toLocaleString(),
+      timestamp: formatTimestamp(),
     });
   } catch (error) {
     console.error("Error updating settings: ", error);
@@ -145,7 +165,7 @@ export const updateUserCardDetails = async (userId, cardDetails) => {
     const userDocRef = doc(db, "cardDetails", userId);
     await setDoc(userDocRef, {
       ...cardDetails,
-      timestamp: new Date().toLocaleString(),
+      timestamp: formatTimestamp(),
     });
     console.log("User card details updated in Firestore");
   } catch (error) {
@@ -161,9 +181,8 @@ export const addTransaction = async (userId, transactionData) => {
     await addDoc(transactionCollectionRef, {
       ...transactionData,
       userId,
-      timestamp: new Date().toLocaleString(),
+      timestamp: formatTimestamp(),
     });
-    console.log("Transaction added to Firestore");
   } catch (error) {
     console.error("Error adding transaction: ", error);
     throw error;
@@ -178,7 +197,7 @@ export const addWithdrawalRequest = async (userId, amount) => {
       userId,
       amount,
       status: "pending",
-      timestamp: new Date().toLocaleString(),
+      timestamp: formatTimestamp(),
     });
 
     console.log("Withdrawal request stored in Firestore");
@@ -264,7 +283,7 @@ export const placeBet = async (betData) => {
       odds: selectedTeam === "t1" ? t1odds.toString() : t2odds.toString(),
       possibleWin,
       selectedTeam: selectedTeam === "t1" ? t1 : t2,
-      timestamp: new Date().toLocaleString(),
+      timestamp: formatTimestamp(),
       status: "pending",
       matchId,
       settled: false,
@@ -335,7 +354,7 @@ export const submitLotteryBet = async (
       gameType,
       ballColor,
       settled,
-      timestamp: new Date().toLocaleString(),
+      timestamp: formatTimestamp(),
     };
     await addDoc(collection(db, "gameBets"), betData);
     return { status: "Bet Placed" };
@@ -740,7 +759,7 @@ export const submitComplaint = async (
       description,
       status: "pending",
       adminRemarks: "",
-      createdAt: new Date().toISOString(),
+      timestamp: formatTimestamp(),
     };
     const docRef = await addDoc(complaintsCollectionRef, complaintData);
     return docRef.id;
@@ -840,3 +859,21 @@ export const fetchCricketMatches = async () => {
 };
 
 // ==================TESTING==================
+
+// Fetch marqueeText
+
+export const fetchMarqueeText = async () => {
+  try {
+    const marqueeTextRef = doc(db, "marqueeText", "marqueeText");
+    const marqueeDoc = await getDoc(marqueeTextRef);
+    if (marqueeDoc.exists) {
+      return marqueeDoc.data().marqueeText;
+    } else {
+      return "There is no marquee text currently";
+    }
+  } catch (e) {
+    console.log("fasdfasdfasdf", e);
+  }
+};
+
+// Fetch Total amount of deposit in a day, month, year

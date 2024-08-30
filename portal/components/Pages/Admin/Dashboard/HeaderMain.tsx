@@ -10,21 +10,21 @@ export default function HeaderTwo() {
     const [isCardExpanded, setIsCardExpanded] = useState(false);
     const [user, setUser] = useState<any>(null);
 
-    const toggleCard = () => {
-        setIsCardExpanded(!isCardExpanded);
-    };
+    // const toggleCard = () => {
+    //     setIsCardExpanded(!isCardExpanded);
+    // };
 
-    useEffect(() => {
-        const handleClickOutside = (event: any) => {
-            if (isCardExpanded && !event.target.closest(".navbar-toggler")) {
-                setIsCardExpanded(false);
-            }
-        };
-        document.body.addEventListener("click", handleClickOutside);
-        return () => {
-            document.body.removeEventListener("click", handleClickOutside);
-        };
-    }, [isCardExpanded]);
+    // useEffect(() => {
+    //     const handleClickOutside = (event: any) => {
+    //         if (isCardExpanded && !event.target.closest(".navbar-toggler")) {
+    //             setIsCardExpanded(false);
+    //         }
+    //     };
+    //     document.body.addEventListener("click", handleClickOutside);
+    //     return () => {
+    //         document.body.removeEventListener("click", handleClickOutside);
+    //     };
+    // }, [isCardExpanded]);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -52,30 +52,30 @@ export default function HeaderTwo() {
             <header className="header-section2 header-section">
                 <nav className="navbar navbar-expand-lg position-relative py-md-3 py-lg-6 workready">
                     <div className={`collapse navbar-collapse justify-content-between ${isCardExpanded ? "show" : "hide"}`} id="navbar-content">
-                        <ul className="navbar-nav2fixed navbar-nav d-flex align-items-lg-center gap-4 gap-sm-5 py-2 py-lg-0 align-self-center p2-bg">
+                        {/* <ul className="navbar-nav2fixed navbar-nav d-flex align-items-lg-center gap-4 gap-sm-5 py-2 py-lg-0 align-self-center p2-bg">
 
                             <li className="dropdown show-dropdown d-block d-sm-none">
                                 <div className="d-flex align-items-center flex-wrap gap-3">
-                                    {/* <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link> */}
+                                    <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link>
                                     <button onClick={() => auth.signOut()} className="cmn-btn px-xxl-11">Log Out</button>
                                 </div>
                             </li>
-                        </ul>
+                        </ul> */}
                     </div>
                     <div className="right-area custom-pos custom-postwo position-relative d-flex gap-3 gap-xl-7 align-items-center me-5 me-xl-10 align-items-center">
                         <div className="d-flex align-items-center gap-2 mt-1">
 
-                            {/* <div className="cart-area search-area d-flex">
+                            <div className="cart-area search-area d-flex">
                                 <button type="button" className="py-1 px-2 n11-bg rounded-5" onClick={handleLogout()}>
                                     <IconLogout height={24} width={24} className="ti ti-user-circle fs-four" />
                                 </button>
 
-                            </div> */}
+                            </div>
                         </div>
-                        <button onClick={toggleCard} className="navbar-toggler navbar-toggler-two mt-1 mt-sm-2 mt-lg-0" type="button" data-bs-toggle="collapse" aria-label="Navbar Toggler"
+                        {/* <button className="navbar-toggler navbar-toggler-two mt-1 mt-sm-2 mt-lg-0" type="button" data-bs-toggle="collapse" aria-label="Navbar Toggler"
                             data-bs-target="#navbar-content" aria-expanded="true" id="nav-icon3">
                             <span></span><span></span><span></span><span></span>
-                        </button>
+                        </button> */}
                     </div>
                 </nav>
                 <div id="div10" className="navigation left-nav-area box3 position-fixed">

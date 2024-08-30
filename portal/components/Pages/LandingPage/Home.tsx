@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Navbar from './Navbar';
 import Slider from './GamesSlider';
 import ResultGamesColorComponent from './ResultPageGamesColorChange';
@@ -8,11 +8,20 @@ import MainBodyScroller from './MainBodyScroller';
 import { useRouter } from 'next/navigation';
 import GamesCards from './GameCards';
 import { IconBrandWhatsapp } from '@tabler/icons-react';
+import MarqueeText from './MarqueeText';
 
 const Home: React.FC = () => {
     const [showWarning, setShowWarning] = useState(true);
     const router = useRouter();
     const gamesRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (showWarning) {
+            document.body.classList.add('no-scroll');
+        } else {
+            document.body.classList.remove('no-scroll');
+        }
+    }, [showWarning]);
 
     const scrollToGames = () => {
         gamesRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -32,15 +41,18 @@ const Home: React.FC = () => {
     return (
         <div className=''>
             {showWarning && (
-                <div className='warning-popup'>
-                    <div className='warning-message'>
-                        <p>Warning! This game may be habit forming and financially risky. Play Responsibly.</p>
-                        <button className='agree-button' onClick={handleAgreeAndContinue}>Agree and Continue</button>
+                <div className='warning-overlay'>
+                    <div className='warning-popup'>
+                        <div className='warning-message'>
+                            <p>Warning! This game may be habit forming and financially risky. Play Responsibly.</p>
+                            <button className='agree-button' onClick={handleAgreeAndContinue}>Agree and Continue</button>
+                        </div>
                     </div>
                 </div>
             )}
             <Navbar />
             <MainBodyScroller scrollToGames={scrollToGames} />
+            <MarqueeText />
             <LandingPageImagesMarquee />
             <Slider />
             <div ref={gamesRef}>

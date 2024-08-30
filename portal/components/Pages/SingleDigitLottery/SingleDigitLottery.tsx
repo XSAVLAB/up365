@@ -63,7 +63,7 @@ function SingleDigitLottery() {
         e.preventDefault();
         if (betAmount > Number(walletBalance) || Number(walletBalance) === 0) {
             alert('Insufficient Wallet Balance.\nPlease Recharge Your Wallet...');
-        } else if (number > -1 && number < 10 && betAmount > 99) {
+        } else if (number > 0 && number < 10 && betAmount > 99) {
             setBetCount((prevCount) => prevCount + 1);
             try {
                 const response = await submitLotteryBet(user?.uid, number, betAmount, 'Single Digit Lottery', null, false);
