@@ -145,7 +145,7 @@ export default function HeaderTwo() {
                             ) : (
                                 <li className="dropdown show-dropdown d-block d-sm-none">
                                     <div className="d-flex align-items-center flex-wrap gap-3">
-                                        <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Profile</Link>
+                                        <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Deposit</Link>
                                         <button onClick={handleLogout} className="cmn-btn px-xxl-11">Log Out</button>
                                     </div>
                                 </li>
@@ -160,14 +160,15 @@ export default function HeaderTwo() {
                             </div>
                         )}
                         <div className="d-flex align-items-center gap-2 mt-1">
-                            <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleWhatsAppClick}>
+                            <Link href="/dashboard" className="cmn-btn px-xxl-11">Deposit</Link>
+                            {/* <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleWhatsAppClick}>
                                 <FaWhatsapp height={24} width={24} className="ti ti-whatsapp fs-four" />
-                            </button>
+                            </button> */}
                             {/* <div className="cart-area search-area d-flex"> */}
                             {/* <HeaderTwoChat /> */}
-                            <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleProfileClick}>
+                            {/* <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleProfileClick}>
                                 <IconUserCircle height={24} width={24} className="ti ti-user-circle fs-four" />
-                            </button>
+                            </button> */}
                             {/* <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleLogout}>
                                 <IconLogout height={24} width={24} className="ti ti-user-circle fs-four" />
                             </button> */}

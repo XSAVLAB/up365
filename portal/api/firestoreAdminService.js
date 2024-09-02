@@ -9,8 +9,33 @@ import {
   updateDoc,
   query,
   where,
-  orderBy,
 } from "firebase/firestore";
+import { auth } from "@/firebaseConfig";
+import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
+// Update Admin Password
+
+export const updatePasswordInFirebase = async (
+  email,
+  currentPassword,
+  newPassword
+) => {
+  try {
+    // Re-authenticate user
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      currentPassword
+    );
+
+    // Update password
+    await updatePassword(userCredential.user, newPassword);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating password: ", error);
+    return { success: false, errorMessage: error.message };
+  }
+};
 
 // Fetch all users
 export const fetchAllUsers = async () => {
@@ -303,6 +328,15 @@ export const updateMarqueeText = async (marqueeText) => {
     console.error("Error updating the marquee", error);
   }
 };
+// Function to update Upi id in Firestore
+export const updateUpiID = async (upiID) => {
+  try {
+    const upiIDRef = doc(db, "upiID", "upiID");
+    await updateDoc(upiIDRef, { upiID: upiID });
+  } catch (error) {
+    console.error("Error updating the upiID", error);
+  }
+};
 
 // Function to get today's date in the same format as stored timestamps
 const getTodayDate = () => {
@@ -385,6 +419,6 @@ export const fetchActiveUsersInGame = async (gameType) => {
     return activeUsers;
   } catch (error) {
     console.error("Error fetching active users in game:", error);
-    return new Set(); 
+    return new Set();
   }
 };

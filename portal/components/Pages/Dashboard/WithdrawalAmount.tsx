@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { dashboardAmmount } from '@/public/data/dashBoard';
 import { auth } from '@/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { addWithdrawalRequest, fetchUserWallet } from '@/api/firestoreService';
+import { addWithdrawalRequest, fetchUserWallet, fetchPendingWithdrawals } from '@/api/firestoreService';
 
 export default function WithdrawalAmount() {
     const [activeItem, setActiveItem] = useState<{ id: number; amount: string } | null>(dashboardAmmount[0]);
@@ -55,7 +55,7 @@ export default function WithdrawalAmount() {
 
     const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        const numericValue = value.replace(/\D/g, ''); // Only allow numeric input
+        const numericValue = value.replace(/\D/g, '');
         setCustomAmount(numericValue);
         setActiveItem(null);
     };
@@ -65,17 +65,25 @@ export default function WithdrawalAmount() {
         const withdrawalAmount = activeItem ? parseFloat(activeItem.amount) : parseFloat(customAmount);
 
         if (user) {
-            if (walletBalance >= withdrawalAmount) {
-                try {
+            try {
+                // Fetch pending withdrawal requests for the user
+                const pendingWithdrawals = await fetchPendingWithdrawals(user.uid);
+                const totalPendingAmount = pendingWithdrawals.reduce((total, request) => total + parseFloat(request.amount), 0);
+
+                // Calculate effective balance after accounting for pending withdrawals
+                const effectiveBalance = walletBalance - totalPendingAmount;
+
+                if (effectiveBalance >= withdrawalAmount) {
+                    // Proceed with the withdrawal request
                     await addWithdrawalRequest(user.uid, withdrawalAmount.toString());
                     setSuccessMessage(`Withdrawal request for ₹${withdrawalAmount} submitted successfully.`);
                     setErrorMessage('');
-                } catch (error) {
-                    setErrorMessage('Error storing withdrawal request!');
+                } else {
+                    setErrorMessage('Insufficient funds!');
                     setSuccessMessage('');
                 }
-            } else {
-                setErrorMessage('Insufficient funds');
+            } catch (error) {
+                setErrorMessage('Error processing withdrawal request!');
                 setSuccessMessage('');
             }
         } else {

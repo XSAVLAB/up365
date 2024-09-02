@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { amountData } from '@/public/data/dashBoard';
 import { db, auth } from '@/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { updateUserCardDetails, addTransaction } from '@/api/firestoreService';
+import { updateUserCardDetails, addTransaction, fetchUpiID } from '@/api/firestoreService';
+import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
+import confetti from 'canvas-confetti';
 
 export default function DepositAmount() {
     const [activeItem, setActiveItem] = useState<{ id: number; amount: string } | null>(amountData[0]);
@@ -26,7 +28,8 @@ export default function DepositAmount() {
     const [showUPI, setShowUPI] = useState(false);
     const [showDebitCard, setShowDebitCard] = useState(false);
     const [paymentStep, setPaymentStep] = useState(false);
-
+    const [upiID, setUpiID] = useState('');
+    const [qrCodeUrl, setQrCodeUrl] = useState('');
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
@@ -50,6 +53,38 @@ export default function DepositAmount() {
         }
     }, [successMessage, errorMessage]);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const fetchedUpiID = await fetchUpiID();
+                setUpiID(fetchedUpiID);
+            } catch {
+                setUpiID("Something went wrong! Please try another method.");
+            }
+        };
+
+        fetchData();
+    }, []);
+    useEffect(() => {
+        const fetchQRCode = async () => {
+            try {
+                const storage = getStorage();
+                const listRef = ref(storage, 'qr-codes/');
+                const res = await listAll(listRef);
+                if (res.items.length > 0) {
+                    const qrCodeRef = res.items[0];
+                    const url = await getDownloadURL(qrCodeRef);
+                    setQrCodeUrl(url);
+                } else {
+                    setQrCodeUrl("QR Code not found.");
+                }
+            } catch (error) {
+                setQrCodeUrl("Error fetching QR Code.");
+            }
+        };
+
+        fetchQRCode();
+    }, []);
     const handleClick = (itemName: { id: number; amount: string }) => {
         setActiveItem(itemName);
         setCustomAmount('');
@@ -92,6 +127,14 @@ export default function DepositAmount() {
         }));
     };
 
+    const triggerConfetti = () => {
+        confetti({
+            particleCount: 700,
+            spread: 360,
+            origin: { y: 0.6 },
+        });
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -106,6 +149,7 @@ export default function DepositAmount() {
                 });
                 setSuccessMessage(`Deposit request for ₹${formDepositData.amount} submitted successfully.`);
                 setErrorMessage('');
+                triggerConfetti();
             } catch (error) {
                 setErrorMessage('Error storing deposit details!');
                 setSuccessMessage('');
@@ -126,6 +170,7 @@ export default function DepositAmount() {
                 setPaymentStep(true);
                 setSuccessMessage(`Deposit request for ₹${formDepositData.amount} submitted successfully.`);
                 setErrorMessage('');
+                triggerConfetti();
             } catch (error) {
                 setErrorMessage('Error storing deposit details!');
                 setSuccessMessage('');
@@ -201,7 +246,11 @@ export default function DepositAmount() {
 
                     {showQRCode && (
                         <div className="text-center">
-                            <img src="/images/upi.jpeg" alt="QR Code" style={{ width: '200px', height: '200px' }} />
+                            {qrCodeUrl ? (
+                                <img src={qrCodeUrl} alt="QR Code" style={{ width: '200px', height: '200px' }} />
+                            ) : (
+                                <p>{qrCodeUrl}</p>
+                            )}
                             <p>Scan and Pay</p>
                             <p><small>You can share the screenshot on WhatsApp</small></p>
                             <p>Amount: ₹{formDepositData.amount}</p>
@@ -210,7 +259,7 @@ export default function DepositAmount() {
 
                     {showUPI && (
                         <div className="text-center">
-                            <p>Pay using UPI ID: <strong>your-upi-id@bank</strong></p>
+                            <p>Pay using UPI ID: <strong>{upiID}</strong></p>
                             <p>Amount: ₹{formDepositData.amount}</p>
                         </div>
                     )}

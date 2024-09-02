@@ -6,15 +6,15 @@ import React from "react";
 export const dashboardTabs = [
   {
     id: 1,
-    tabname: "Profile",
-    icon: <IconUser
-      className="ti ti-user fs-five n5-color" />,
+    tabname: "Deposit",
+    icon: <IconWallet className="ti ti-wallet fs-five n5-color" />,
 
   },
   {
     id: 2,
-    tabname: "Deposit",
-    icon: <IconWallet className="ti ti-wallet fs-five n5-color" />,
+    tabname: "Profile",
+    icon: <IconUser
+      className="ti ti-user fs-five n5-color" />,
 
   },
   // {
@@ -72,10 +72,10 @@ export const dashboardTabs = [
   //   icon: <IconBellRinging
   //     className="ti ti-bell-ringing fs-five n5-color" />,
   // },
-  // {
-  //   id: 8,
-  //   tabname: "Log out",
-  //   icon: <IconLogout
-  //     className="ti ti-logout fs-five n5-color" />,
-  // },
+  {
+    id: 10,
+    tabname: "Log out",
+    icon: <IconLogout
+      className="ti ti-logout fs-five n5-color" />,
+  },
 ];

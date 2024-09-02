@@ -109,6 +109,7 @@ export const updateProfile = async (userId, profileData) => {
 export const createProfile = async (userId, profileData) => {
   try {
     const userDocRef = doc(db, "users", userId);
+    profileData.timestamp = formatTimestamp();
     await setDoc(userDocRef, profileData);
   } catch (error) {
     console.error("Error creating profile: ", error);
@@ -185,6 +186,24 @@ export const addTransaction = async (userId, transactionData) => {
     });
   } catch (error) {
     console.error("Error adding transaction: ", error);
+    throw error;
+  }
+};
+
+// Fetch all pending withdrawal requests for the user
+export const fetchPendingWithdrawals = async (userId) => {
+  try {
+    const withdrawalCollectionRef = collection(db, "withdrawals");
+    const q = query(
+      withdrawalCollectionRef,
+      where("userId", "==", userId),
+      where("status", "==", "pending")
+    );
+    const querySnapshot = await getDocs(q);
+    const pendingWithdrawals = querySnapshot.docs.map((doc) => doc.data());
+    return pendingWithdrawals;
+  } catch (error) {
+    console.error("Error fetching pending withdrawals:", error);
     throw error;
   }
 };
@@ -872,8 +891,21 @@ export const fetchMarqueeText = async () => {
       return "There is no marquee text currently";
     }
   } catch (e) {
-    console.log("fasdfasdfasdf", e);
+    console.log(e);
   }
 };
 
-// Fetch Total amount of deposit in a day, month, year
+// Fetch UPI ID
+export const fetchUpiID = async () => {
+  try {
+    const upiIDRef = doc(db, "upiID", "upiID");
+    const upiIDDoc = await getDoc(upiIDRef);
+    if (upiIDDoc.exists) {
+      return upiIDDoc.data().upiID;
+    } else {
+      return "There is no upiID! Please try another method";
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};

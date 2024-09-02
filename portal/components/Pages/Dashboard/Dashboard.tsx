@@ -190,9 +190,12 @@ export default function Dashboard() {
     // Logout
     const handleLogout = async () => {
         try {
-            await doSignOut();
-            window.location.replace('/login');
-            console.log('Logged out successfully');
+            const confirmation = window.confirm('Are you sure you want to logout?');
+            if (confirmation) {
+                await doSignOut();
+                window.location.replace('/login');
+                console.log('Logged out successfully');
+            }
         } catch (error) {
             console.error('Error logging out:', error);
         }
@@ -244,6 +247,21 @@ export default function Dashboard() {
                                         </div>
                                         <div className="col-xxl-9">
                                             <Tab.Panels className="tabcontents">
+                                                <Tab.Panel>
+                                                    {/* <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
+                                                        <div
+                                                            className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
+                                                            <i className="ti ti-credit-card fs-four g1-color"></i>
+                                                            <h5 className="n10-color">Payment methods</h5>
+                                                            </div>
+                                                            <div className="pay_method__paymethod-alitem">
+                                                            <div className="row gx-4 gy-4">
+                                                            <DepositCard />
+                                                            </div>
+                                                            </div>
+                                                            </div> */}
+                                                    <DepositAmount />
+                                                </Tab.Panel>
                                                 <Tab.Panel>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div className="pay_method__paymethod-title mb-5 mb-md-6">
@@ -403,21 +421,6 @@ export default function Dashboard() {
                                                             </form>
                                                         </div>
                                                     </div>
-                                                </Tab.Panel>
-                                                <Tab.Panel>
-                                                    {/* <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
-                                                        <div
-                                                            className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
-                                                            <i className="ti ti-credit-card fs-four g1-color"></i>
-                                                            <h5 className="n10-color">Payment methods</h5>
-                                                        </div>
-                                                        <div className="pay_method__paymethod-alitem">
-                                                            <div className="row gx-4 gy-4">
-                                                                <DepositCard />
-                                                            </div>
-                                                        </div>
-                                                    </div> */}
-                                                    <DepositAmount />
                                                 </Tab.Panel>
                                                 <Tab.Panel>
                                                     {/* <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
@@ -806,6 +809,8 @@ export default function Dashboard() {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </Tab.Panel>
+                                                <Tab.Panel>
                                                 </Tab.Panel>
                                                 {/* <Tab.Panel>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">

@@ -6,10 +6,12 @@ import { dashboardTabs } from '@/public/data/adminTabs';
 import { doSignOut } from '../../../../firebase/auth';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth, isAdmin as checkIsAdmin } from '@/firebaseConfig';
-import { fetchAllUsers, deleteUser, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus, updateComplaintStatus, updateComplaintRemark, fetchComplaints, updateMarqueeText } from '../../../../api/firestoreAdminService';
+import { fetchAllUsers, deleteUser, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus, updateComplaintStatus, updateComplaintRemark, fetchComplaints, updateMarqueeText, updatePasswordInFirebase } from '../../../../api/firestoreAdminService';
 import EditUserForm from '../UserManagement/EditUserForm';
 import History from '../Dashboard/History';
+import Payment from './Payment';
 import Status from './Status';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 interface User {
     id: string;
@@ -27,6 +29,7 @@ interface User {
     address: string;
     isBlocked?: boolean;
     blockComment?: string;
+    timestamp: string;
 }
 
 interface Transaction {
@@ -65,7 +68,12 @@ export default function Dashboard() {
     const [series, setSeries] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const [marqueeText, setMarqueeText] = useState("");
-    const [message, setMessage] = useState("");
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [message, setMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
 
     useEffect(() => {
@@ -287,6 +295,50 @@ export default function Dashboard() {
         }
     };
 
+
+    // Password Change
+    const onPasswordSubmit = async (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        if (formPasswordData.newPassword !== formPasswordData.confirmPassword) {
+            setErrorMessage("Passwords do not match!");
+            return;
+        }
+        try {
+            if (user) {
+                const result = await updatePasswordInFirebase(
+                    user.email,
+                    formPasswordData.currentPassword,
+                    formPasswordData.newPassword
+                );
+                if (result.success) {
+                    setSuccessMessage("Password updated successfully!");
+                    setErrorMessage("");
+                } else {
+                    setErrorMessage("Please enter correct current password!");
+                }
+            } else {
+                setErrorMessage("No user found");
+            }
+        } catch (error) {
+            setErrorMessage("Error updating password!");
+        }
+    };
+    const togglePasswordVisibility = (type: string) => {
+        if (type === 'current') {
+            setShowCurrentPassword(!showCurrentPassword);
+        } else if (type === 'new') {
+            setShowNewPassword(!showNewPassword);
+        } else if (type === 'confirm') {
+            setShowConfirmPassword(!showConfirmPassword);
+        }
+    };
+
+    const [formPasswordData, setFormPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+    });
+
     const getUserNameById = (userId: string) => {
         const user = userDetails.find(user => user.id === userId);
         return user ? `${user.firstName} ${user.lastName}` : 'Unknown User';
@@ -304,6 +356,8 @@ export default function Dashboard() {
                     <div className="row">
                         <div className="col-12 gx-0 gx-sm-4">
                             <div className="hero_area__main1">
+                                {successMessage && <div className="alert alert-success">{successMessage}</div>}
+                                {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
                                 <Tab.Group>
                                     <div className="row gy-6 gy-xxl-0 singletab">
                                         <div className="col-xxl-3">
@@ -335,6 +389,7 @@ export default function Dashboard() {
                                                                 <table className="w-100 text-center p2-bg">
                                                                     <thead>
                                                                         <tr>
+                                                                            <th>Date</th>
                                                                             <th>Name</th>
                                                                             <th>Wallet</th>
                                                                             <th>Edit</th>
@@ -348,6 +403,7 @@ export default function Dashboard() {
                                                                     <tbody>
                                                                         {userDetails.map((entry) => (
                                                                             <tr key={entry.id}>
+                                                                                <td>{entry.timestamp}</td>
                                                                                 <td>{entry.firstName} {entry.lastName}</td>
                                                                                 <td>{entry.wallet}</td>
                                                                                 <td>
@@ -571,9 +627,99 @@ export default function Dashboard() {
                                                 </Tab.Panel>
 
                                                 <Tab.Panel>
+                                                    <Payment />
+                                                </Tab.Panel>
+                                                <Tab.Panel>
                                                     <Status />
                                                 </Tab.Panel>
+                                                <Tab.Panel >
+                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                        <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mt-6">
+                                                            <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                                                                <h5 className="n10-color">Update Admin Password</h5>
+                                                            </div>
+                                                            <div className="pay_method__formarea">
+                                                                <form onSubmit={onPasswordSubmit}>
+                                                                    {/* Current Password */}
+                                                                    <div className="d-flex align-items-center w-100 p1-bg ps-3 rounded-8 mb-5">
+                                                                        <input
+                                                                            type={showCurrentPassword ? "text" : "password"}
+                                                                            name="currentPassword"
+                                                                            placeholder="Current Password"
+                                                                            value={formPasswordData.currentPassword}
+                                                                            onChange={(e) =>
+                                                                                setFormPasswordData({
+                                                                                    ...formPasswordData,
+                                                                                    currentPassword: e.target.value,
+                                                                                })
+                                                                            }
+                                                                            className="flex-grow-1"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn"
+                                                                            onClick={() => togglePasswordVisibility('current')}
+                                                                        >
+                                                                            {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+                                                                        </button>
+                                                                    </div>
 
+                                                                    {/* New Password */}
+                                                                    <div className="d-flex align-items-center w-100 p1-bg ps-3 rounded-8 mb-5">
+                                                                        <input
+                                                                            type={showNewPassword ? "text" : "password"}
+                                                                            name="newPassword"
+                                                                            placeholder="New Password"
+                                                                            value={formPasswordData.newPassword}
+                                                                            onChange={(e) =>
+                                                                                setFormPasswordData({
+                                                                                    ...formPasswordData,
+                                                                                    newPassword: e.target.value,
+                                                                                })
+                                                                            }
+                                                                            className="flex-grow-1"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn"
+                                                                            onClick={() => togglePasswordVisibility('new')}
+                                                                        >
+                                                                            {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                                                                        </button>
+                                                                    </div>
+
+                                                                    {/* Confirm Password */}
+                                                                    <div className="d-flex align-items-center w-100 p1-bg ps-3 rounded-8 mb-5">
+                                                                        <input
+                                                                            type={showConfirmPassword ? "text" : "password"}
+                                                                            name="confirmPassword"
+                                                                            placeholder="Confirm Password"
+                                                                            value={formPasswordData.confirmPassword}
+                                                                            onChange={(e) =>
+                                                                                setFormPasswordData({
+                                                                                    ...formPasswordData,
+                                                                                    confirmPassword: e.target.value,
+                                                                                })
+                                                                            }
+                                                                            className="flex-grow-1"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn"
+                                                                            onClick={() => togglePasswordVisibility('confirm')}
+                                                                        >
+                                                                            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">
+                                                                        Update Password
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel>
                                             </Tab.Panels>
                                         </div>
                                     </div>
@@ -581,8 +727,8 @@ export default function Dashboard() {
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </div >
+            </section >
         </>
     );
 }

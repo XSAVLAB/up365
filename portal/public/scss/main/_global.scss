@@ -3239,3 +3239,80 @@ input[type=radio] {
 
 // ================Ludo Testing================== //
 
+// Ludo Redux Starts
+
+.highlight {
+	stroke-width: 0.8;
+	stroke: black;
+	stroke-dasharray: 1.1;
+	stroke-dashoffset: 5.5;
+	animation: dashes 1s linear infinite;
+  }
+  
+  @keyframes dashes {
+	to {
+	  stroke-dashoffset: 1.1;
+	}
+  }
+  
+  .highlight:hover {
+	cursor: pointer;
+	stroke: limegreen;
+  }
+  
+  .ludoBoardHome {
+	animation: rotateBoard 30s linear infinite;
+  }
+  
+  @keyframes rotateBoard {
+	0% {
+	  transform: rotate(45deg);
+	}
+  
+	100% {
+	  transform: rotate(405deg);
+	}
+  }
+  
+  .breathingAnim {
+	animation: breathing 1s infinite;
+  }
+  
+  @keyframes breathing {
+	0% {
+	  transform: scale(1);
+	  opacity: 0.75;
+	}
+  
+	50% {
+	  transform: scale(1.1);
+	  opacity: 1;
+	}
+  
+	100% {
+	  transform: scale(1);
+	  opacity: 0.75;
+	}
+  }
+// Ludo Redux Ends
+
+// Payment Admin side starts
+.dropzone {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 20px;
+	margin: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.dropzone.active {
+    border-color: #007bff;
+}
+
+.dropzone p {
+    margin: 0;
+    color: #666;
+}
+// Payment Admin side ends
