@@ -9,16 +9,16 @@
     z-index: 05;
 
     .navbar {
-        margin-left: 235px;
+        margin-left: 283px;
         border-bottom: 1px solid var(--brt1);
         border-left: 1px solid var(--brt1);
 
         @include maxQuery(1199) {
-            margin-left: 150px;
+            margin-left: 283px;
         }
 
         @include maxQuery(991) {
-            margin-left: 95px;
+            margin-left: 133px;
             border-left: none;
             height: 79px;
         }
@@ -973,4 +973,10 @@
     .active{
         background-color: rgba(var(--p2), 1) !important;
     }
+}
+
+.wallet-balance{
+    background-color: #080f25;
+    padding: 6px;
+    border-radius: 10px;
 }

@@ -56,10 +56,10 @@ const MainBodyScroller: React.FC<MainBodyScrollerProps> = ({ scrollToGames }) =>
             <IconBallFootball size={25} />
             <span>Football</span>
           </div>
-          <div className="nav-item" onClick={navigateLoginPage}>
+          {/* <div className="nav-item" onClick={navigateLoginPage}>
             <BiSolidOffer size={25} />
             <span>Offers</span>
-          </div>
+          </div> */}
           <div className="nav-item" onClick={navigateLoginPage}>
             <GiWallet size={25} />
             <span>Wallet</span>

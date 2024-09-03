@@ -110,6 +110,10 @@ export const createProfile = async (userId, profileData) => {
   try {
     const userDocRef = doc(db, "users", userId);
     profileData.timestamp = formatTimestamp();
+    profileData.wallet = "0";
+    profileData.role = "user";
+    profileData.isBlocked = false;
+    profileData.consent = "Accepted";
     await setDoc(userDocRef, profileData);
   } catch (error) {
     console.error("Error creating profile: ", error);

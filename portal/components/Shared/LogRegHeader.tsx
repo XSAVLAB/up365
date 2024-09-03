@@ -64,8 +64,7 @@ export default function HeaderMain() {
                             )}
                         </ul>
                     </div>
-                    <div className="right-area custom-pos position-relative d-flex gap-0 gap-lg-7 align-items-center me-5 me-xl-10">
-                        {/* <Language /> */}
+                    {/* <div className="right-area custom-pos position-relative d-flex gap-0 gap-lg-7 align-items-center me-5 me-xl-10">
                         {!user ? (
                             <>
                                 <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2 me-5 me-lg-0 d-none d-sm-block">Log In</Link>
@@ -79,11 +78,11 @@ export default function HeaderMain() {
                                 </div>
                             </div>
                         )}
-                    </div>
-                    <button onClick={toggleCard} className="navbar-toggler mt-1 mt-sm-2 mt-lg-0" type="button" data-bs-toggle="collapse" aria-label="Navbar Toggler"
+                    </div> */}
+                    {/* <button onClick={toggleCard} className="navbar-toggler mt-1 mt-sm-2 mt-lg-0" type="button" data-bs-toggle="collapse" aria-label="Navbar Toggler"
                         data-bs-target="#navbar-content" aria-expanded="true" id="nav-icon3">
                         <span></span><span></span><span></span><span></span>
-                    </button>
+                    </button> */}
                 </nav>
                 <div id="div10" className="navigation left-nav-area box3  position-fixed">
                     <div className="logo-area slide-toggle3 trader-list position-fixed top-0 d-flex align-items-center justify-content-center pt-6 pt-md-8 gap-sm-4 gap-md-5 gap-lg-7 px-4 px-lg-8">

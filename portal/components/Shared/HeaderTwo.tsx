@@ -147,7 +147,7 @@ export default function HeaderTwo() {
                     </div>
                     <div className="right-area custom-pos custom-postwo position-relative d-flex gap-3 gap-xl-7 align-items-center me-5 me-xl-10 align-items-center">
                         {user && (
-                            <div className="text-end d-none d-sm-block">
+                            <div className="wallet-balance text-end d-none d-sm-block">
                                 <span className="fs-seven mb-1 d-block">Your balance</span>
                                 <span className="fw-bold d-block">₹ {walletBalance}</span>
                             </div>

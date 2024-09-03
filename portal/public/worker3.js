@@ -14,7 +14,7 @@ onmessage = function (e) {
     const minutes = now.getMinutes();
     const seconds = now.getSeconds();
 
-    const nextQuarter = Math.ceil(minutes / 2) * 2;
+    const nextQuarter = Math.ceil(minutes / 5) * 5;
     const remainingMinutes = (nextQuarter - minutes) % 60;
     const remainingSeconds = 60 - seconds;
 
@@ -24,7 +24,7 @@ onmessage = function (e) {
     intervalId = setInterval(() => {
       if (countdownTimer === 0) {
         postMessage({ command: "settleBets" });
-        countdownTimer = 120;
+        countdownTimer = 300;
         cooldown = 10;
       } else if (cooldown !== 0) {
         cooldown -= 1;

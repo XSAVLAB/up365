@@ -10,7 +10,7 @@ import { doCreateUserWithEmailAndPassword, doSignInWithGoogle } from '../../../f
 import { createProfile } from '../../../api/firestoreService'
 import { FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth, db } from '@/firebaseConfig';
-import { getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc, collection, getDocs, query, where } from 'firebase/firestore';
 
 const CreateAccount = () => {
     const [firstName, setFirstName] = useState('');
@@ -23,11 +23,22 @@ const CreateAccount = () => {
 
     const { userLoggedIn } = useAuth() || {};
 
-    const onSubmit = async (e: { preventDefault: () => void; }) => {
+    const onSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
         setMessage("");
 
         try {
+            // Check if the phone number already exists in Firestore
+            const q = query(collection(db, "users"), where("phoneNumber", "==", phoneNumber));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                // If the phone number is found, display an error message
+                setMessage('Mobile number already registered!');
+                return;
+            }
+
+            // Proceed with account creation if the phone number is not registered
             const userCredential = await doCreateUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
 
@@ -36,10 +47,8 @@ const CreateAccount = () => {
                 lastName,
                 phoneNumber,
                 email,
-                wallet: '0',
-                role: "user",
-                isBlocked: false
             };
+
             await createProfile(user.uid, profileData);
 
             router.push('/');
@@ -56,13 +65,11 @@ const CreateAccount = () => {
             const userCredential = await doSignInWithGoogle();
             const user = userCredential.user;
 
-            // Check if the user document exists
             const userDoc = await getDoc(doc(db, "users", user.uid));
 
             if (userDoc.exists()) {
                 const userData = userDoc.data();
 
-                // Check if the user is blocked
                 if (userData?.isBlocked === false) {
                     if (userData.role === 'admin') {
                         router.push('/admin');
@@ -78,9 +85,6 @@ const CreateAccount = () => {
                     lastName: user.displayName?.split(' ')[1] || '',
                     phoneNumber: '',
                     email: user.email,
-                    wallet: '0',
-                    role: "user",
-                    isBlocked: false
                 };
                 await createProfile(user.uid, profileData);
                 router.push('/');
@@ -121,9 +125,6 @@ const CreateAccount = () => {
                     lastName: user.displayName?.split(' ')[1] || '',
                     phoneNumber: '',
                     email: user.email,
-                    wallet: '0',
-                    role: "user",
-                    isBlocked: false
                 };
                 await createProfile(user.uid, profileData);
                 router.push('/');
@@ -209,8 +210,8 @@ const CreateAccount = () => {
                                                     />
                                                 </div>
                                                 <div className="d-flex align-items-center flex-wrap flex-sm-nowrap gap-2 mb-6">
-                                                    <input type="checkbox" checked required />
-                                                    <span>I agree to all statements with <Link href="#">Terms of Use</Link></span>
+                                                    <input type="checkbox" required />
+                                                    <span>By signing up, I hereby confirm that I am over 18, I read and accepted the <a href="#">terms and conditions</a></span>
                                                 </div>
                                                 <button className="cmn-btn px-5 py-3 mb-6 w-100" type="submit">Sign Up</button>
                                             </form>

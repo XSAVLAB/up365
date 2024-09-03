@@ -70,9 +70,6 @@ export default function Login() {
                     lastName: user.displayName?.split(' ')[1] || '',
                     phoneNumber: '',
                     email: user.email,
-                    wallet: '0',
-                    role: "user",
-                    isBlocked: false
                 };
                 await createProfile(user.uid, profileData);
                 router.push('/');
@@ -114,9 +111,6 @@ export default function Login() {
                     lastName: user.displayName?.split(' ')[1] || '',
                     phoneNumber: '',
                     email: user.email,
-                    wallet: '0',
-                    role: "user",
-                    isBlocked: false
                 };
                 await createProfile(user.uid, profileData);
                 router.push('/');
