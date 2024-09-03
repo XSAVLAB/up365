@@ -6,7 +6,7 @@ import { dashboardTabs } from '@/public/data/adminTabs';
 import { doSignOut } from '../../../../firebase/auth';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth, isAdmin as checkIsAdmin } from '@/firebaseConfig';
-import { fetchAllUsers, deleteUser, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus, updateComplaintStatus, updateComplaintRemark, fetchComplaints, updateMarqueeText, updatePasswordInFirebase } from '../../../../api/firestoreAdminService';
+import { fetchAllUsers, deleteUser, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus, updateComplaintStatus, updateComplaintRemark, fetchComplaints, updateMarqueeText, updatePasswordInFirebase, updateOfferPercentage } from '../../../../api/firestoreAdminService';
 import EditUserForm from '../UserManagement/EditUserForm';
 import History from '../Dashboard/History';
 import Payment from './Payment';
@@ -145,6 +145,15 @@ export default function Dashboard() {
         return () => unsubscribe();
     }, [router]);
 
+    // Use effect to clear messages after 5 seconds
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setMessage('');
+            setSuccessMessage('');
+            setErrorMessage('');
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, [message, successMessage, errorMessage]);
     const handleLogout = async () => {
         try {
             await doSignOut();
@@ -270,6 +279,7 @@ export default function Dashboard() {
             console.error('Error submitting complaint remark:', error);
         }
     };
+    // Marquee and Offers 
     const handleSubmitMarqueeText = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try {
@@ -279,6 +289,17 @@ export default function Dashboard() {
         } catch (error) {
             console.error("Error updating marquee text", error);
             setMessage("Failed to update marquee text.");
+        }
+    };
+    const handleSubmitOffer = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        try {
+            const offerPercentage = event.currentTarget.offerPercentage.value;
+            await updateOfferPercentage(offerPercentage);
+            setMessage("Offer updated successfully!");
+        } catch (error) {
+            console.error("Error updating Offer", error);
+            setMessage("Failed to update Offer.");
         }
     };
 
@@ -597,6 +618,11 @@ export default function Dashboard() {
                                                     </div>
                                                 </Tab.Panel>
                                                 <Tab.Panel>
+                                                    {message && (
+                                                        <div className="mt-3 alert alert-success">
+                                                            {message}
+                                                        </div>
+                                                    )}
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                                             <h5 className="n10-color">Enter the Marquee Text</h5>
@@ -617,11 +643,31 @@ export default function Dashboard() {
                                                                     Update
                                                                 </button>
                                                             </form>
-                                                            {message && (
-                                                                <div className="mt-3 alert alert-success">
-                                                                    {message}
+
+                                                        </div>
+                                                    </div>
+                                                    <hr />
+                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                        <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                                                            <h5 className="n10-color">Update the Offer Percentage</h5>
+                                                        </div>
+                                                        <div className="pay_method__formarea">
+                                                            <form onSubmit={handleSubmitOffer}>
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                    <div className="w-100">
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="number"
+                                                                            name="offerPercentage"
+                                                                            placeholder="Enter Percentage %"
+                                                                        />
+                                                                    </div>
                                                                 </div>
-                                                            )}
+                                                                <button className="cmn-btn py-3 px-10" type="submit">
+                                                                    Update
+                                                                </button>
+                                                            </form>
+
                                                         </div>
                                                     </div>
                                                 </Tab.Panel>

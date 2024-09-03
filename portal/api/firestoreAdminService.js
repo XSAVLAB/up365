@@ -322,12 +322,22 @@ export const updateComplaintRemark = async (complaintId, adminRemarks) => {
 // Function to update marquee text in Firestore
 export const updateMarqueeText = async (marqueeText) => {
   try {
-    const marqueeTextRef = doc(db, "marqueeText", "marqueeText");
+    const marqueeTextRef = doc(db, "offersAndMarquee", "marqueeText");
     await updateDoc(marqueeTextRef, { marqueeText: marqueeText });
   } catch (error) {
     console.error("Error updating the marquee", error);
   }
 };
+// Function to update Offers in Firestore
+export const updateOfferPercentage = async (offerPercentage) => {
+  try {
+    const offerPercentageRef = doc(db, "offersAndMarquee", "offerPercentage");
+    await updateDoc(offerPercentageRef, { offerPercentage: offerPercentage });
+  } catch (error) {
+    console.error("Error updating the offer", error);
+  }
+};
+
 // Function to update Upi id in Firestore
 export const updateUpiID = async (upiID) => {
   try {
