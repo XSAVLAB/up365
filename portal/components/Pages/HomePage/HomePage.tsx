@@ -7,14 +7,14 @@ import AllLotteryBets from './AllLotteryBets';
 import Link from 'next/link';
 import { auth, db } from '../../../firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { fetchProfileData } from '../../../api/firestoreService';
+import { fetchOfferData, fetchProfileData } from '../../../api/firestoreService';
 import { doc, setDoc } from 'firebase/firestore';
 
 const HomePage: React.FC = () => {
     const gamesRef = useRef<HTMLDivElement>(null);
     const [showBonus, setShowBonus] = useState(false);
     const [user, setUser] = useState<any>(null);
-
+    const [offer, setOffer] = useState("");
     // Fetch current user using onAuthStateChanged
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -26,6 +26,9 @@ const HomePage: React.FC = () => {
                 if (profileData && !profileData.hasSeenBonus) {
                     setShowBonus(true);
                 }
+                const offer = await fetchOfferData();
+                setOffer(offer);
+
             } else {
                 setUser(null);
             }
@@ -58,23 +61,29 @@ const HomePage: React.FC = () => {
     return (
         <section className="top_matches__main">
             {showBonus && (
-                <div className="warning-overlay">
-                    <div className="warning-popup">
-                        <div className="warning-message">
-                            <p>Welcome! Get 10% Bonus on your first deposit!</p>
-                            <Link href="/dashboard" onClick={handleDeposit} className="agree-button">
-                                Deposit
-                            </Link>
+                <div className="bonus-overlay">
+                    <Link href="/dashboard">
+                        <div className="bonus-popup">
+                            <div className="bonus-offer1">
+                                Welcome! Get
+                            </div>
+                            <div className="bonus-offer2">
+                                {offer}% Bonus!
+                            </div>
+                            <div className="bonus-offer3">
+                                on your first deposit
+                            </div>
                         </div>
-                    </div>
+                    </Link>
                 </div>
-            )}
+            )
+            }
             <LandingPageImagesMarquee />
             <div ref={gamesRef}>
                 <GamesCards />
             </div>
             <AllLotteryBets />
-        </section>
+        </section >
     );
 };
 

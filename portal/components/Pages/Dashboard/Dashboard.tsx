@@ -262,166 +262,7 @@ export default function Dashboard() {
                                                             </div> */}
                                                     <DepositAmount />
                                                 </Tab.Panel>
-                                                <Tab.Panel>
-                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
-                                                        <div className="pay_method__paymethod-title mb-5 mb-md-6">
-                                                            <h5 className="n10-color">About You</h5>
-                                                        </div>
-                                                        <div className="pay_method__formarea">
 
-                                                            <form onSubmit={onSubmit}>
-                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
-                                                                    <div className="w-100">
-                                                                        <label className="mb-3">First Name (Given Name)</label>
-                                                                        <input
-                                                                            className="n11-bg rounded-8"
-                                                                            type="text"
-                                                                            name="firstName"
-                                                                            placeholder="First Name"
-                                                                            value={formProfileData.firstName}
-                                                                            onChange={handleChange(formProfileData, setFormProfileData)} />
-                                                                    </div>
-                                                                    <div className="w-100">
-                                                                        <label className="mb-3">Last Name</label>
-                                                                        <input
-                                                                            className="n11-bg rounded-8"
-                                                                            type="text"
-                                                                            name="lastName"
-                                                                            placeholder="Last Name"
-                                                                            value={formProfileData.lastName}
-                                                                            onChange={handleChange(formProfileData, setFormProfileData)} />
-                                                                    </div>
-                                                                </div>
-                                                                <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
-                                                                    <div className="w-100">
-                                                                        <label className="mb-3">Date Of Birth</label>
-                                                                        <div className="d-flex align-items-center gap-6 w-100">
-                                                                            <div className="d-flex n11-bg rounded-8 w-50">
-                                                                                <input
-                                                                                    type="text"
-                                                                                    name="day"
-                                                                                    placeholder="12"
-                                                                                    value={formProfileData.day}
-                                                                                    onChange={(e) => {
-                                                                                        const value = e.target.value;
-                                                                                        const numericValue = value.replace(/\D/g, '');
-                                                                                        setFormProfileData({ ...formProfileData, day: numericValue });
-                                                                                    }} />
-                                                                            </div>
-                                                                            <div className="d-flex n11-bg rounded-8 w-50">
-                                                                                <input
-                                                                                    type="text"
-                                                                                    name="month"
-                                                                                    placeholder="09"
-                                                                                    value={formProfileData.month}
-                                                                                    onChange={(e) => {
-                                                                                        const value = e.target.value;
-                                                                                        const numericValue = value.replace(/\D/g, '');
-                                                                                        setFormProfileData({ ...formProfileData, month: numericValue });
-                                                                                    }} />
-                                                                            </div>
-                                                                            <div className="d-flex n11-bg rounded-8 w-50">
-                                                                                <input
-                                                                                    type="text"
-                                                                                    name="year"
-                                                                                    placeholder="1999"
-                                                                                    value={formProfileData.year}
-                                                                                    onChange={(e) => {
-                                                                                        const value = e.target.value;
-                                                                                        const numericValue = value.replace(/\D/g, '');
-                                                                                        setFormProfileData({ ...formProfileData, year: numericValue });
-                                                                                    }} />
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="w-100">
-                                                                        <label className="mb-3">Phone Number</label>
-                                                                        <div className="d-flex gap-2">
-                                                                            <input
-                                                                                className="w-25 n11-bg rounded-8"
-                                                                                type="text"
-                                                                                name="phoneCode"
-                                                                                placeholder="+91"
-                                                                                value={formProfileData.phoneCode}
-                                                                                onChange={(e) => {
-                                                                                    const value = e.target.value;
-                                                                                    const numericValue = value.replace(/\D/g, '');
-                                                                                    setFormProfileData({ ...formProfileData, phoneCode: numericValue });
-                                                                                }} />
-                                                                            <input
-                                                                                className="n11-bg rounded-8"
-                                                                                type="text"
-                                                                                name="phoneNumber"
-                                                                                placeholder="XX-XXX-XXXXX"
-                                                                                value={formProfileData.phoneNumber}
-                                                                                onChange={(e) => {
-                                                                                    const value = e.target.value;
-                                                                                    const numericValue = value.replace(/\D/g, '');
-                                                                                    setFormProfileData({ ...formProfileData, phoneNumber: numericValue });
-                                                                                }} />
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
-                                                                    <div className="w-100">
-                                                                        <label className="mb-3">Address</label>
-                                                                        <input
-                                                                            className="n11-bg rounded-8"
-                                                                            type="text"
-                                                                            name="address"
-                                                                            placeholder="Address..."
-                                                                            value={formProfileData.address}
-                                                                            onChange={handleChange(formProfileData, setFormProfileData)} />
-                                                                    </div>
-                                                                    <div className="w-100">
-                                                                        <label className="mb-3 d-block">Male & Female</label>
-                                                                        <select
-                                                                            className="n11-bg extrastyle rounded-8 w-100 py-3 pe-5"
-                                                                            name="gender"
-                                                                            value={formProfileData.gender}
-                                                                            onChange={handleChange(formProfileData, setFormProfileData)}                                                                        >
-                                                                            <option className="p6-color" value="">
-                                                                                Select Gender...
-                                                                            </option>
-                                                                            <option className="p6-color" value="Male">
-                                                                                Male
-                                                                            </option>
-                                                                            <option className="p6-color" value="Female">
-                                                                                Female
-                                                                            </option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
-                                                                    <div className="w-100">
-                                                                        <label className="mb-3">City / Region</label>
-                                                                        <input
-                                                                            className="n11-bg rounded-8"
-                                                                            type="text"
-                                                                            name="city"
-                                                                            placeholder="City / Region..."
-                                                                            value={formProfileData.city}
-                                                                            onChange={handleChange(formProfileData, setFormProfileData)} />
-                                                                    </div>
-                                                                    <div className="w-100">
-                                                                        <label className="mb-3">Country</label>
-                                                                        <input
-                                                                            className="n11-bg rounded-8"
-                                                                            type="text"
-                                                                            name="country"
-                                                                            placeholder="United Kingdom"
-                                                                            value={formProfileData.country}
-                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                                <button className="cmn-btn py-3 px-10" type="submit">
-                                                                    Update
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </Tab.Panel>
                                                 <Tab.Panel>
                                                     {/* <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
                                                         <div
@@ -494,6 +335,7 @@ export default function Dashboard() {
                                                                         <th className="text-nowrap">Transaction Type</th>
                                                                         <th className="text-nowrap">Amount/Balance</th>
                                                                         <th className="text-nowrap">Status</th>
+                                                                        <th className="text-nowrap">Comment</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -503,9 +345,43 @@ export default function Dashboard() {
                                                                             <td className="text-nowrap">{entry.timestamp}</td>
                                                                             <td className="text-nowrap">{entry.type}</td>
                                                                             <td className="text-nowrap">{entry.amount}</td>
-                                                                            <td className={`${entry.status === 'Complete' ? 'g1-color' : 'r1-color'} fw-normal cpoint text-nowrap`}>
-                                                                                {entry.status}
+                                                                            <td className={`${entry.status === 'approved' ? 'g1-color' : entry.status === 'pending' ? 'y1-color' : 'r1-color'} fw-normal cpoint text-nowrap`}>{entry.status}
                                                                             </td>
+                                                                            <td className="text-nowrap">{entry.comment || "N/A"}</td>
+
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    {user && <UserStatement userId={user.uid} />}
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    <div className="pay_method__tabletwo">
+                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                            <table className="w-100 text-center p2-bg">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Match</th>
+                                                                        <th>Your Team</th>
+                                                                        <th>Odds</th>
+                                                                        <th>Bet Amount</th>
+                                                                        <th>Status</th>
+                                                                        <th>Bet ID</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {userBets.map((bet) => (
+                                                                        <tr key={bet.id}>
+                                                                            <td>{bet.team1} Vs {bet.team2}</td>
+                                                                            <td>{bet.selectedTeam}</td>
+                                                                            <td>{bet.odds}</td>
+                                                                            <td>{bet.betAmount}</td>
+                                                                            <td>{bet.status}</td>
+                                                                            <td>{bet.id}</td>
                                                                         </tr>
                                                                     ))}
                                                                 </tbody>
@@ -515,6 +391,41 @@ export default function Dashboard() {
                                                 </Tab.Panel>
 
 
+                                                <Tab.Panel>
+                                                    <div>
+                                                        <h2>Complaint History</h2>
+                                                        <div className="pay_method__tabletwo">
+                                                            <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                                <table className="w-100 text-left p2-bg">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th className="text-nowrap">Date</th>
+                                                                            <th className="text-nowrap">Game</th>
+                                                                            <th className="text-nowrap">Complaint Type</th>
+                                                                            <th className="text-nowrap">Description</th>
+                                                                            <th className="text-nowrap">Admin Remarks</th>
+                                                                            <th className="text-nowrap">Status</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {complaintsHistory.map((complaint) => (
+                                                                            <tr key={complaint.id}>
+                                                                                <td className="text-nowrap">{new Date(complaint.createdAt).toLocaleDateString()}</td>
+                                                                                <td className="text-nowrap">{complaint.game}</td>
+                                                                                <td className="text-nowrap">{complaint.complaintType}</td>
+                                                                                <td className="text-balance">{complaint.description}</td>
+                                                                                <td className="text-nowrap">{complaint.adminRemarks}</td>
+                                                                                <td className={`fw-normal cpoint text-nowrap ${complaint.status === 'Resolved' ? 'g1-color' : 'r1-color'}`}>
+                                                                                    {complaint.status}
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel>
                                                 <Tab.Panel >
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mt-6">
@@ -740,75 +651,167 @@ export default function Dashboard() {
                                                     </div>
                                                 </Tab.Panel>
                                                 <Tab.Panel>
-                                                    <div className="pay_method__tabletwo">
-                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
-                                                            <table className="w-100 text-center p2-bg">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Match</th>
-                                                                        <th>Your Team</th>
-                                                                        <th>Odds</th>
-                                                                        <th>Bet Amount</th>
-                                                                        <th>Status</th>
-                                                                        <th>Bet ID</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {userBets.map((bet) => (
-                                                                        <tr key={bet.id}>
-                                                                            <td>{bet.team1} Vs {bet.team2}</td>
-                                                                            <td>{bet.selectedTeam}</td>
-                                                                            <td>{bet.odds}</td>
-                                                                            <td>{bet.betAmount}</td>
-                                                                            <td>{bet.status}</td>
-                                                                            <td>{bet.id}</td>
-                                                                        </tr>
-                                                                    ))}
-                                                                </tbody>
-                                                            </table>
+                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                        <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                                                            <h5 className="n10-color">About You</h5>
+                                                        </div>
+                                                        <div className="pay_method__formarea">
+
+                                                            <form onSubmit={onSubmit}>
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                    <div className="w-100">
+                                                                        <label className="mb-3">First Name (Given Name)</label>
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="firstName"
+                                                                            placeholder="First Name"
+                                                                            value={formProfileData.firstName}
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                    </div>
+                                                                    <div className="w-100">
+                                                                        <label className="mb-3">Last Name</label>
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="lastName"
+                                                                            placeholder="Last Name"
+                                                                            value={formProfileData.lastName}
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
+                                                                    <div className="w-100">
+                                                                        <label className="mb-3">Date Of Birth</label>
+                                                                        <div className="d-flex align-items-center gap-6 w-100">
+                                                                            <div className="d-flex n11-bg rounded-8 w-50">
+                                                                                <input
+                                                                                    type="text"
+                                                                                    name="day"
+                                                                                    placeholder="12"
+                                                                                    value={formProfileData.day}
+                                                                                    onChange={(e) => {
+                                                                                        const value = e.target.value;
+                                                                                        const numericValue = value.replace(/\D/g, '');
+                                                                                        setFormProfileData({ ...formProfileData, day: numericValue });
+                                                                                    }} />
+                                                                            </div>
+                                                                            <div className="d-flex n11-bg rounded-8 w-50">
+                                                                                <input
+                                                                                    type="text"
+                                                                                    name="month"
+                                                                                    placeholder="09"
+                                                                                    value={formProfileData.month}
+                                                                                    onChange={(e) => {
+                                                                                        const value = e.target.value;
+                                                                                        const numericValue = value.replace(/\D/g, '');
+                                                                                        setFormProfileData({ ...formProfileData, month: numericValue });
+                                                                                    }} />
+                                                                            </div>
+                                                                            <div className="d-flex n11-bg rounded-8 w-50">
+                                                                                <input
+                                                                                    type="text"
+                                                                                    name="year"
+                                                                                    placeholder="1999"
+                                                                                    value={formProfileData.year}
+                                                                                    onChange={(e) => {
+                                                                                        const value = e.target.value;
+                                                                                        const numericValue = value.replace(/\D/g, '');
+                                                                                        setFormProfileData({ ...formProfileData, year: numericValue });
+                                                                                    }} />
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="w-100">
+                                                                        <label className="mb-3">Phone Number</label>
+                                                                        <div className="d-flex gap-2">
+                                                                            <input
+                                                                                className="w-25 n11-bg rounded-8"
+                                                                                type="text"
+                                                                                name="phoneCode"
+                                                                                placeholder="+91"
+                                                                                value={formProfileData.phoneCode}
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    const numericValue = value.replace(/\D/g, '');
+                                                                                    setFormProfileData({ ...formProfileData, phoneCode: numericValue });
+                                                                                }} />
+                                                                            <input
+                                                                                className="n11-bg rounded-8"
+                                                                                type="text"
+                                                                                name="phoneNumber"
+                                                                                placeholder="XX-XXX-XXXXX"
+                                                                                value={formProfileData.phoneNumber}
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    const numericValue = value.replace(/\D/g, '');
+                                                                                    setFormProfileData({ ...formProfileData, phoneNumber: numericValue });
+                                                                                }} />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                    <div className="w-100">
+                                                                        <label className="mb-3">Address</label>
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="address"
+                                                                            placeholder="Address..."
+                                                                            value={formProfileData.address}
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                    </div>
+                                                                    <div className="w-100">
+                                                                        <label className="mb-3 d-block">Male & Female</label>
+                                                                        <select
+                                                                            className="n11-bg extrastyle rounded-8 w-100 py-3 pe-5"
+                                                                            name="gender"
+                                                                            value={formProfileData.gender}
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)}                                                                        >
+                                                                            <option className="p6-color" value="">
+                                                                                Select Gender...
+                                                                            </option>
+                                                                            <option className="p6-color" value="Male">
+                                                                                Male
+                                                                            </option>
+                                                                            <option className="p6-color" value="Female">
+                                                                                Female
+                                                                            </option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                    <div className="w-100">
+                                                                        <label className="mb-3">City / Region</label>
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="city"
+                                                                            placeholder="City / Region..."
+                                                                            value={formProfileData.city}
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                    </div>
+                                                                    <div className="w-100">
+                                                                        <label className="mb-3">Country</label>
+                                                                        <input
+                                                                            className="n11-bg rounded-8"
+                                                                            type="text"
+                                                                            name="country"
+                                                                            placeholder="United Kingdom"
+                                                                            value={formProfileData.country}
+                                                                            onChange={handleChange(formProfileData, setFormProfileData)}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <button className="cmn-btn py-3 px-10" type="submit">
+                                                                    Update
+                                                                </button>
+                                                            </form>
                                                         </div>
                                                     </div>
-                                                </Tab.Panel>
-                                                <Tab.Panel>
-                                                    {user && <UserStatement userId={user.uid} />}
                                                 </Tab.Panel>
                                                 <Tab.Panel>
                                                     {user && <ComplaintForm userId={user.uid} />}
-                                                </Tab.Panel>
-                                                <Tab.Panel>
-                                                    <div>
-                                                        <h2>Complaint History</h2>
-                                                        <div className="pay_method__tabletwo">
-                                                            <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
-                                                                <table className="w-100 text-left p2-bg">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th className="text-nowrap">Date</th>
-                                                                            <th className="text-nowrap">Game</th>
-                                                                            <th className="text-nowrap">Complaint Type</th>
-                                                                            <th className="text-nowrap">Description</th>
-                                                                            <th className="text-nowrap">Admin Remarks</th>
-                                                                            <th className="text-nowrap">Status</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        {complaintsHistory.map((complaint) => (
-                                                                            <tr key={complaint.id}>
-                                                                                <td className="text-nowrap">{new Date(complaint.createdAt).toLocaleDateString()}</td>
-                                                                                <td className="text-nowrap">{complaint.game}</td>
-                                                                                <td className="text-nowrap">{complaint.complaintType}</td>
-                                                                                <td className="text-balance">{complaint.description}</td>
-                                                                                <td className="text-nowrap">{complaint.adminRemarks}</td>
-                                                                                <td className={`fw-normal cpoint text-nowrap ${complaint.status === 'Resolved' ? 'g1-color' : 'r1-color'}`}>
-                                                                                    {complaint.status}
-                                                                                </td>
-                                                                            </tr>
-                                                                        ))}
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 </Tab.Panel>
                                                 <Tab.Panel>
                                                 </Tab.Panel>
@@ -910,8 +913,8 @@ export default function Dashboard() {
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </div >
+            </section >
         </>
     )
 }

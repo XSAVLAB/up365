@@ -5,12 +5,13 @@ import { BiSolidWalletAlt, BiUserCircle } from 'react-icons/bi';
 import { MdArrowDropDownCircle } from 'react-icons/md';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets, fetchProfileData } from '../../../api/firestoreService';
+import { fetchUserBalance, submitLotteryBet, updateUserWallet, fetchProfileData } from '../../../api/firestoreService';
+import Confetti from 'react-confetti';
 const gameTimer = 300;
 
 function formatTimer(seconds: number) {
     const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
+    const remainingSeconds = Math.floor(seconds % 60);
     const minutesStr = String(minutes).padStart(2, '0');
     const secondsStr = String(remainingSeconds).padStart(2, '0');
     return `${minutesStr}:${secondsStr}`;
@@ -42,7 +43,7 @@ function SingleDigitLottery() {
     let [betCount, setBetCount] = useState(0);
     const [number, setNumber] = useState(0);
     const [betAmount, setBetAmount] = useState(0);
-    const [rewardAmount] = useState(0);
+    const [showConfetti, setShowConfetti] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -93,39 +94,40 @@ function SingleDigitLottery() {
     }
 
     useEffect(() => {
+        const storedTimer = localStorage.getItem('countdownTimer');
+
+        const initialTimer = storedTimer !== null ? parseInt(storedTimer) : calculateTimeToNextInterval();
+        setCountdownTimer(initialTimer);
+
         let worker = new Worker(new URL('../../../public/worker1.js', import.meta.url));
 
         worker.postMessage({
             command: 'start',
-            timer: countdownTimer,
-            coolDown: cooldown,
+            timer: initialTimer,
         });
 
         worker.onmessage = function (e) {
-            const { command, timer, coolDown } = e.data;
+            const { command, timer } = e.data;
 
             if (command === 'update') {
                 setCountdownTimer(timer);
-                setCooldown(coolDown);
                 localStorage.setItem('countdownTimer', timer);
-                localStorage.setItem('cooldown', coolDown);
-            } else if (command === 'settleBets') {
-                // settleLotteryBets('Single Digit Lottery');
-                setCounter((prevCounter) => prevCounter + 1);
-                setBetCount(0);
-                localStorage.setItem('countdownTimer', gameTimer.toString());
-                localStorage.setItem('cooldown', '0');
 
+                if (timer === 0) {
+                    setShowConfetti(true);
+                    setTimeout(() => setShowConfetti(false), 10000);
+                }
             }
         };
 
         return () => {
             worker.terminate();
         };
-    }, [countdownTimer, cooldown, user?.uid, number, betAmount, counter]);
+    }, []);
 
     return (
         <div className="form-container">
+            {showConfetti && <Confetti numberOfPieces={1000} recycle={false} />}
             <div className="form-info">
                 <div className={`info-box ${countdownTimer === 0 ? 'text-white' : 'text-green-500'}`}>
                     <div className='info-timer'><IoMdClock size={30} className='mr-2' />{formatTimer(countdownTimer)}</div>
@@ -177,14 +179,7 @@ function SingleDigitLottery() {
                             <option value="1000">1000</option>
                         </select>
                     </div>
-                    {/* <div className="form-bet-option">
-                        <div>Custom Bet</div>
-                        <div>
-                            <input type='number' onChange={(e) => setBetAmount(parseInt(e.target.value, 10))}
-                                value={betAmount} placeholder='100, 200, etc.'
-                                className='bet-input' />
-                        </div>
-                    </div> */}
+
                 </div>
                 <div className="form-actions">
                     <div onClick={handleSubmitBet} className="bet-button">

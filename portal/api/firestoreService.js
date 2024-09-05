@@ -49,8 +49,8 @@ const formatTimestamp = () => {
 export const fetchBalanceHistory = async (userId) => {
   try {
     const transactionsCollectionRef = query(
-      collection(db, "transactions"),
-      where("status", "==", "approved")
+      collection(db, "transactions")
+      // where("status", "==", "approved")
     );
     const withdrawalsCollectionRef = query(
       collection(db, "withdrawals"),
@@ -69,7 +69,11 @@ export const fetchBalanceHistory = async (userId) => {
       .map((doc) => ({ id: doc.id, type: "Withdrawal", ...doc.data() }));
 
     const combinedData = [...transactionsData, ...withdrawalsData];
-    return combinedData;
+    return combinedData.sort((a, b) => {
+      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      return dateB - dateA;
+    });
   } catch (error) {
     console.error("Error fetching balance history: ", error);
     throw error;
@@ -114,6 +118,7 @@ export const createProfile = async (userId, profileData) => {
     profileData.role = "user";
     profileData.isBlocked = false;
     profileData.consent = "Accepted";
+    profileData.hasSeenBonus = false;
     await setDoc(userDocRef, profileData);
   } catch (error) {
     console.error("Error creating profile: ", error);
@@ -405,9 +410,9 @@ export const fetchLotteryBets = async (userId, gameType) => {
 
     // Parse and sort the bets in descending order by timestamp
     return bets.sort((a, b) => {
-      const dateA = parse(a.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
-      const dateB = parse(b.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
-      return dateB - dateA; // Descending order
+      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      return dateB - dateA;
     });
   } catch (error) {
     throw error;
@@ -443,9 +448,9 @@ export const fetchWinningBets = async (userId, gameType) => {
 
     // Parse and sort the winning bets in descending order by timestamp
     return winningBets.sort((a, b) => {
-      const dateA = parse(a.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
-      const dateB = parse(b.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
-      return dateB - dateA; // Descending order
+      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      return dateB - dateA;
     });
   } catch (error) {
     throw error;
@@ -468,10 +473,9 @@ export const fetchAllLotteryBetsHome = async (userId) => {
 
     // Parse and sort the bets in descending order by timestamp
     const sortedBets = bets.sort((a, b) => {
-      const dateA = parse(a.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
-      const dateB = parse(b.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
-
-      return dateB - dateA; // Descending order
+      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      return dateB - dateA;
     });
 
     return sortedBets;
@@ -497,10 +501,10 @@ export const fetchAllLotteryBets = async (userId, gameType) => {
 
     // Parse and sort the bets in descending order by timestamp
     const sortedBets = bets.sort((a, b) => {
-      const dateA = parse(a.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
-      const dateB = parse(b.timestamp, "M/d/yyyy, h:mm:ss a", new Date());
+      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
 
-      return dateB - dateA; // Descending order
+      return dateB - dateA;
     });
 
     return sortedBets;
@@ -887,12 +891,42 @@ export const fetchCricketMatches = async () => {
 
 export const fetchMarqueeText = async () => {
   try {
-    const marqueeTextRef = doc(db, "marqueeText", "marqueeText");
+    const marqueeTextRef = doc(db, "adminDataUpdates", "marqueeText");
     const marqueeDoc = await getDoc(marqueeTextRef);
     if (marqueeDoc.exists) {
       return marqueeDoc.data().marqueeText;
     } else {
-      return "There is no marquee text currently";
+      return "Welcome! Please check out our latest updates";
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
+// Fetch Offer Percentage
+
+export const fetchOfferData = async () => {
+  try {
+    const offerDataRef = doc(db, "adminDataUpdates", "offerPercentage");
+    const offerDataDoc = await getDoc(offerDataRef);
+    if (offerDataDoc.exists) {
+      return offerDataDoc.data().offerPercentage;
+    } else {
+      return "10";
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
+// Fetch WhatsApp Number
+
+export const fetchWhatsappNumber = async () => {
+  try {
+    const whatsappNumberRef = doc(db, "adminDataUpdates", "whatsappNumber");
+    const whatsappNumberDoc = await getDoc(whatsappNumberRef);
+    if (whatsappNumberDoc.exists) {
+      return whatsappNumberDoc.data().whatsappNumber;
+    } else {
+      return "There is no WhatsApp number! Please try another method";
     }
   } catch (e) {
     console.log(e);

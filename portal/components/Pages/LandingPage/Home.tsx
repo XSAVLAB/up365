@@ -9,10 +9,11 @@ import { useRouter } from 'next/navigation';
 import GamesCards from './GameCards';
 import { IconBrandWhatsapp } from '@tabler/icons-react';
 import MarqueeText from './MarqueeText';
+import { fetchWhatsappNumber } from '@/api/firestoreService';
 
 const Home: React.FC = () => {
     const [showWarning, setShowWarning] = useState(true);
-    const router = useRouter();
+    const [whatsappNumber, setWhatsappNumber] = useState<any>('');
     const gamesRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -23,12 +24,26 @@ const Home: React.FC = () => {
         }
     }, [showWarning]);
 
+    useEffect(() => {
+        const fetchedWhatsappNumber = async () => {
+            try {
+                const fetchedWhatsappNumber = await fetchWhatsappNumber();
+                setWhatsappNumber(fetchedWhatsappNumber);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        fetchedWhatsappNumber();
+    }, []);
+
     const scrollToGames = () => {
         gamesRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     const handleWhatsAppClick = () => {
-        const adminPhoneNumber = '+919730219716';
+        const adminPhoneNumber = "+91" + whatsappNumber;
+        console.log(adminPhoneNumber);
         const message = "Hello, I want to create an account. Please can you help me?";
         const whatsappURL = `https://wa.me/${adminPhoneNumber}?text=${encodeURIComponent(message)}`;
         window.open(whatsappURL, '_blank');

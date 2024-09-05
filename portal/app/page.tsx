@@ -56,9 +56,6 @@ export default function Page() {
       {user ? (
         <>
           <HeaderMain />
-          {/* <TopSlider />
-          <TopCricket /> */}
-          {/* <SingleDigitLottery /> */}
           <HomePage />
         </>
       ) : (

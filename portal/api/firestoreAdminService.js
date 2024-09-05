@@ -12,6 +12,8 @@ import {
 } from "firebase/firestore";
 import { auth } from "@/firebaseConfig";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
+import { parse } from "date-fns";
+
 // Update Admin Password
 
 export const updatePasswordInFirebase = async (
@@ -46,7 +48,13 @@ export const fetchAllUsers = async () => {
       id: doc.id,
       ...doc.data(),
     }));
-    return usersData;
+
+    // Parse and sort the users in descending order by timestamp
+    return usersData.sort((a, b) => {
+      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      return dateB - dateA;
+    });
   } catch (error) {
     console.error("Error fetching all users: ", error);
     throw error;
@@ -98,16 +106,17 @@ export const fetchUserRole = async (userId) => {
 export const fetchTransactions = async () => {
   try {
     const transactionsCollectionRef = collection(db, "transactions");
-    const transactionsQuery = query(
-      transactionsCollectionRef
-      // orderBy("timestamp", "asc")
-    );
+    const transactionsQuery = query(transactionsCollectionRef);
     const transactionsSnapshot = await getDocs(transactionsQuery);
     const transactionsData = transactionsSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
-    return transactionsData;
+    return transactionsData.sort((a, b) => {
+      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      return dateB - dateA;
+    });
   } catch (error) {
     console.error("Error fetching transactions: ", error);
     throw error;
@@ -115,10 +124,14 @@ export const fetchTransactions = async () => {
 };
 
 // Update transaction status
-export const updateTransactionStatus = async (transactionId, status) => {
+export const updateTransactionStatus = async (
+  transactionId,
+  status,
+  comment
+) => {
   try {
     const transactionDocRef = doc(db, "transactions", transactionId);
-    await updateDoc(transactionDocRef, { status });
+    await updateDoc(transactionDocRef, { status, comment });
   } catch (error) {
     console.error("Error updating transaction status: ", error);
     throw error;
@@ -147,16 +160,17 @@ export const updateUserWallet = async (userId, amount) => {
 export const fetchWithdrawals = async () => {
   try {
     const withdrawalsCollectionRef = collection(db, "withdrawals");
-    const withdrawalsQuery = query(
-      withdrawalsCollectionRef
-      // orderBy("timestamp", "asc")
-    );
+    const withdrawalsQuery = query(withdrawalsCollectionRef);
     const withdrawalsSnapshot = await getDocs(withdrawalsQuery);
     const withdrawalsData = withdrawalsSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
-    return withdrawalsData;
+    return withdrawalsData.sort((a, b) => {
+      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      return dateB - dateA;
+    });
   } catch (error) {
     console.error("Error fetching withdrawals: ", error);
     throw error;
@@ -168,7 +182,8 @@ export const updateWithdrawalStatus = async (
   withdrawalId,
   userId,
   amount,
-  status
+  status,
+  comment
 ) => {
   try {
     const withdrawalDocRef = doc(db, "withdrawals", withdrawalId);
@@ -189,7 +204,7 @@ export const updateWithdrawalStatus = async (
       throw new Error(`Insufficient balance in the user's wallet.`);
     }
 
-    await updateDoc(withdrawalDocRef, { status });
+    await updateDoc(withdrawalDocRef, { status, comment });
   } catch (error) {
     console.error("Error updating withdrawal status: ", error);
     throw error;
@@ -206,10 +221,18 @@ export const fetchApprovedTransactions = async () => {
       // orderBy("timestamp", "asc")
     );
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => ({
+    const approvedTransactionsData = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
+    return approvedTransactionsData.sort((a, b) => {
+      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      console.log(dateA);
+      console.log(dateB);
+      console.log(dateB - dateA);
+      return dateB - dateA;
+    });
   } catch (error) {
     console.error("Error fetching approved transactions: ", error);
     throw error;
@@ -322,7 +345,7 @@ export const updateComplaintRemark = async (complaintId, adminRemarks) => {
 // Function to update marquee text in Firestore
 export const updateMarqueeText = async (marqueeText) => {
   try {
-    const marqueeTextRef = doc(db, "offersAndMarquee", "marqueeText");
+    const marqueeTextRef = doc(db, "adminDataUpdates", "marqueeText");
     await updateDoc(marqueeTextRef, { marqueeText: marqueeText });
   } catch (error) {
     console.error("Error updating the marquee", error);
@@ -331,10 +354,19 @@ export const updateMarqueeText = async (marqueeText) => {
 // Function to update Offers in Firestore
 export const updateOfferPercentage = async (offerPercentage) => {
   try {
-    const offerPercentageRef = doc(db, "offersAndMarquee", "offerPercentage");
+    const offerPercentageRef = doc(db, "adminDataUpdates", "offerPercentage");
     await updateDoc(offerPercentageRef, { offerPercentage: offerPercentage });
   } catch (error) {
     console.error("Error updating the offer", error);
+  }
+};
+// Function to update Whatsapp Number in Firestore
+export const updateWhatsappNumber = async (whatsappNumber) => {
+  try {
+    const whatsappNumberRef = doc(db, "adminDataUpdates", "whatsappNumber");
+    await updateDoc(whatsappNumberRef, { whatsappNumber: whatsappNumber });
+  } catch (error) {
+    console.error("Error updating the Whatsapp Number", error);
   }
 };
 

@@ -6,7 +6,7 @@ import { dashboardTabs } from '@/public/data/adminTabs';
 import { doSignOut } from '../../../../firebase/auth';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth, isAdmin as checkIsAdmin } from '@/firebaseConfig';
-import { fetchAllUsers, deleteUser, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus, updateComplaintStatus, updateComplaintRemark, fetchComplaints, updateMarqueeText, updatePasswordInFirebase, updateOfferPercentage } from '../../../../api/firestoreAdminService';
+import { fetchAllUsers, deleteUser, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus, updateComplaintStatus, updateComplaintRemark, fetchComplaints, updateMarqueeText, updatePasswordInFirebase, updateOfferPercentage, updateWhatsappNumber } from '../../../../api/firestoreAdminService';
 import EditUserForm from '../UserManagement/EditUserForm';
 import History from '../Dashboard/History';
 import Payment from './Payment';
@@ -38,6 +38,7 @@ interface Transaction {
     amount: string;
     status: string;
     timestamp: string;
+    comment: string;
 }
 
 interface Withdrawal {
@@ -46,6 +47,7 @@ interface Withdrawal {
     amount: string;
     status: string;
     timestamp: string;
+    comment: string;
 }
 interface Complaint {
     id: string;
@@ -202,24 +204,42 @@ export default function Dashboard() {
         setEditingUser(null);
     };
 
-    const handleUpdateTransaction = async (transactionId: string, userId: string, amount: string, status: string) => {
+    const handleUpdateTransaction = async (transactionId: string, userId: string, amount: string, status: string, comment: string) => {
         try {
-            await updateTransactionStatus(transactionId, status);
             if (status === 'approved') {
+                comment = comment || 'Approved without comment'; // Set a default comment if not provided
+                await updateTransactionStatus(transactionId, status, comment);
                 await updateUserWallet(userId, parseFloat(amount));
+            } else if (status === 'rejected') {
+                comment = prompt("Please enter a comment for rejecting this transaction:") ?? 'Reason not provide!';
+                await updateTransactionStatus(transactionId, status, comment);
+            } else {
+                await updateTransactionStatus(transactionId, status);
             }
-            setTransactions(transactions.map((transaction) => transaction.id === transactionId ? { ...transaction, status } : transaction));
+
+            setTransactions(transactions.map((transaction) =>
+                transaction.id === transactionId ? { ...transaction, status, comment } : transaction
+            ));
         } catch (error) {
             console.error('Error updating transaction:', error);
         }
     };
 
-    const handleUpdateWithdrawal = async (withdrawalId: string, userId: string, amount: string, status: string) => {
+
+    const handleUpdateWithdrawal = async (withdrawalId: string, userId: string, amount: string, status: string, comment: string) => {
         try {
             if (status === 'approved') {
-                await updateWithdrawalStatus(withdrawalId, userId, parseFloat(amount), status);
+                comment = comment || 'Approved without comment';
+                await updateWithdrawalStatus(withdrawalId, userId, parseFloat(amount), status, comment);
             }
-            setWithdrawals(withdrawals.map((withdrawal) => withdrawal.id === withdrawalId ? { ...withdrawal, status } : withdrawal));
+            else if (status === 'rejected') {
+                comment = prompt("Please enter a comment for rejecting this withdrawal:") ?? 'Reason not provide!';
+                await updateWithdrawalStatus(withdrawalId, userId, parseFloat(amount), status, comment);
+            }
+
+            setWithdrawals(withdrawals.map((withdrawal) =>
+                withdrawal.id === withdrawalId ? { ...withdrawal, status, comment } : withdrawal
+            ));
         } catch (error) {
             console.error('Error updating withdrawal:', error);
         }
@@ -300,6 +320,17 @@ export default function Dashboard() {
         } catch (error) {
             console.error("Error updating Offer", error);
             setMessage("Failed to update Offer.");
+        }
+    };
+    const handleSubmitWpNumber = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        try {
+            const whatsappNumber = event.currentTarget.whatsappNumber.value;
+            await updateWhatsappNumber(whatsappNumber);
+            setMessage("Whatsapp Number updated successfully!");
+        } catch (error) {
+            console.error("Error updating Whatsapp Number", error);
+            setMessage("Failed to update Whatsapp Number.");
         }
     };
 
@@ -463,6 +494,7 @@ export default function Dashboard() {
                                                                         <th>Status</th>
                                                                         <th>Approve</th>
                                                                         <th>Reject</th>
+                                                                        <th>Comment</th>
                                                                         <th>User ID</th>
                                                                         <th>Transaction ID</th>
                                                                     </tr>
@@ -475,15 +507,16 @@ export default function Dashboard() {
                                                                             <td>{transaction.amount}</td>
                                                                             <td style={getStatusStyle(transaction.status)}>{transaction.status}</td>
                                                                             <td>
-                                                                                <button onClick={() => handleUpdateTransaction(transaction.id, transaction.userId, transaction.amount, 'approved')} className="btn btn-success" disabled={transaction.status !== 'pending'}>
+                                                                                <button onClick={() => handleUpdateTransaction(transaction.id, transaction.userId, transaction.amount, 'approved', "N/A")} className="btn btn-success" disabled={transaction.status !== 'pending'}>
                                                                                     Approve
                                                                                 </button>
                                                                             </td>
                                                                             <td>
-                                                                                <button onClick={() => handleUpdateTransaction(transaction.id, transaction.userId, transaction.amount, 'rejected')} className="btn btn-danger" disabled={transaction.status !== 'pending'}>
+                                                                                <button onClick={() => handleUpdateTransaction(transaction.id, transaction.userId, transaction.amount, 'rejected', "N/A")} className="btn btn-danger" disabled={transaction.status !== 'pending'}>
                                                                                     Reject
                                                                                 </button>
                                                                             </td>
+                                                                            <td>{transaction.comment || 'N/A'}</td>
                                                                             <td>{transaction.userId}</td>
                                                                             <td>{transaction.id}</td>
                                                                         </tr>
@@ -505,6 +538,7 @@ export default function Dashboard() {
                                                                         <th>Status</th>
                                                                         <th>Approve</th>
                                                                         <th>Reject</th>
+                                                                        <th>Comment</th>
                                                                         <th>User ID</th>
                                                                         <th>Withdrawal ID</th>
                                                                     </tr>
@@ -517,15 +551,16 @@ export default function Dashboard() {
                                                                             <td>{withdrawal.amount}</td>
                                                                             <td style={getStatusStyle(withdrawal.status)}>{withdrawal.status}</td>
                                                                             <td>
-                                                                                <button onClick={() => handleUpdateWithdrawal(withdrawal.id, withdrawal.userId, withdrawal.amount, 'approved')} className="btn btn-success" disabled={withdrawal.status !== 'pending'}>
+                                                                                <button onClick={() => handleUpdateWithdrawal(withdrawal.id, withdrawal.userId, withdrawal.amount, 'approved', "N/A")} className="btn btn-success" disabled={withdrawal.status !== 'pending'}>
                                                                                     Approve
                                                                                 </button>
                                                                             </td>
                                                                             <td>
-                                                                                <button onClick={() => handleUpdateWithdrawal(withdrawal.id, withdrawal.userId, withdrawal.amount, 'rejected')} className="btn btn-danger" disabled={withdrawal.status !== 'pending'}>
+                                                                                <button onClick={() => handleUpdateWithdrawal(withdrawal.id, withdrawal.userId, withdrawal.amount, 'rejected', "N/A")} className="btn btn-danger" disabled={withdrawal.status !== 'pending'}>
                                                                                     Reject
                                                                                 </button>
                                                                             </td>
+                                                                            <td>{withdrawal.comment || 'N/A'}</td>
                                                                             <td>{withdrawal.userId}</td>
                                                                             <td>{withdrawal.id}</td>
                                                                         </tr>
@@ -648,6 +683,34 @@ export default function Dashboard() {
                                                     </div>
                                                     <hr />
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+
+                                                        <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                            <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                                                                <h5 className="n10-color">Update Whatsapp Number</h5>
+                                                            </div>
+                                                            <div className="pay_method__formarea">
+                                                                <form onSubmit={handleSubmitWpNumber}>
+                                                                    <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                        <div className="w-100">
+                                                                            <input
+                                                                                className="n11-bg rounded-8"
+                                                                                type="number"
+                                                                                name="whatsappNumber"
+                                                                                placeholder="Enter 10 Digit Whatsapp Number"
+                                                                            />
+
+                                                                        </div>
+                                                                    </div>
+                                                                    <button className="cmn-btn py-3 px-10" type="submit">
+                                                                        Update
+                                                                    </button>
+                                                                </form>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr />
+                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                                             <h5 className="n10-color">Update the Offer Percentage</h5>
                                                         </div>
@@ -669,6 +732,8 @@ export default function Dashboard() {
                                                             </form>
 
                                                         </div>
+
+
                                                     </div>
                                                 </Tab.Panel>
 

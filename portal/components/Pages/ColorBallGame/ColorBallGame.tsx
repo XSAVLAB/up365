@@ -6,6 +6,8 @@ import { MdArrowDropDownCircle } from 'react-icons/md';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleColorBallBets, fetchProfileData } from '../../../api/firestoreService';
+import Confetti from 'react-confetti';
+
 
 const gameTimer = 300;
 
@@ -45,6 +47,7 @@ function ColorBallGame() {
     const [betAmount, setBetAmount] = useState(0);
     const [rewardAmount] = useState(0);
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
+    const [showConfetti, setShowConfetti] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -95,41 +98,41 @@ function ColorBallGame() {
     }
 
     useEffect(() => {
-        let worker = new Worker(new URL('../../../public/worker3.js', import.meta.url));
+        const storedTimer = localStorage.getItem('countdownTimer');
+
+        const initialTimer = storedTimer !== null ? parseInt(storedTimer) : calculateTimeToNextInterval();
+        setCountdownTimer(initialTimer);
+
+        let worker = new Worker(new URL('../../../public/worker1.js', import.meta.url));
 
         worker.postMessage({
             command: 'start',
-            timer: countdownTimer,
-            coolDown: cooldown,
+            timer: initialTimer,
         });
 
         worker.onmessage = function (e) {
-            const { command, timer, coolDown } = e.data;
+            const { command, timer } = e.data;
 
             if (command === 'update') {
                 setCountdownTimer(timer);
-                setCooldown(coolDown);
                 localStorage.setItem('countdownTimer', timer);
-                localStorage.setItem('cooldown', coolDown);
-            } else if (command === 'settleBets') {
-                // settleColorBallBets();
-                setCounter((prevCounter) => prevCounter + 1);
-                setBetCount(0);
-                localStorage.setItem('countdownTimer', gameTimer.toString());
-                localStorage.setItem('cooldown', '0');
 
+                if (timer === 0) {
+                    setShowConfetti(true);
+                    setTimeout(() => setShowConfetti(false), 10000);
+                }
             }
         };
 
         return () => {
             worker.terminate();
         };
-    }, [countdownTimer, cooldown, user?.uid, number, betAmount, counter]);
-
+    }, []);
     const colorOptions = ['Red', 'Blue', 'Green', 'Yellow', 'Purple'];
 
     return (
         <div className="form-container">
+            {showConfetti && <Confetti numberOfPieces={1000} recycle={false} />}
             <div className="form-info">
                 <div className={`info-box ${countdownTimer === 0 ? 'text-white' : 'text-green-500'}`}>
                     <div className='info-timer'><IoMdClock size={30} className='mr-2' />{formatTimer(countdownTimer)}</div>

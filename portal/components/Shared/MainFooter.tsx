@@ -418,7 +418,7 @@ export default function MainFooter() {
                 </div>
             </div>
             <div className='custom-footer-copyright'>
-                <p>@ Copyright-2023: UP365 Gaming created by <a href="https://www.xsavlab.com/" target="_blank" rel="noopener noreferrer" className='font-bold underline underline-offset-4 hover:text-blue-700'>XSAV Lab</a></p>
+                <p>@ Copyright-2023: UP365 Gaming created by <a href="https://www.up365gaming.com/" target="_blank" rel="noopener noreferrer" className='font-bold underline underline-offset-4 hover:text-blue-700'>up365gaming</a></p>
             </div>
         </div>
     );

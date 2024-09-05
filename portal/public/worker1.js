@@ -1,40 +1,33 @@
 let countdownTimer = 0;
-let cooldown = 0;
 let intervalId = null;
 
 onmessage = function (e) {
-  const { command, timer, coolDown } = e.data;
+  const { command, timer } = e.data;
 
   if (command === "start") {
     if (intervalId !== null) {
       clearInterval(intervalId);
     }
 
+    // Calculate the reference time as 12:00:00 AM
     const now = new Date();
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
+    const referenceTime = new Date(now);
+    referenceTime.setHours(0, 0, 0, 0);
 
-    const nextQuarter = Math.ceil(minutes / 5) * 5;
-    const remainingMinutes = (nextQuarter - minutes) % 60;
-    const remainingSeconds = 60 - seconds;
+    // Calculate the time elapsed since the reference time
+    const timeElapsedSinceReference = (now - referenceTime) / 1000;
+    countdownTimer = 300 - Math.floor(timeElapsedSinceReference % 300);
 
-    countdownTimer = remainingMinutes * 60 + remainingSeconds;
-    cooldown = coolDown;
-
+    // Start the countdown
     intervalId = setInterval(() => {
-      if (countdownTimer === 0) {
-        postMessage({ command: "settleBets" });
+      if (countdownTimer <= 0) {
         countdownTimer = 300;
-        cooldown = 10;
-      } else if (cooldown !== 0) {
-        cooldown -= 1;
       } else {
         countdownTimer -= 1;
       }
       postMessage({
         command: "update",
         timer: countdownTimer,
-        coolDown: cooldown,
       });
     }, 1000);
   }
