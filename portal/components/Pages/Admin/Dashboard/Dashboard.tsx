@@ -611,7 +611,7 @@ export default function Dashboard() {
                                                                         <th>User Name</th>
                                                                         <th>Complaint Type</th>
                                                                         <th>Description</th>
-                                                                        <th>Game</th>
+                                                                        <th>Problem</th>
                                                                         <th>Status</th>
                                                                         <th>Admin Remarks</th>
                                                                         <th>Submit Remark</th>
@@ -620,7 +620,7 @@ export default function Dashboard() {
                                                                 <tbody>
                                                                     {complaints.map((complaint) => (
                                                                         <tr key={complaint.id}>
-                                                                            <td className="text-nowrap">{new Date(complaint.createdAt).toLocaleDateString()}</td>
+                                                                            <td className="text-nowrap">{complaint.timestamp}</td>
                                                                             <td className="text-nowrap">{getUserNameById(complaint.userId)}</td>
                                                                             <td className="text-nowrap">{complaint.complaintType}</td>
                                                                             <td className="text-balance">{complaint.description}</td>

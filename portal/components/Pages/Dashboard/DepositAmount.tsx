@@ -4,7 +4,7 @@ import { db, auth } from '@/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { updateUserCardDetails, addTransaction, fetchUpiID } from '@/api/firestoreService';
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
-import confetti from 'canvas-confetti';
+// import confetti from 'canvas-confetti';
 
 export default function DepositAmount() {
     const [activeItem, setActiveItem] = useState<{ id: number; amount: string } | null>(amountData[0]);
@@ -127,13 +127,13 @@ export default function DepositAmount() {
         }));
     };
 
-    const triggerConfetti = () => {
-        confetti({
-            particleCount: 700,
-            spread: 360,
-            origin: { y: 0.6 },
-        });
-    };
+    // const triggerConfetti = () => {
+    //     confetti({
+    //         particleCount: 700,
+    //         spread: 360,
+    //         origin: { y: 0.6 },
+    //     });
+    // };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -149,7 +149,7 @@ export default function DepositAmount() {
                 });
                 setSuccessMessage(`Deposit request for ₹${formDepositData.amount} submitted successfully.`);
                 setErrorMessage('');
-                triggerConfetti();
+                // triggerConfetti();
             } catch (error) {
                 setErrorMessage('Error storing deposit details!');
                 setSuccessMessage('');
@@ -166,11 +166,12 @@ export default function DepositAmount() {
                 await addTransaction(user.uid, {
                     amount: formDepositData.amount,
                     status: 'pending',
+                    isSuccessShown: false,
                 });
                 setPaymentStep(true);
                 setSuccessMessage(`Deposit request for ₹${formDepositData.amount} submitted successfully.`);
                 setErrorMessage('');
-                triggerConfetti();
+                // triggerConfetti();
             } catch (error) {
                 setErrorMessage('Error storing deposit details!');
                 setSuccessMessage('');
@@ -219,7 +220,7 @@ export default function DepositAmount() {
                         <span>Total</span>
                         <span>₹ {formDepositData.amount}</span>
                     </div>
-                    <button onClick={handleDeposit} className="py-4 px-5 n11-bg rounded-2 w-100">
+                    <button onClick={handleDeposit} className="py-4 px-5 n11-bg rounded-2 w-100 cmn-btn">
                         Deposit
                     </button>
                 </>

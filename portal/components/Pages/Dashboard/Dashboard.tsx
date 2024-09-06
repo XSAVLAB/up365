@@ -512,7 +512,7 @@ export default function Dashboard() {
                                                                 </form>
                                                             </div>
                                                         </div>
-                                                        <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                                                        {/* <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                                             <h5 className="n10-color">Enter your payment details</h5>
                                                         </div>
                                                         <div className="pay_method__formarea">
@@ -641,13 +641,9 @@ export default function Dashboard() {
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                {/* <div className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
-                                                                    <span>Total</span>
-                                                                    <span>₹ 3,000</span>
-                                                                </div>  */}
                                                                 <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">Save</button>
                                                             </form>
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                 </Tab.Panel>
                                                 <Tab.Panel>
@@ -660,7 +656,7 @@ export default function Dashboard() {
                                                             <form onSubmit={onSubmit}>
                                                                 <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
-                                                                        <label className="mb-3">First Name (Given Name)</label>
+                                                                        <label className="mb-3">First Name</label>
                                                                         <input
                                                                             className="n11-bg rounded-8"
                                                                             type="text"
@@ -681,7 +677,7 @@ export default function Dashboard() {
                                                                     </div>
                                                                 </div>
                                                                 <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
-                                                                    <div className="w-100">
+                                                                    {/* <div className="w-100">
                                                                         <label className="mb-3">Date Of Birth</label>
                                                                         <div className="d-flex align-items-center gap-6 w-100">
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
@@ -721,7 +717,7 @@ export default function Dashboard() {
                                                                                     }} />
                                                                             </div>
                                                                         </div>
-                                                                    </div>
+                                                                    </div> */}
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Phone Number</label>
                                                                         <div className="d-flex gap-2">
@@ -750,7 +746,7 @@ export default function Dashboard() {
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                {/* <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Address</label>
                                                                         <input
@@ -802,7 +798,7 @@ export default function Dashboard() {
                                                                             onChange={handleChange(formProfileData, setFormProfileData)}
                                                                         />
                                                                     </div>
-                                                                </div>
+                                                                </div> */}
                                                                 <button className="cmn-btn py-3 px-10" type="submit">
                                                                     Update
                                                                 </button>

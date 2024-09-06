@@ -53,8 +53,8 @@ export const fetchBalanceHistory = async (userId) => {
       // where("status", "==", "approved")
     );
     const withdrawalsCollectionRef = query(
-      collection(db, "withdrawals"),
-      where("status", "==", "approved")
+      collection(db, "withdrawals")
+      // where("status", "==", "approved")
     );
 
     const transactionsSnapshot = await getDocs(transactionsCollectionRef);
@@ -117,7 +117,6 @@ export const createProfile = async (userId, profileData) => {
     profileData.wallet = "0";
     profileData.role = "user";
     profileData.isBlocked = false;
-    profileData.consent = "Accepted";
     profileData.hasSeenBonus = false;
     await setDoc(userDocRef, profileData);
   } catch (error) {
@@ -125,7 +124,6 @@ export const createProfile = async (userId, profileData) => {
     throw error;
   }
 };
-
 // Settings management functions:
 
 // Update Settings
@@ -199,6 +197,48 @@ export const addTransaction = async (userId, transactionData) => {
   }
 };
 
+export const fetchDepositCredited = async (userId) => {
+  try {
+    const depositCreditedCollectionRef = collection(db, "transactions");
+    const q = query(
+      depositCreditedCollectionRef,
+      where("userId", "==", userId),
+      where("status", "==", "approved"),
+      where("isSuccessShown", "==", false)
+    );
+    const querySnapshot = await getDocs(q);
+    const depositCredited = querySnapshot.docs.map((doc) => {
+      const { amount, isSuccessShown } = doc.data();
+      return { amount, isSuccessShown };
+    });
+
+    return depositCredited;
+  } catch (error) {
+    console.error("Error fetching successful deposits:", error);
+    throw error;
+  }
+};
+export const updateSuccessDepositMessage = async (userId) => {
+  try {
+    const depositCreditedCollectionRef = collection(db, "transactions");
+    const q = query(
+      depositCreditedCollectionRef,
+      where("userId", "==", userId),
+      where("isSuccessShown", "==", false)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    // Iterate over each document and update the field
+    querySnapshot.forEach(async (doc) => {
+      await updateDoc(doc.ref, { isSuccessShown: true });
+    });
+  } catch (error) {
+    console.error("Error updating successful deposits message:", error);
+    throw error;
+  }
+};
+
 // Fetch all pending withdrawal requests for the user
 export const fetchPendingWithdrawals = async (userId) => {
   try {
@@ -218,7 +258,16 @@ export const fetchPendingWithdrawals = async (userId) => {
 };
 
 // Withdrawals
-export const addWithdrawalRequest = async (userId, amount) => {
+export const addWithdrawalRequest = async (
+  userId,
+  amount,
+  accountNumber,
+  ifscCode,
+  bankName,
+  branchName,
+  accountHolderName,
+  upiID
+) => {
   try {
     const withdrawalCollectionRef = collection(db, "withdrawals");
     await addDoc(withdrawalCollectionRef, {
@@ -226,6 +275,12 @@ export const addWithdrawalRequest = async (userId, amount) => {
       amount,
       status: "pending",
       timestamp: formatTimestamp(),
+      accountNumber,
+      ifscCode,
+      bankName,
+      branchName,
+      accountHolderName,
+      upiID,
     });
 
     console.log("Withdrawal request stored in Firestore");
@@ -694,7 +749,7 @@ export const fetchUserStatement = async (userId) => {
     const transactionsData = transactionsSnapshot.docs.map((doc) => ({
       id: doc.id,
       type: "Deposit",
-      amount: doc.data().amount,
+      amount: parseFloat(doc.data().amount),
       status: doc.data().status,
       timestamp: doc.data().timestamp,
       userId: doc.data().userId,
@@ -703,7 +758,7 @@ export const fetchUserStatement = async (userId) => {
     const withdrawalsData = withdrawalsSnapshot.docs.map((doc) => ({
       id: doc.id,
       type: "Withdrawal",
-      amount: doc.data().amount,
+      amount: parseFloat(doc.data().amount),
       status: doc.data().status,
       timestamp: doc.data().timestamp,
       userId: doc.data().userId,
@@ -712,8 +767,8 @@ export const fetchUserStatement = async (userId) => {
     const betsData = betsSnapshot.docs.map((doc) => ({
       id: doc.id,
       type: "Bet",
-      amount: doc.data().betAmount,
-      rewardAmount: doc.data().possibleWin,
+      amount: parseFloat(doc.data().betAmount),
+      rewardAmount: parseFloat(doc.data().possibleWin) || 0,
       status: doc.data().settled ? "settled" : "unsettled",
       timestamp: doc.data().timestamp,
       userId: doc.data().userId,
@@ -722,8 +777,8 @@ export const fetchUserStatement = async (userId) => {
     const gameBetsData = gameBetsSnapshot.docs.map((doc) => ({
       id: doc.id,
       type: "Game Bet",
-      amount: doc.data().betAmount,
-      rewardAmount: doc.data().rewardAmount,
+      amount: parseFloat(doc.data().betAmount),
+      rewardAmount: parseFloat(doc.data().rewardAmount) || 0,
       status: doc.data().settled ? "settled" : "unsettled",
       timestamp: doc.data().timestamp,
       userId: doc.data().userID,

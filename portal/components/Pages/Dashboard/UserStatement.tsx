@@ -15,7 +15,7 @@ interface Transaction {
     timestamp: string;
     type: string;
     rewardAmount?: number;
-    balance: number; // Added balance property
+    balance: number;
 }
 
 interface UserStatementProps {
@@ -29,6 +29,15 @@ export default function UserStatement({ userId }: UserStatementProps) {
     const [toDate, setToDate] = useState<Date | null>(null);
     const [tempFromDate, setTempFromDate] = useState<Date | null>(new Date());
     const [tempToDate, setTempToDate] = useState<Date | null>(new Date());
+
+    // Helper function to parse string timestamp into Date object
+    const parseDateString = (dateString: string): Date => {
+        // Expected format: "dd/MM/yyyy, HH:mm:ss AM/PM"
+        const [datePart, timePart] = dateString.split(', ');
+        const [day, month, year] = datePart.split('/');
+        const date = new Date(`${year}-${month}-${day} ${timePart}`);
+        return date;
+    };
 
     useEffect(() => {
         const fetchApprovedData = async () => {
@@ -47,7 +56,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
     useEffect(() => {
         if (fromDate && toDate) {
             const filtered = balanceHistory.filter(entry => {
-                const timestamp = new Date(entry.timestamp);
+                const timestamp = parseDateString(entry.timestamp);
                 return timestamp >= fromDate && timestamp <= toDate;
             });
             setFilteredData(filtered);
@@ -67,14 +76,15 @@ export default function UserStatement({ userId }: UserStatementProps) {
     };
 
     const handleDownloadExcel = () => {
+        // Map the data, ensuring all rows are properly filled even if some fields are empty
         const data = filteredData.map(entry => ({
-            'Timestamp': entry.timestamp,
+            'Timestamp': entry.timestamp || '',  // Ensure this field is not undefined or null
             'Deposit': entry.type === 'Deposit' ? entry.amount : '',
             'Withdraw': entry.type === 'Withdrawal' ? entry.amount : '',
             'Bet': entry.type === 'Bet' ? entry.amount : '',
             'Game Bet': entry.type === 'Game Bet' ? entry.amount : '',
             'Reward': (entry.type === 'Bet' || entry.type === 'Game Bet') ? entry.rewardAmount : '',
-            'Balance': entry.balance, // Added balance column
+            'Balance': entry.balance || ''       // Ensure this field is not undefined or null
         }));
 
         const headers = [
@@ -84,27 +94,32 @@ export default function UserStatement({ userId }: UserStatementProps) {
             'Sports Bet Debit',
             'Game Bet Debit',
             'Rewards',
-            'Balance', // Added balance column
+            'Balance',
         ];
 
+        // Create a new workbook and worksheet
         const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils.json_to_sheet(data, { skipHeader: true });
+        const worksheet = XLSX.utils.json_to_sheet(data);  // No skipHeader here
+
+        // Add headers manually after generating the sheet
         XLSX.utils.sheet_add_aoa(worksheet, [headers], { origin: 'A1' });
 
+        // Set column widths for better display in Excel
         const columnWidths = [
+            { wch: 20 },  // Adjust this for timestamp
             { wch: 15 },
             { wch: 15 },
+            { wch: 20 },
+            { wch: 20 },
             { wch: 15 },
-            { wch: 15 },
-            { wch: 15 },
-            { wch: 15 },
-            { wch: 15 },
-            { wch: 20 }
+            { wch: 15 }
         ];
         worksheet['!cols'] = columnWidths;
 
+        // Append the worksheet to the workbook
         XLSX.utils.book_append_sheet(workbook, worksheet, 'BalanceHistory');
 
+        // Write the workbook to a buffer and save it as an Excel file
         const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
         const dataBlob = new Blob([excelBuffer], { type: 'application/octet-stream' });
         saveAs(dataBlob, 'BalanceHistory.xlsx');
@@ -123,7 +138,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
                 entry.type === 'Bet' ? entry.amount : '',
                 entry.type === 'Game Bet' ? entry.amount : '',
                 (entry.type === 'Bet' || entry.type === 'Game Bet') ? entry.rewardAmount : '',
-                entry.balance // Added balance column
+                entry.balance
             ];
             tableRows.push(entryData);
         });
@@ -173,7 +188,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
                             <th>Sports Bet Debit</th>
                             <th>Game Bet Debit</th>
                             <th>Rewards</th>
-                            <th>Balance</th> {/* Added balance column */}
+                            <th>Balance</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -185,7 +200,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
                                 <td>{entry.type === 'Bet' ? entry.amount : '-'}</td>
                                 <td>{entry.type === 'Game Bet' ? entry.amount : '-'}</td>
                                 <td>{entry.rewardAmount ? entry.rewardAmount : '-'}</td>
-                                <td>{entry.balance}</td> {/* Added balance value */}
+                                <td>{entry.balance}</td>
                             </tr>
                         ))}
                     </tbody>

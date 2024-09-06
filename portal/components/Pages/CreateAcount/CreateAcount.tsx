@@ -19,21 +19,31 @@ const CreateAccount = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [isChecked, setIsChecked] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+    const [isConsentGiven, setIsConsentGiven] = useState(false);
     const router = useRouter();
 
     const { userLoggedIn } = useAuth() || {};
 
-    const onSubmit = async (e: { preventDefault: () => void }) => {
+    const handleTermsChange = (event: { target: { checked: boolean | ((prevState: boolean) => boolean); }; }) => {
+        setIsTermsAccepted(event.target.checked);
+    };
+
+    const handleConsentChange = (event: { target: { checked: boolean | ((prevState: boolean) => boolean); }; }) => {
+        setIsConsentGiven(event.target.checked);
+    };
+
+    const onSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        setMessage("");
+        setMessage('');
 
         try {
             // Check if the phone number already exists in Firestore
-            const q = query(collection(db, "users"), where("phoneNumber", "==", phoneNumber));
+            const q = query(collection(db, 'users'), where('phoneNumber', '==', phoneNumber));
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
-                // If the phone number is found, display an error message
                 setMessage('Mobile number already registered!');
                 return;
             }
@@ -47,14 +57,16 @@ const CreateAccount = () => {
                 lastName,
                 phoneNumber,
                 email,
+                isConsentGiven, // Save the consent status
+                isTermsAccepted, // Save the terms acceptance status
             };
 
             await createProfile(user.uid, profileData);
 
             router.push('/');
-        } catch (e) {
+        } catch (error) {
             setMessage('User Already Registered! Please Log in');
-            console.log(e);
+            console.error(error);
         }
     };
 
@@ -134,6 +146,9 @@ const CreateAccount = () => {
             // setMessage('User Already Registered via Google! Please use Google to signin');
         }
     };
+    const handleCheckboxChange = (event: { target: { checked: boolean | ((prevState: boolean) => boolean); }; }) => {
+        setIsChecked(event.target.checked);
+    };
     return (
         <section className="login_section pt-120 p3-bg">
             {userLoggedIn && (<Navigate to={'/'} replace={true} />)}
@@ -181,7 +196,7 @@ const CreateAccount = () => {
                                                         className="n11-bg"
                                                         name="phoneNumber"
                                                         placeholder="Mobile Number"
-                                                        type="text"
+                                                        type="number"
                                                         required
                                                         value={phoneNumber}
                                                         onChange={(e) => setphoneNumber(e.target.value)}
@@ -210,10 +225,26 @@ const CreateAccount = () => {
                                                     />
                                                 </div>
                                                 <div className="d-flex align-items-center flex-wrap flex-sm-nowrap gap-2 mb-6">
-                                                    <input type="checkbox" required />
-                                                    <span>By signing up, I hereby confirm that I am over 18, I read and accepted the <a href="#">terms and conditions</a></span>
+                                                    <input type="checkbox" required onChange={handleTermsChange} />
+                                                    <span>
+                                                        By signing up, I hereby confirm that I am over 18, I read and accepted
+                                                        the <a href="#">terms and conditions</a>
+                                                    </span>
                                                 </div>
-                                                <button className="cmn-btn px-5 py-3 mb-6 w-100" type="submit">Sign Up</button>
+                                                <div className="d-flex align-items-center flex-wrap flex-sm-nowrap gap-2 mb-6">
+                                                    <input type="checkbox" onChange={handleConsentChange} />
+                                                    <span>
+                                                        I consent to the use of my email and mobile number for future
+                                                        communications, updates, and promotional purposes.
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    className={`cmn-btn px-5 py-3 mb-6 w-100 ${!isTermsAccepted ? 'btn-disabled' : ''}`}
+                                                    type="submit"
+                                                    disabled={!isTermsAccepted}
+                                                >
+                                                    Sign Up
+                                                </button>
                                             </form>
                                         </div>
                                         <div className="login_section__socialmedia text-center mb-6">
@@ -222,9 +253,7 @@ const CreateAccount = () => {
                                                 <Link href="#" onClick={(e) => { onFacebookSignin(e) }} className="n11-bg px-3 py-2 rounded-5">
                                                     <IconBrandFacebookFilled className="ti ti-brand-facebook-filled fs-four" />
                                                 </Link>
-                                                {/* <Link href="#" className="n11-bg px-3 py-2 rounded-5">
-                                                    <IconBrandTwitterFilled className="ti ti-brand-twitter-filled fs-four" />
-                                                </Link> */}
+
                                                 <Link href="#" onClick={(e) => { onGoogleSignIn(e) }} className="n11-bg px-3 py-2 rounded-5">
                                                     <IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" />
                                                 </Link>

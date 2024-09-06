@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { dashboardAmmount } from '@/public/data/dashBoard';
 import { auth } from '@/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { addWithdrawalRequest, fetchUserWallet, fetchPendingWithdrawals } from '@/api/firestoreService';
+import { fetchUserWallet } from '@/api/firestoreService';
+import KYCVerification from './KYCVerification'; // Import the KYCVerification component
 
 export default function WithdrawalAmount() {
     const [activeItem, setActiveItem] = useState<{ id: number; amount: string } | null>(dashboardAmmount[0]);
@@ -11,6 +12,8 @@ export default function WithdrawalAmount() {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [customAmount, setCustomAmount] = useState('');
+    const [showKYC, setShowKYC] = useState(false);
+    const [selectedAmount, setSelectedAmount] = useState(''); // State to store the selected amount
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -60,37 +63,20 @@ export default function WithdrawalAmount() {
         setActiveItem(null);
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const withdrawalAmount = activeItem ? parseFloat(activeItem.amount) : parseFloat(customAmount);
 
-        if (user) {
-            try {
-                // Fetch pending withdrawal requests for the user
-                const pendingWithdrawals = await fetchPendingWithdrawals(user.uid);
-                const totalPendingAmount = pendingWithdrawals.reduce((total, request) => total + parseFloat(request.amount), 0);
+        // Set the selected amount before showing KYC screen
+        setSelectedAmount(activeItem ? activeItem.amount : customAmount);
 
-                // Calculate effective balance after accounting for pending withdrawals
-                const effectiveBalance = walletBalance - totalPendingAmount;
-
-                if (effectiveBalance >= withdrawalAmount) {
-                    // Proceed with the withdrawal request
-                    await addWithdrawalRequest(user.uid, withdrawalAmount.toString());
-                    setSuccessMessage(`Withdrawal request for ₹${withdrawalAmount} submitted successfully.`);
-                    setErrorMessage('');
-                } else {
-                    setErrorMessage('Insufficient funds!');
-                    setSuccessMessage('');
-                }
-            } catch (error) {
-                setErrorMessage('Error processing withdrawal request!');
-                setSuccessMessage('');
-            }
-        } else {
-            setErrorMessage('No user is logged in');
-            setSuccessMessage('');
-        }
+        // Show the KYCVerification component when the form is submitted
+        setShowKYC(true);
     };
+
+    // Display KYCVerification component if KYC is not completed
+    if (showKYC) {
+        return <KYCVerification amount={selectedAmount} />; // Pass the selected amount as a prop
+    }
 
     return (
         <div className="pay_method__paymethod-alitem mb-5 mb-md-6">
@@ -119,7 +105,7 @@ export default function WithdrawalAmount() {
                         />
                     </div>
                 </div>
-                <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">
+                <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100 cmn-btn">
                     Withdraw ₹{activeItem ? activeItem.amount : customAmount}
                 </button>
             </form>

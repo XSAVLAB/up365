@@ -7,22 +7,32 @@ import AllLotteryBets from './AllLotteryBets';
 import Link from 'next/link';
 import { auth, db } from '../../../firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { fetchOfferData, fetchProfileData } from '../../../api/firestoreService';
+import { fetchDepositCredited, fetchOfferData, fetchProfileData, updateSuccessDepositMessage } from '../../../api/firestoreService';
 import { doc, setDoc } from 'firebase/firestore';
+import Confetti from 'react-confetti';
+
 
 const HomePage: React.FC = () => {
     const gamesRef = useRef<HTMLDivElement>(null);
-    const [showBonus, setShowBonus] = useState(false);
     const [user, setUser] = useState<any>(null);
+    const [userName, setUserName] = useState<any>("");
     const [offer, setOffer] = useState("");
+    const [successMessage, setSuccessMessage] = useState<any>("");
+    const [showBonus, setShowBonus] = useState(false);
+    const [showConfetti, setShowConfetti] = useState(false);
+    const [showDepositSuccess, setShowDepositSuccess] = useState(false);
+
+
     // Fetch current user using onAuthStateChanged
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-
                 // Fetch the user's profile data to check if the Bonus has been shown
                 const profileData = await fetchProfileData(currentUser.uid);
+                if (profileData && profileData.firstName) {
+                    setUserName(profileData.firstName);
+                }
                 if (profileData && !profileData.hasSeenBonus) {
                     setShowBonus(true);
                 }
@@ -45,6 +55,38 @@ const HomePage: React.FC = () => {
         }
     }, [showBonus]);
 
+    useEffect(() => {
+        const fetchDepositSuccessMessage = async () => {
+            try {
+                if (user && user.uid) {
+                    const depositCredited = await fetchDepositCredited(user.uid);
+                    if (depositCredited.length > 0) {
+                        const { amount, isSuccessShown } = depositCredited[0];
+
+                        setSuccessMessage({ amount, isSuccessShown });
+                        console.log({ amount, isSuccessShown });
+
+                        if (!isSuccessShown) {
+                            console.log(isSuccessShown);
+                            setShowConfetti(true);
+                            setTimeout(() => setShowConfetti(false), 10000);
+                            setShowDepositSuccess(true);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        const intervalId = setInterval(() => {
+            fetchDepositSuccessMessage();
+        }, 10000);
+
+        return () => clearInterval(intervalId);
+    }, [user]);
+
+
     const handleDeposit = async () => {
         setShowBonus(false);
 
@@ -57,15 +99,45 @@ const HomePage: React.FC = () => {
             }
         }
     };
-
+    const handleSuccessMessage = async () => {
+        setShowDepositSuccess(false);
+        setShowConfetti(false);
+        await updateSuccessDepositMessage(user.uid);
+    };
     return (
         <section className="top_matches__main">
+            {showConfetti && <Confetti numberOfPieces={1000} recycle={false} />}
+
+            {showDepositSuccess && (
+                <div className="success-overlay">
+                    <Link href="/" onClick={handleSuccessMessage}>
+                        <div className="success-popup">
+                            <div className="success-1">
+                                Hurray!
+                            </div>
+                            <div className="success-2">
+                                Rs.{successMessage.amount}
+                            </div>
+                            <div className="success-3">
+                                Credited to your account!
+                            </div>
+                            <div className="success-4">
+                                Play and Win Exciting Prizes!
+                            </div>
+                        </div>
+                    </Link>
+                </div>
+            )
+            }
             {showBonus && (
                 <div className="bonus-overlay">
-                    <Link href="/dashboard">
+                    <Link href="/dashboard" onClick={handleDeposit}>
                         <div className="bonus-popup">
                             <div className="bonus-offer1">
-                                Welcome! Get
+                                Hii! <b>{userName}</b>
+                            </div>
+                            <div className="bonus-offer4">
+                                Get
                             </div>
                             <div className="bonus-offer2">
                                 {offer}% Bonus!
