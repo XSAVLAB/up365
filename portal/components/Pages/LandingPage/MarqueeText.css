@@ -5,7 +5,7 @@
   overflow: hidden;
   position: relative;
   white-space: nowrap;
-  padding:10px
+  padding: 10px;
 }
 
 .marquee-content {
@@ -16,45 +16,49 @@
   color: white;
   position: relative;
   animation: marquee 15s linear infinite, color-change 10s ease-in-out infinite;
+  will-change: transform;
 }
 
 @keyframes marquee {
   0% {
-      transform: translateX(100%);
+    transform: translateX(100%);
   }
   100% {
-      transform: translateX(-100%);
+    transform: translateX(-100%);
   }
 }
 
-@keyframes color-change {0% {
-  color: #ef4444;
-}
-20% {
-  color: #f97316;
-}
-40% {
-  color: #fbbf24;
-}
-60% {
-  color: #a3e635;
-}
-80% {
-  color: #4ade80;
-}
-100% {
-  color: #5eead4;
-}
+@keyframes color-change {
+  0% {
+    color: #ef4444;
+  }
+  20% {
+    color: #f97316;
+  }
+  40% {
+    color: #fbbf24;
+  }
+  60% {
+    color: #a3e635;
+  }
+  80% {
+    color: #4ade80;
+  }
+  100% {
+    color: #5eead4;
+  }
 }
 
 @media (max-width: 768px) {
   .marquee-content {
-      font-size: 1rem;
+    font-size: 1rem;
+    animation: marquee 12s linear infinite, color-change 10s ease-in-out infinite;
   }
 }
 
 @media (max-width: 480px) {
   .marquee-content {
-      font-size: 1rem;
+    font-size: 1rem;
+    animation: marquee 10s linear infinite, color-change 8s ease-in-out infinite;
   }
 }

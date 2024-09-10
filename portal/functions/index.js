@@ -31,6 +31,59 @@ exports.settleColorBallBets = functions.pubsub
       await settleColorBallBets();
     });
 
+// New Firestore trigger function to notify admin on a new deposit request
+exports.onNewTransaction = functions.firestore
+    .document("transactions/{transactionId}")
+    .onCreate(async (snapshot, context) => {
+      const transaction = snapshot.data();
+
+      // Check if the transaction status is 'pending'
+      if (transaction && transaction.status === "pending") {
+        try {
+        // Update a notifications document for the admin
+          await db
+              .collection("notifications")
+              .doc("admin")
+              .set(
+                  {
+                    newRequest: true,
+                    lastRequest: admin.firestore.FieldValue.serverTimestamp(),
+                    message: `New deposit request for ₹${transaction.amount}`,
+                  },
+                  {merge: true},
+              );
+        } catch (error) {
+          console.error("Error notifying admin:", error);
+        }
+      }
+    });
+// New Firestore trigger function to notify admin on a new withdrawal request
+exports.onNewWithdrawal = functions.firestore
+    .document("withdrawals/{withdrawalId}")
+    .onCreate(async (snapshot, context) => {
+      const withdrawal = snapshot.data();
+
+      // Check if the withdrawal status is 'pending'
+      if (withdrawal && withdrawal.status === "pending") {
+        try {
+        // Update a notifications document for the admin
+          await db
+              .collection("notifications")
+              .doc("admin")
+              .set(
+                  {
+                    newRequest: true,
+                    lastRequest: admin.firestore.FieldValue.serverTimestamp(),
+                    message: `New Withdrawal request for ₹${withdrawal.amount}`,
+                  },
+                  {merge: true},
+              );
+        } catch (error) {
+          console.error("Error notifying admin:", error);
+        }
+      }
+    });
+
 const settleLotteryBets = async (gameType, minNumber, maxNumber) => {
   try {
     const betAmounts = [100, 250, 500, 750, 1000];

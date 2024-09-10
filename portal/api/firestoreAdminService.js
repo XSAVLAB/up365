@@ -122,6 +122,17 @@ export const fetchTransactions = async () => {
     throw error;
   }
 };
+//  Update the notification field in the transaction after notifying the admin
+export const updateNotificationStatus = async () => {
+  try {
+    await updateDoc(doc(db, "notifications", "admin"), {
+      newRequest: false,
+    });
+    console.log("Notification status reset.");
+  } catch (error) {
+    console.error("Error resetting notification status:", error);
+  }
+};
 
 // Update transaction status
 export const updateTransactionStatus = async (

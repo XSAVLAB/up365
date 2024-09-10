@@ -135,7 +135,7 @@ export default function DepositAmount() {
     //     });
     // };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleCardDetails = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (user) {
@@ -271,7 +271,7 @@ export default function DepositAmount() {
                                 <h5 className="n10-color">Enter your card details</h5>
                             </div>
                             <div className="pay_method__formarea">
-                                <form onSubmit={handleSubmit}>
+                                <form onSubmit={handleCardDetails}>
                                     <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                         <div className="d-flex w-100 p1-bg ps-3 rounded-8">
                                             <div className="d-flex align-items-center justify-content-end">

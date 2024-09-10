@@ -5,13 +5,15 @@ import { Tab } from '@headlessui/react';
 import { dashboardTabs } from '@/public/data/adminTabs';
 import { doSignOut } from '../../../../firebase/auth';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
-import { auth, isAdmin as checkIsAdmin } from '@/firebaseConfig';
-import { fetchAllUsers, deleteUser, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus, updateComplaintStatus, updateComplaintRemark, fetchComplaints, updateMarqueeText, updatePasswordInFirebase, updateOfferPercentage, updateWhatsappNumber } from '../../../../api/firestoreAdminService';
+import { auth, isAdmin as checkIsAdmin, db } from '@/firebaseConfig';
+import { fetchAllUsers, deleteUser, fetchTransactions, updateTransactionStatus, updateUserWallet, fetchWithdrawals, updateWithdrawalStatus, fetchSeries, toggleSeriesActive, updateUserBlockStatus, updateComplaintStatus, updateComplaintRemark, fetchComplaints, updateMarqueeText, updatePasswordInFirebase, updateOfferPercentage, updateWhatsappNumber, updateNotificationStatus } from '../../../../api/firestoreAdminService';
 import EditUserForm from '../UserManagement/EditUserForm';
 import History from '../Dashboard/History';
 import Payment from './Payment';
 import Status from './Status';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { IconBellFilled } from '@tabler/icons-react';
+import { onSnapshot, doc } from 'firebase/firestore';
 
 interface User {
     id: string;
@@ -39,6 +41,7 @@ interface Transaction {
     status: string;
     timestamp: string;
     comment: string;
+    notifyAdmin: boolean;
 }
 
 interface Withdrawal {
@@ -48,6 +51,12 @@ interface Withdrawal {
     status: string;
     timestamp: string;
     comment: string;
+    upiID: string;
+    accountNumber: string;
+    bankName: string;
+    ifscCode: string;
+    accountHolderName: string;
+    branchName: string;
 }
 interface Complaint {
     id: string;
@@ -58,6 +67,7 @@ interface Complaint {
     game: string;
     status: string;
     userId: string;
+    timestamp: string;
 }
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
@@ -76,6 +86,7 @@ export default function Dashboard() {
     const [message, setMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [notification, setNotification] = useState('');
     const router = useRouter();
 
     useEffect(() => {
@@ -97,25 +108,45 @@ export default function Dashboard() {
 
         const fetchUsers = async () => {
             try {
-                const users = await fetchAllUsers();
+                const users = await fetchAllUsers() as User[];
                 setUserDetails(users);
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
         };
 
+        // const fetchTransactionsData = async () => {
+        //     try {
+        //         const transactions = await fetchTransactions() as Transaction[];
+        //         setTransactions(transactions);
+
+        //         for (const transaction of transactions) {
+        //             if (transaction.notifyAdmin) {
+        //                 setNotification('New Transaction Request');
+        //                 console.log('New transaction request received');
+        //                 await updateNotifyAdmin(transaction.id, { notifyAdmin: false });
+        //             }
+        //         }
+        //     } catch (error) {
+        //         console.error('Error fetching transactions:', error);
+        //     }
+        // };
+
         const fetchTransactionsData = async () => {
             try {
-                const transactions = await fetchTransactions();
+                const transactions = await fetchTransactions() as Transaction[];
                 setTransactions(transactions);
+
+
             } catch (error) {
                 console.error('Error fetching transactions:', error);
             }
         };
 
+
         const fetchWithdrawalsData = async () => {
             try {
-                const withdrawals = await fetchWithdrawals();
+                const withdrawals = await fetchWithdrawals() as Withdrawal[];
                 setWithdrawals(withdrawals);
             } catch (error) {
                 console.error('Error fetching withdrawals:', error);
@@ -132,7 +163,7 @@ export default function Dashboard() {
         };
         const fetchComplaintsData = async () => {
             try {
-                const complaintsData = await fetchComplaints();
+                const complaintsData = await fetchComplaints() as Complaint[];
                 setComplaints(complaintsData);
             } catch (error) {
                 console.error('Error fetching complaints:', error);
@@ -146,16 +177,30 @@ export default function Dashboard() {
         fetchComplaintsData();
         return () => unsubscribe();
     }, [router]);
+    useEffect(() => {
 
-    // Use effect to clear messages after 5 seconds
+        const unsubscribe = onSnapshot(doc(db, 'notifications', 'admin'), (doc) => {
+            if (doc.exists()) {
+                const notificationData = doc.data();
+                if (notificationData?.newRequest) {
+                    setNotification(notificationData.message || 'New notification');
+                    updateNotificationStatus();
+                }
+            }
+        });
+        return () => unsubscribe();
+    }, []);
+
     useEffect(() => {
         const timer = setTimeout(() => {
             setMessage('');
             setSuccessMessage('');
             setErrorMessage('');
-        }, 5000);
+            setNotification('');
+        }, 10000);
         return () => clearTimeout(timer);
-    }, [message, successMessage, errorMessage]);
+    }, [message, successMessage, errorMessage, notification]);
+
     const handleLogout = async () => {
         try {
             await doSignOut();
@@ -410,6 +455,7 @@ export default function Dashboard() {
                             <div className="hero_area__main1">
                                 {successMessage && <div className="alert alert-success">{successMessage}</div>}
                                 {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+                                {notification && <div className="alert alert-info"><IconBellFilled /> {notification}</div>}
                                 <Tab.Group>
                                     <div className="row gy-6 gy-xxl-0 singletab">
                                         <div className="col-xxl-3">
@@ -539,6 +585,12 @@ export default function Dashboard() {
                                                                         <th>Approve</th>
                                                                         <th>Reject</th>
                                                                         <th>Comment</th>
+                                                                        <th>UPI id</th>
+                                                                        <th>Account No.</th>
+                                                                        <th>Bank Name</th>
+                                                                        <th>IFSC</th>
+                                                                        <th>Account Holder</th>
+                                                                        <th>Branch Name</th>
                                                                         <th>User ID</th>
                                                                         <th>Withdrawal ID</th>
                                                                     </tr>
@@ -561,6 +613,12 @@ export default function Dashboard() {
                                                                                 </button>
                                                                             </td>
                                                                             <td>{withdrawal.comment || 'N/A'}</td>
+                                                                            <td>{withdrawal.upiID || '-'}</td>
+                                                                            <td>{withdrawal.accountNumber || '-'}</td>
+                                                                            <td>{withdrawal.bankName || '-'}</td>
+                                                                            <td>{withdrawal.ifscCode || '-'}</td>
+                                                                            <td>{withdrawal.accountHolderName || '-'}</td>
+                                                                            <td>{withdrawal.branchName || '-'}</td>
                                                                             <td>{withdrawal.userId}</td>
                                                                             <td>{withdrawal.id}</td>
                                                                         </tr>
