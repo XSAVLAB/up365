@@ -178,19 +178,23 @@ export default function Dashboard() {
         return () => unsubscribe();
     }, [router]);
     useEffect(() => {
-
+        const playSound = () => {
+            const audio = new Audio('/notification2.wav');
+            audio.play();
+        };
         const unsubscribe = onSnapshot(doc(db, 'notifications', 'admin'), (doc) => {
             if (doc.exists()) {
                 const notificationData = doc.data();
                 if (notificationData?.newRequest) {
                     setNotification(notificationData.message || 'New notification');
                     updateNotificationStatus();
+                    playSound();
                 }
             }
         });
+
         return () => unsubscribe();
     }, []);
-
     useEffect(() => {
         const timer = setTimeout(() => {
             setMessage('');
