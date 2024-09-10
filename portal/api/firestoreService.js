@@ -190,7 +190,6 @@ export const addTransaction = async (userId, transactionData) => {
       ...transactionData,
       userId,
       timestamp: formatTimestamp(),
-      notifyAdmin: true,
     });
   } catch (error) {
     console.error("Error adding transaction: ", error);

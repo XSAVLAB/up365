@@ -9,10 +9,31 @@ import {
   updateDoc,
   query,
   where,
+  addDoc,
 } from "firebase/firestore";
 import { auth } from "@/firebaseConfig";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
 import { parse } from "date-fns";
+
+// Time formater:
+const formatTimestamp = () => {
+  const now = new Date();
+  const hours = now.getHours();
+  const formattedHours = hours % 12 || 12;
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  const formattedTimestamp = `${String(now.getDate()).padStart(
+    2,
+    "0"
+  )}/${String(now.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}/${now.getFullYear()}, ${String(formattedHours).padStart(2, "0")}:${String(
+    now.getMinutes()
+  ).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")} ${ampm}`;
+
+  return formattedTimestamp;
+};
 
 // Update Admin Password
 
@@ -163,6 +184,22 @@ export const updateUserWallet = async (userId, amount) => {
     }
   } catch (error) {
     console.error("Error updating user wallet: ", error);
+    throw error;
+  }
+};
+// Add a deposit request by admin
+export const addDepositRequest = async (userId, amount) => {
+  try {
+    const transactionCollectionRef = collection(db, "transactions");
+    await addDoc(transactionCollectionRef, {
+      amount: amount,
+      userId,
+      timestamp: formatTimestamp(),
+      status: "pending",
+      byAdmin: true,
+    });
+  } catch (error) {
+    console.error("Error adding transaction: ", error);
     throw error;
   }
 };
