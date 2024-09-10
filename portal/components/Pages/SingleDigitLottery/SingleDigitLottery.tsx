@@ -95,7 +95,11 @@ function SingleDigitLottery() {
 
     useEffect(() => {
         const storedTimer = localStorage.getItem('countdownTimer');
-
+        const playSound = () => {
+            console.log("Playing sound...")
+            const audio = new Audio('/celebrate-sound.wav');
+            audio.play();
+        };
         const initialTimer = storedTimer !== null ? parseInt(storedTimer) : calculateTimeToNextInterval();
         setCountdownTimer(initialTimer);
 
@@ -115,6 +119,7 @@ function SingleDigitLottery() {
 
                 if (timer === 0) {
                     setShowConfetti(true);
+                    playSound();
                     setTimeout(() => setShowConfetti(false), 10000);
                 }
             }
