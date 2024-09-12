@@ -16,12 +16,12 @@ onmessage = function (e) {
 
     // Calculate the time elapsed since the reference time
     const timeElapsedSinceReference = (now - referenceTime) / 1000;
-    countdownTimer = 300 - Math.floor(timeElapsedSinceReference % 300);
+    countdownTimer = 180 - Math.floor(timeElapsedSinceReference % 180);
 
     // Start the countdown
     intervalId = setInterval(() => {
       if (countdownTimer <= 0) {
-        countdownTimer = 300;
+        countdownTimer = 180;
       } else {
         countdownTimer -= 1;
       }

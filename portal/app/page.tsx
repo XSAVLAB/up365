@@ -47,13 +47,14 @@ export default function Page() {
     return () => unsubscribe();
   }, [router]);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <>
-      {user ? (
+      {isLoading ? (
+        <div className="loading-body">
+          <div className="ring">Loading<span className="loading-span"></span></div>
+        </div>
+      ) : user ? (
         <>
           <HeaderMain />
           <HomePage />

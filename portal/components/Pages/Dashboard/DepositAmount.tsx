@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { amountData } from '@/public/data/dashBoard';
 import { db, auth } from '@/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { updateUserCardDetails, addTransaction, fetchUpiID } from '@/api/firestoreService';
+import { updateUserCardDetails, addTransaction, fetchUpiID, fetchWhatsappNumber } from '@/api/firestoreService';
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
 // import confetti from 'canvas-confetti';
+import { BsWhatsapp } from "react-icons/bs";
 
 export default function DepositAmount() {
     const [activeItem, setActiveItem] = useState<{ id: number; amount: string } | null>(amountData[0]);
@@ -30,6 +31,7 @@ export default function DepositAmount() {
     const [paymentStep, setPaymentStep] = useState(false);
     const [upiID, setUpiID] = useState('');
     const [qrCodeUrl, setQrCodeUrl] = useState('');
+    const [whatsappNumber, setWhatsappNumber] = useState<any>('');
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
@@ -181,13 +183,34 @@ export default function DepositAmount() {
             setSuccessMessage('');
         }
     };
+    useEffect(() => {
+        const fetchedWhatsappNumber = async () => {
+            try {
+                const fetchedWhatsappNumber = await fetchWhatsappNumber();
+                setWhatsappNumber(fetchedWhatsappNumber);
+            } catch (e) {
+                console.error(e);
+            }
+        };
 
+        fetchedWhatsappNumber();
+    }, []);
+    const handleWhatsAppClick = () => {
+        const adminPhoneNumber = "+91" + whatsappNumber;
+        console.log(adminPhoneNumber);
+        const message = "Hello, I want to create an account. Please can you help me?";
+        const whatsappURL = `https://wa.me/${adminPhoneNumber}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappURL, '_blank');
+    };
     return (
         <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+            <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                <h5 className="n10-color">Deposit Amount...</h5>
+            </div>
             {!paymentStep ? (
                 <>
                     <div className="pay_method__paymethod-title mb-5 mb-md-6">
-                        <h5 className="n10-color">Choose deposit amount</h5>
+                        <h6 className="n10-color">Choose deposit amount</h6>
                     </div>
                     <div className="pay_method__paymethod-alitem mb-5 mb-md-6">
                         {successMessage && <div className="alert alert-success">{successMessage}</div>}
@@ -229,7 +252,7 @@ export default function DepositAmount() {
                     {!showQRCode && !showUPI && !showDebitCard && (
                         <>
                             <div className="pay_method__paymethod-title mb-5 mb-md-6">
-                                <h5 className="n10-color">Choose payment method</h5>
+                                <h6 className="n10-color">Choose payment method</h6>
                             </div>
                             <div className="d-flex flex-column gap-3">
                                 <button onClick={() => handlePaymentOption('qr')} className="py-2 px-3 btn btn-primary">
@@ -254,14 +277,18 @@ export default function DepositAmount() {
                             )}
                             <p>Scan and Pay</p>
                             <p><small>You can share the screenshot on WhatsApp</small></p>
-                            <p>Amount: ₹{formDepositData.amount}</p>
+                            <p>Amount: <b>₹{formDepositData.amount}</b></p>
+
+                            <button onClick={handleWhatsAppClick} className="cmn-btn px-xxl-11">Share <BsWhatsapp /></button>
+
                         </div>
                     )}
 
                     {showUPI && (
                         <div className="text-center">
                             <p>Pay using UPI ID: <strong>{upiID}</strong></p>
-                            <p>Amount: ₹{formDepositData.amount}</p>
+                            <p>Amount: <b>₹{formDepositData.amount}</b></p>
+                            <button onClick={handleWhatsAppClick} className="cmn-btn px-xxl-11">Share <BsWhatsapp /></button>
                         </div>
                     )}
 

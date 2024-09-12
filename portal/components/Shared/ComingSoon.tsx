@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 const ComingSoon: React.FC = () => {
     const calculateTimeLeft = () => {
-        const targetDate = new Date('2024-09-31T00:00:00');
+        const targetDate = new Date('2024-09-30T00:00:00');
         const now = new Date();
         const difference = targetDate.getTime() - now.getTime();
 

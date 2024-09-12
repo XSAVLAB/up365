@@ -9,7 +9,7 @@ import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets
 import Confetti from 'react-confetti';
 
 
-const gameTimer = 300;
+const gameTimer = 180;
 
 function formatTimer(seconds: number) {
     const minutes = Math.floor(seconds / 60);
@@ -25,10 +25,10 @@ function calculateTimeToNextInterval() {
     nextInterval.setSeconds(0);
     nextInterval.setMilliseconds(0);
 
-    if (now.getSeconds() % 300 === 0) {
+    if (now.getSeconds() % 180 === 0) {
         return gameTimer;
     } else {
-        const seconds = now.getSeconds() + (300 - (now.getSeconds() % 300));
+        const seconds = now.getSeconds() + (180 - (now.getSeconds() % 180));
         nextInterval.setSeconds(seconds);
         return Math.floor((nextInterval.getTime() - now.getTime()) / 1000);
     }
