@@ -5,28 +5,28 @@ const db = admin.firestore();
 
 // Settle Single Digit Lottery Bets every 120 seconds
 exports.settleSingleDigitLotteryBets = functions.pubsub
-    .schedule("every 5 minutes")
+    .schedule("every 3 minutes")
     .onRun(async (context) => {
       await settleLotteryBets("Single Digit Lottery", 1, 9);
     });
 
 // Settle Double Digit Lottery Bets every 300 seconds (5 minutes)
 exports.settleDoubleDigitLotteryBets = functions.pubsub
-    .schedule("every 5 minutes")
+    .schedule("every 3 minutes")
     .onRun(async (context) => {
       await settleLotteryBets("Double Digit Lottery", 10, 99);
     });
 
 // Settle Triple Digit Lottery Bets every 900 seconds (15 minutes)
 exports.settleTripleDigitLotteryBets = functions.pubsub
-    .schedule("every 5 minutes")
+    .schedule("every 3 minutes")
     .onRun(async (context) => {
       await settleLotteryBets("Triple Digit Lottery", 100, 999);
     });
 
 // Settle Color Ball Game Bets every 900 seconds (15 minutes)
 exports.settleColorBallBets = functions.pubsub
-    .schedule("every 5 minutes")
+    .schedule("every 3 minutes")
     .onRun(async (context) => {
       await settleColorBallBets();
     });

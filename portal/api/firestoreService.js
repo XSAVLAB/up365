@@ -12,6 +12,7 @@ import {
   query,
   increment,
   where,
+  onSnapshot,
 } from "firebase/firestore";
 import { auth } from "@/firebaseConfig";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
@@ -290,7 +291,7 @@ export const addWithdrawalRequest = async (
   }
 };
 
-// Fetch user wallet by user ID
+// // Fetch user wallet by user ID
 export const fetchUserWallet = async (userId) => {
   try {
     const userDocRef = doc(db, "users", userId);
@@ -302,6 +303,26 @@ export const fetchUserWallet = async (userId) => {
     }
   } catch (error) {
     console.error("Error fetching user wallet: ", error);
+    throw error;
+  }
+};
+
+// Fetch and listen to changes in the user's wallet balance
+export const fetchUserWalletOnUpdate = (userId, onUpdate) => {
+  try {
+    const userDocRef = doc(db, "users", userId);
+    const unsubscribe = onSnapshot(userDocRef, (doc) => {
+      if (doc.exists()) {
+        const wallet = doc.data().wallet;
+        onUpdate(wallet);
+      } else {
+        console.error("User document does not exist");
+      }
+    });
+
+    return unsubscribe;
+  } catch (error) {
+    console.error("Error fetching and listening to user wallet: ", error);
     throw error;
   }
 };

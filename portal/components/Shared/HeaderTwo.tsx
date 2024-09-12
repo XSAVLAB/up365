@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { IconAdjustmentsHorizontal, IconX, IconUserCircle, IconLogout } from "@tabler/icons-react";
 import { FaWhatsapp } from 'react-icons/fa';
-import { fetchUserWallet, fetchProfileData } from '@/api/firestoreService';
+import { fetchUserWalletOnUpdate, fetchProfileData } from '@/api/firestoreService';
 import HeaderTwoChat from './HeaderTwoChat';
 import SideNav from './SideNav';
 import NavItem from './NavItem';
@@ -61,14 +61,6 @@ export default function HeaderTwo() {
     }, [isMiddleExpanded]);
 
     useEffect(() => {
-        const fetchWallet = async (userId: string) => {
-            try {
-                const balance = await fetchUserWallet(userId);
-                setWalletBalance(balance);
-            } catch (error) {
-                console.error('Error fetching wallet balance:', error);
-            }
-        };
 
         const fetchDetails = async (userId: string) => {
             try {
@@ -82,8 +74,15 @@ export default function HeaderTwo() {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                fetchWallet(currentUser.uid);
+
                 fetchDetails(currentUser.uid);
+                const walletUnsubscribe = fetchUserWalletOnUpdate(currentUser.uid, (newBalance: React.SetStateAction<null>) => {
+                    setWalletBalance(newBalance);
+                });
+
+                return () => {
+                    walletUnsubscribe();
+                };
             } else {
                 setUser(null);
                 setWalletBalance(null);

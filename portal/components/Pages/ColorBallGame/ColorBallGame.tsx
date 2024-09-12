@@ -100,7 +100,7 @@ function ColorBallGame() {
     useEffect(() => {
         const storedTimer = localStorage.getItem('countdownTimer');
         const playSound = () => {
-            console.log("Playing sound...")
+
             const audio = new Audio('/celebrate-sound.wav');
             audio.play();
         };
