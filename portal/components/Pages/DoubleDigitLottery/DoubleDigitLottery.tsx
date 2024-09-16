@@ -20,17 +20,9 @@ function formatTimer(seconds: number) {
 
 function calculateTimeToNextInterval() {
     const now = new Date();
-    const nextInterval = new Date(now);
-    nextInterval.setSeconds(0);
-    nextInterval.setMilliseconds(0);
-
-    if (now.getSeconds() % 180 === 0) {
-        return gameTimer;
-    } else {
-        const seconds = now.getSeconds() + (180 - (now.getSeconds() % 180));
-        nextInterval.setSeconds(seconds);
-        return Math.floor((nextInterval.getTime() - now.getTime()) / 1000);
-    }
+    const currentTimeInSeconds = Math.floor(now.getTime() / 1000);
+    const timeSinceLastInterval = currentTimeInSeconds % 180;
+    return 180 - timeSinceLastInterval;
 }
 
 function DoubleDigitLottery() {
@@ -103,7 +95,7 @@ function DoubleDigitLottery() {
         const initialTimer = storedTimer !== null ? parseInt(storedTimer) : calculateTimeToNextInterval();
         setCountdownTimer(initialTimer);
 
-        let worker = new Worker(new URL('../../../public/worker1.js', import.meta.url));
+        let worker = new Worker(new URL('../../../public/worker.js', import.meta.url));
 
         worker.postMessage({
             command: 'start',

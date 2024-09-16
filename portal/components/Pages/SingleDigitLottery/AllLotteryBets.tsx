@@ -15,28 +15,25 @@ function AllLotteryBets() {
         setShowBets(!showBets);
     }
 
-    const fetchBets = async (uid: string) => {
-        try {
-            const fetchedBets = await fetchAllLotteryBets(uid, "Single Digit Lottery");
-            setMyBetsTable(fetchedBets);
-
-        } catch (error) {
-            console.error('Error fetching my bets data:', error);
-        }
-    }
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                // console.log('User:', currentUser);
-                fetchBets(currentUser.uid);
-                const interval = setInterval(() => fetchBets(currentUser.uid), 10000);
-                return () => clearInterval(interval);
+
+                const betsUnsubscribe = fetchAllLotteryBets(currentUser.uid, "Single Digit Lottery", (updatedBets: React.SetStateAction<any[]>) => {
+                    setMyBetsTable(updatedBets);
+                });
+
+                return () => {
+                    betsUnsubscribe();
+                };
             } else {
                 setUser(null);
+                setMyBetsTable([]);
             }
         });
+
         return () => unsubscribe();
     }, []);
 

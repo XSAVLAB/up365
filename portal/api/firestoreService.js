@@ -468,67 +468,124 @@ export const submitLotteryBet = async (
   }
 };
 
-// Fetch Lottery Bets
-export const fetchLotteryBets = async (userId, gameType) => {
+// Fetch and listen to Lottery Bets
+export const fetchLotteryBets = (userId, gameType, onUpdate) => {
   try {
     const db = getFirestore();
-    const q = query(
+    const betsQuery = query(
       collection(db, "gameBets"),
       where("userID", "==", userId),
       where("settled", "==", false),
       where("gameType", "==", gameType)
     );
-    const betsSnapshot = await getDocs(q);
-    const bets = betsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
 
-    // Parse and sort the bets in descending order by timestamp
-    return bets.sort((a, b) => {
-      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      return dateB - dateA;
+    const unsubscribe = onSnapshot(betsQuery, (betsSnapshot) => {
+      const bets = betsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      const sortedBets = bets.sort((a, b) => {
+        const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+        const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+        return dateB - dateA;
+      });
+      onUpdate(sortedBets);
     });
+
+    return unsubscribe;
   } catch (error) {
+    console.error("Error listening to lottery bets:", error);
     throw error;
   }
 };
 // Fetch winning bets
 
-export const fetchWinningBets = async (userId, gameType) => {
+// export const fetchWinningBets = async (userId, gameType) => {
+//   try {
+//     const db = getFirestore();
+//     const gameBetsRef = collection(db, "gameBets");
+//     const settledBetsQuery = query(
+//       gameBetsRef,
+//       where("settled", "==", true),
+//       where("userID", "==", userId),
+//       where("gameType", "==", gameType)
+//     );
+//     const snapshot = await getDocs(settledBetsQuery);
+//     const winningBets = [];
+
+//     snapshot.forEach((betDoc) => {
+//       const betData = betDoc.data();
+//       if (betData.rewardAmount > 0) {
+//         winningBets.push({
+//           gameType: betData.gameType,
+//           winningNumber: betData.winningNumber,
+//           winningColor: betData.winningColor,
+//           rewardAmount: betData.rewardAmount,
+//           timestamp: betData.timestamp,
+//         });
+//       }
+//     });
+
+//     // Parse and sort the winning bets in descending order by timestamp
+//     return winningBets.sort((a, b) => {
+//       const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+//       const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+//       return dateB - dateA;
+//     });
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+export const fetchWinningBets = (userId, gameType, onUpdate, onError) => {
   try {
     const db = getFirestore();
     const gameBetsRef = collection(db, "gameBets");
+
     const settledBetsQuery = query(
       gameBetsRef,
       where("settled", "==", true),
       where("userID", "==", userId),
       where("gameType", "==", gameType)
     );
-    const snapshot = await getDocs(settledBetsQuery);
-    const winningBets = [];
 
-    snapshot.forEach((betDoc) => {
-      const betData = betDoc.data();
-      if (betData.rewardAmount > 0) {
-        winningBets.push({
-          gameType: betData.gameType,
-          winningNumber: betData.winningNumber,
-          winningColor: betData.winningColor,
-          rewardAmount: betData.rewardAmount,
-          timestamp: betData.timestamp,
+    const unsubscribe = onSnapshot(
+      settledBetsQuery,
+      (snapshot) => {
+        const winningBets = [];
+
+        snapshot.forEach((betDoc) => {
+          const betData = betDoc.data();
+          if (betData.rewardAmount > 0) {
+            winningBets.push({
+              gameType: betData.gameType,
+              winningNumber: betData.winningNumber,
+              winningColor: betData.winningColor,
+              rewardAmount: betData.rewardAmount,
+              timestamp: betData.timestamp,
+            });
+          }
         });
-      }
-    });
 
-    // Parse and sort the winning bets in descending order by timestamp
-    return winningBets.sort((a, b) => {
-      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      return dateB - dateA;
-    });
+        // Parse and sort the winning bets in descending order by timestamp
+        const sortedWinningBets = winningBets.sort((a, b) => {
+          const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+          const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+          return dateB - dateA;
+        });
+
+        onUpdate(sortedWinningBets);
+      },
+      (error) => {
+        console.error("Error fetching winning bets: ", error);
+        onError(error);
+      }
+    );
+
+    return unsubscribe; // Return unsubscribe function to stop listening
   } catch (error) {
+    console.error("Error setting up listener: ", error);
     throw error;
   }
 };
@@ -560,32 +617,35 @@ export const fetchAllLotteryBetsHome = async (userId) => {
     throw error;
   }
 };
-export const fetchAllLotteryBets = async (userId, gameType) => {
+
+// Fetch all lottery bets
+export const fetchAllLotteryBets = (userId, gameType, onUpdate) => {
   try {
     const db = getFirestore();
-    const q = query(
+    const betsQuery = query(
       collection(db, "gameBets"),
       where("userID", "==", userId),
       where("settled", "==", true),
       where("gameType", "==", gameType)
     );
-    const betsSnapshot = await getDocs(q);
-    const bets = betsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
 
-    // Parse and sort the bets in descending order by timestamp
-    const sortedBets = bets.sort((a, b) => {
-      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+    const unsubscribe = onSnapshot(betsQuery, (betsSnapshot) => {
+      const bets = betsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-      return dateB - dateA;
+      const sortedBets = bets.sort((a, b) => {
+        const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+        const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+        return dateB - dateA;
+      });
+      onUpdate(sortedBets);
     });
 
-    return sortedBets;
+    return unsubscribe;
   } catch (error) {
-    console.error("Error fetching user bets: ", error);
+    console.error("Error listening to lottery bets:", error);
     throw error;
   }
 };

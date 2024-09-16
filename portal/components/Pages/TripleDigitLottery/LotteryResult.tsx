@@ -15,30 +15,33 @@ function LotteryResult() {
     setShowBets(!showBets);
   };
 
-  const fetchBets = async (uid: string) => {
-    try {
-      const fetchedWinningBets = await fetchWinningBets(uid, 'Triple Digit Lottery');
-      setWinningBets(fetchedWinningBets);
-
-    } catch (error) {
-      console.error('Error fetching winning bets data:', error);
-    }
-  };
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        fetchBets(currentUser.uid);
-        const interval = setInterval(() => fetchBets(currentUser.uid), 10000);
-        return () => clearInterval(interval);
+
+        const unsubscribeBets = fetchWinningBets(
+          currentUser.uid,
+          "Triple Digit Lottery",
+          (fetchedWinningBets: React.SetStateAction<any[]>) => {
+            setWinningBets(fetchedWinningBets);
+          },
+          (error: any) => {
+            console.error('Error fetching winning bets data:', error);
+          }
+        );
+        return () => {
+          unsubscribeBets();
+        };
       } else {
         setUser(null);
+        setWinningBets([]);
       }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribeAuth();
   }, []);
+
 
   return (
     <div className="bets-table-container">
