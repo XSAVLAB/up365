@@ -106,77 +106,23 @@ export default function Dashboard() {
             }
         });
 
-        const fetchUsers = async () => {
-            try {
-                const users = await fetchAllUsers() as User[];
-                setUserDetails(users);
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
+        const unsubscribeUsers = fetchAllUsers(setUserDetails);
+        const unsubscribeTransactions = fetchTransactions(setTransactions);
+        const unsubscribeWithdrawals = fetchWithdrawals(setWithdrawals);
+        const unsubscribeSeries = fetchSeries(setSeries);
+        const unsubscribeComplaints = fetchComplaints(setComplaints);
+
+        return () => {
+            unsubscribe();
+            unsubscribeUsers();
+            unsubscribeTransactions();
+            unsubscribeWithdrawals();
+            unsubscribeSeries();
+            unsubscribeComplaints();
         };
-
-        // const fetchTransactionsData = async () => {
-        //     try {
-        //         const transactions = await fetchTransactions() as Transaction[];
-        //         setTransactions(transactions);
-
-        //         for (const transaction of transactions) {
-        //             if (transaction.notifyAdmin) {
-        //                 setNotification('New Transaction Request');
-        //                 console.log('New transaction request received');
-        //                 await updateNotifyAdmin(transaction.id, { notifyAdmin: false });
-        //             }
-        //         }
-        //     } catch (error) {
-        //         console.error('Error fetching transactions:', error);
-        //     }
-        // };
-
-        const fetchTransactionsData = async () => {
-            try {
-                const transactions = await fetchTransactions() as Transaction[];
-                setTransactions(transactions);
-
-
-            } catch (error) {
-                console.error('Error fetching transactions:', error);
-            }
-        };
-
-
-        const fetchWithdrawalsData = async () => {
-            try {
-                const withdrawals = await fetchWithdrawals() as Withdrawal[];
-                setWithdrawals(withdrawals);
-            } catch (error) {
-                console.error('Error fetching withdrawals:', error);
-            }
-        };
-
-        const fetchSeriesData = async () => {
-            try {
-                const series = await fetchSeries();
-                setSeries(series);
-            } catch (error) {
-                console.error('Error fetching series:', error);
-            }
-        };
-        const fetchComplaintsData = async () => {
-            try {
-                const complaintsData = await fetchComplaints() as Complaint[];
-                setComplaints(complaintsData);
-            } catch (error) {
-                console.error('Error fetching complaints:', error);
-            }
-        };
-
-        fetchUsers();
-        fetchTransactionsData();
-        fetchWithdrawalsData();
-        fetchSeriesData();
-        fetchComplaintsData();
-        return () => unsubscribe();
     }, [router]);
+
+
     useEffect(() => {
         const playSound = () => {
             const audio = new Audio('/notification2.wav');
@@ -195,6 +141,7 @@ export default function Dashboard() {
 
         return () => unsubscribe();
     }, []);
+
     useEffect(() => {
         const timer = setTimeout(() => {
             setMessage('');

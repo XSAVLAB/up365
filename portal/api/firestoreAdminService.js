@@ -10,6 +10,7 @@ import {
   query,
   where,
   addDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { auth } from "@/firebaseConfig";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
@@ -60,21 +61,24 @@ export const updatePasswordInFirebase = async (
   }
 };
 
-// Fetch all users
-export const fetchAllUsers = async () => {
+// Fetch all users with real-time updates
+export const fetchAllUsers = (callback) => {
   try {
     const usersCollectionRef = collection(db, "users");
-    const usersSnapshot = await getDocs(usersCollectionRef);
-    const usersData = usersSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    return onSnapshot(usersCollectionRef, (usersSnapshot) => {
+      const usersData = usersSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-    // Parse and sort the users in descending order by timestamp
-    return usersData.sort((a, b) => {
-      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      return dateB - dateA;
+      // Parse and sort the users in descending order by timestamp
+      const sortedUsers = usersData.sort((a, b) => {
+        const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+        const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+        return dateB - dateA;
+      });
+
+      callback(sortedUsers);
     });
   } catch (error) {
     console.error("Error fetching all users: ", error);
@@ -123,26 +127,30 @@ export const fetchUserRole = async (userId) => {
   }
 };
 
-// Fetch all transactions
-export const fetchTransactions = async () => {
+// Fetch all transactions with real-time updates
+export const fetchTransactions = (callback) => {
   try {
     const transactionsCollectionRef = collection(db, "transactions");
-    const transactionsQuery = query(transactionsCollectionRef);
-    const transactionsSnapshot = await getDocs(transactionsQuery);
-    const transactionsData = transactionsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    return transactionsData.sort((a, b) => {
-      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      return dateB - dateA;
+    return onSnapshot(transactionsCollectionRef, (transactionsSnapshot) => {
+      const transactionsData = transactionsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      const sortedTransactions = transactionsData.sort((a, b) => {
+        const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+        const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+        return dateB - dateA;
+      });
+
+      callback(sortedTransactions);
     });
   } catch (error) {
     console.error("Error fetching transactions: ", error);
     throw error;
   }
 };
+
 //  Update the notification field in the transaction after notifying the admin
 export const updateNotificationStatus = async () => {
   try {
@@ -204,20 +212,23 @@ export const addDepositRequest = async (userId, amount) => {
   }
 };
 
-// Fetch all withdrawals
-export const fetchWithdrawals = async () => {
+// Fetch all withdrawals with real-time updates
+export const fetchWithdrawals = (callback) => {
   try {
     const withdrawalsCollectionRef = collection(db, "withdrawals");
-    const withdrawalsQuery = query(withdrawalsCollectionRef);
-    const withdrawalsSnapshot = await getDocs(withdrawalsQuery);
-    const withdrawalsData = withdrawalsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    return withdrawalsData.sort((a, b) => {
-      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      return dateB - dateA;
+    return onSnapshot(withdrawalsCollectionRef, (withdrawalsSnapshot) => {
+      const withdrawalsData = withdrawalsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      const sortedWithdrawals = withdrawalsData.sort((a, b) => {
+        const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+        const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+        return dateB - dateA;
+      });
+
+      callback(sortedWithdrawals);
     });
   } catch (error) {
     console.error("Error fetching withdrawals: ", error);
@@ -307,16 +318,18 @@ export const fetchApprovedWithdrawals = async () => {
   }
 };
 
-// Fetch series data
-export const fetchSeries = async () => {
+// Fetch series data with real-time updates
+export const fetchSeries = (callback) => {
   try {
     const seriesCollectionRef = collection(db, "cricketData");
-    const seriesSnapshot = await getDocs(seriesCollectionRef);
-    const seriesData = seriesSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    return seriesData;
+    return onSnapshot(seriesCollectionRef, (seriesSnapshot) => {
+      const seriesData = seriesSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      callback(seriesData);
+    });
   } catch (error) {
     console.error("Error fetching series data: ", error);
     throw error;
@@ -352,16 +365,22 @@ export const updateUserBlockStatus = async (
   }
 };
 
-// Fetch all complaints
-export const fetchComplaints = async () => {
+// Fetch all complaints with real-time updates
+export const fetchComplaints = (callback) => {
   try {
     const complaintsCollection = collection(db, "complaints");
-    const complaintsSnapshot = await getDocs(complaintsCollection);
-    const complaintsList = complaintsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    return complaintsList;
+    return onSnapshot(complaintsCollection, (complaintsSnapshot) => {
+      const complaintsList = complaintsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      const sortedcomplaintsList = complaintsList.sort((a, b) => {
+        const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+        const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+        return dateB - dateA;
+      });
+      callback(sortedcomplaintsList);
+    });
   } catch (error) {
     console.error("Error fetching complaints:", error);
     throw error;
