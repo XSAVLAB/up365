@@ -84,7 +84,7 @@ function AllLotteryBets() {
                         </tr>
                     </thead>
                     <tbody>
-                        {myBetsTable.map((row, index) => (
+                        {myBetsTable.slice(0, 10).map((row, index) => (
                             <tr key={index}>
                                 <td>{index + 1}</td>
                                 <td>{row.gameType}</td>

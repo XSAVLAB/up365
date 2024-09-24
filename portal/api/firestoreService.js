@@ -499,44 +499,6 @@ export const fetchLotteryBets = (userId, gameType, onUpdate) => {
     throw error;
   }
 };
-// Fetch winning bets
-
-// export const fetchWinningBets = async (userId, gameType) => {
-//   try {
-//     const db = getFirestore();
-//     const gameBetsRef = collection(db, "gameBets");
-//     const settledBetsQuery = query(
-//       gameBetsRef,
-//       where("settled", "==", true),
-//       where("userID", "==", userId),
-//       where("gameType", "==", gameType)
-//     );
-//     const snapshot = await getDocs(settledBetsQuery);
-//     const winningBets = [];
-
-//     snapshot.forEach((betDoc) => {
-//       const betData = betDoc.data();
-//       if (betData.rewardAmount > 0) {
-//         winningBets.push({
-//           gameType: betData.gameType,
-//           winningNumber: betData.winningNumber,
-//           winningColor: betData.winningColor,
-//           rewardAmount: betData.rewardAmount,
-//           timestamp: betData.timestamp,
-//         });
-//       }
-//     });
-
-//     // Parse and sort the winning bets in descending order by timestamp
-//     return winningBets.sort((a, b) => {
-//       const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-//       const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-//       return dateB - dateA;
-//     });
-//   } catch (error) {
-//     throw error;
-//   }
-// };
 
 export const fetchWinningBets = (userId, gameType, onUpdate, onError) => {
   try {

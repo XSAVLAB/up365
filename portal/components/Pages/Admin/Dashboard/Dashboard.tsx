@@ -14,6 +14,7 @@ import Status from './Status';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { IconBellFilled } from '@tabler/icons-react';
 import { onSnapshot, doc } from 'firebase/firestore';
+import AviatorAdmin from '../Aviator/AviatorAdmin';
 
 interface User {
     id: string;
@@ -839,6 +840,9 @@ export default function Dashboard() {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    <AviatorAdmin />
                                                 </Tab.Panel>
                                             </Tab.Panels>
                                         </div>

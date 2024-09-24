@@ -531,3 +531,34 @@ export const fetchActiveUsersInGame = async (gameType) => {
     return new Set();
   }
 };
+
+// Aviator Game functions
+
+// Function to update the crash point limits (min and max) in Firestore
+export const setCrashLimits = async (minCrash, maxCrash) => {
+  try {
+    const crashLimitsRef = doc(db, "aviatorSettings", "crashLimits");
+    await setDoc(crashLimitsRef, { minCrash, maxCrash });
+    console.log("Crash limits updated successfully");
+  } catch (error) {
+    console.error("Error updating crash limits: ", error);
+    throw error;
+  }
+};
+// Function to fetch the crash point limits (min and max) from Firestore in real-time
+export const subscribeToCrashLimits = (callback) => {
+  try {
+    const crashLimitsRef = doc(db, "aviatorSettings", "crashLimits");
+    return onSnapshot(crashLimitsRef, (crashLimitsDoc) => {
+      if (crashLimitsDoc.exists()) {
+        callback(crashLimitsDoc.data());
+      } else {
+        console.error("Crash limits not found");
+        callback(null);
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching crash limits: ", error);
+    throw error;
+  }
+};
