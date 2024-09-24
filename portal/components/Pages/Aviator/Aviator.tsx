@@ -92,9 +92,9 @@ export default function Aviator() {
 
             crashDelayTimeout = setTimeout(() => {
                 setResultMessage(null);
-                setCountdown(15); // Restart the countdown for the next round
-                setIsBettingOpen(true); // Reopen betting after crash
-                setHasPlacedBet(false); // Reset bet state
+                setCountdown(15);
+                setIsBettingOpen(true);
+                setHasPlacedBet(false);
             }, 2000);
         }
 
@@ -104,7 +104,6 @@ export default function Aviator() {
         };
     }, [isRunning, multiplier, crashPoint]);
 
-    // Clear result message after 10 seconds
     useEffect(() => {
         if (resultMessage) {
             const messageTimer = setTimeout(() => {
@@ -126,8 +125,8 @@ export default function Aviator() {
 
     // Function to cancel the bet
     const cancelBet = () => {
-        setBetAmount(null); // Clear the bet amount
-        setHasPlacedBet(false); // Reset bet state
+        setBetAmount(null);
+        setHasPlacedBet(false);
         setResultMessage('Bet canceled.');
     };
 

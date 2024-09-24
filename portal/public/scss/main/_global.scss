@@ -3681,7 +3681,7 @@ input[type=radio] {
 .aviator-input {
     padding: 10px;
     font-size: 1rem;
-    width: 120px; /* Make input smaller */
+    width: 120px; 
     border: 1px solid #ccc;
     border-radius: 4px;
     background-color: #b4c6ff;
@@ -3691,13 +3691,13 @@ input[type=radio] {
 .aviator-bet-btn,
 .aviator-cashout-btn,
 .aviator-cancel-btn {
-    padding: 12px 40px; /* Increase button width */
+    padding: 12px 40px;
     font-size: 1.2rem;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     margin-top: 10px;
-    width: 200px; /* Set button width */
+    width: 200px; 
     text-align: center;
 }
 
