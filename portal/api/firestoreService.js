@@ -417,7 +417,7 @@ export const addBet = async (betData) => {
 };
 
 // Function to update user wallet
-export const updateUserWallet = async (userId, newBalance) => {
+export const updateUserWallet = async (userId, newBalance) => { 
   const db = getFirestore();
   const userWalletRef = doc(db, "users", userId);
   await updateDoc(userWalletRef, {
@@ -1045,3 +1045,4 @@ export const fetchUpiID = async () => {
     console.log(e);
   }
 };
+

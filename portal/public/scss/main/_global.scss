@@ -3652,22 +3652,6 @@ input[type=radio] {
 // Loading screen spinner ends
 
 // Aviator Game Section Starts
-.aviator-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-left: 50px;
-    margin-right: 50px;
-    border-radius: 50px;
-    padding: 50px;
-    background-color: rgba(255, 255, 255, 0.333);
-}
-
-.aviator-header {
-    font-size: 2rem;
-    color: white;
-}
 
 .aviator-content {
     display: flex;
@@ -3678,15 +3662,6 @@ input[type=radio] {
     gap: 20px;
 }
 
-.aviator-input {
-    padding: 10px;
-    font-size: 1rem;
-    width: 120px; 
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #b4c6ff;
-    color: black;
-}
 
 .aviator-bet-btn,
 .aviator-cashout-btn,
@@ -3697,7 +3672,7 @@ input[type=radio] {
     border-radius: 10px;
     cursor: pointer;
     margin-top: 10px;
-    width: 200px; 
+    width: 100%; 
     text-align: center;
 }
 
@@ -3717,25 +3692,68 @@ input[type=radio] {
 }
 
 .aviator-multiplier-text {
-    font-size: 5rem;
+    font-size: 4rem;
     color: #04ff00;
     font-weight: 700;
 }
-
-.aviator-result {
-    font-size: 1.5rem;
-    color: white;
+.aviator-countdown-text{
+	font-size: 2rem;
+	color: white;
 }
 
-.aviator-bet {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
+.aviator-result{
+	font-size: 2rem;
+	color: white;
+	padding: 20px;
+	margin: 20px;
 }
 .crash-text {
 	color: red;
 	font-weight: bold;
-  }
+}
   
+.aviator-bets{
+	background-color: #2f3854;
+    padding: 20px;
+    border-radius: 10px;
+}
+.aviator-bets-content{
+	display: flex;
+    flex-wrap: wrap;
+	flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.aviator-plane{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 300px;
+	background-color: black;
+	margin-bottom: 10px;
+	border-radius: 20px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+.aviator-inputs{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	gap: 20px;
+}
+.aviator-inputbox{
+	width: 100%;
+	height: 50px;
+	border-radius: 10px;
+	border: 1px solid #ccc;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+.aviator-buttons{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	gap: 20px;
+}

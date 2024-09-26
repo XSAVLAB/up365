@@ -2,25 +2,26 @@
 import { SetStateAction, useEffect, useState } from 'react';
 import { subscribeToCrashLimits } from '../../../api/firestoreAdminService';
 import { BiSolidWalletAlt, BiUserCircle } from 'react-icons/bi';
-import { fetchProfileData, fetchUserBalance } from '@/api/firestoreService';
+import { fetchProfileData, fetchUserBalance, updateUserWallet } from '@/api/firestoreService';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 
 export default function Aviator() {
-
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<any>(null);
     const [walletBalance, setWalletBalance] = useState('0');
     const [multiplier, setMultiplier] = useState(1);
     const [isRunning, setIsRunning] = useState(false);
     const [crashPoint, setCrashPoint] = useState<number | null>(null);
-    const [betAmount, setBetAmount] = useState<number | null>(null);
+    const [betAmount1, setBetAmount1] = useState<number>(100);
+    const [betAmount2, setBetAmount2] = useState<number>(100);
+    const [hasPlacedBet1, setHasPlacedBet1] = useState(false);
+    const [hasPlacedBet2, setHasPlacedBet2] = useState(false);
     const [resultMessage, setResultMessage] = useState<string | null>(null);
     const [minCrash, setMinCrash] = useState<number>(1);
     const [maxCrash, setMaxCrash] = useState<number>(100);
     const [isBettingOpen, setIsBettingOpen] = useState(false);
     const [countdown, setCountdown] = useState(15);
-    const [hasPlacedBet, setHasPlacedBet] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -52,8 +53,10 @@ export default function Aviator() {
         setIsBettingOpen(true);
         setCountdown(15);
         setResultMessage(null);
-        setBetAmount(null);
-        setHasPlacedBet(false);
+        setBetAmount1(100);
+        setBetAmount2(100);
+        setHasPlacedBet1(false);
+        setHasPlacedBet2(false);
     }, []);
 
     useEffect(() => {
@@ -88,13 +91,14 @@ export default function Aviator() {
         if (crashPoint !== null && multiplier >= crashPoint) {
             setIsRunning(false);
             clearInterval(interval!);
-            setResultMessage(`Crash! The game crashed at ${crashPoint.toFixed(2)}x.`);
+            setResultMessage(`Crashed! ${crashPoint.toFixed(2)}x.`);
 
             crashDelayTimeout = setTimeout(() => {
                 setResultMessage(null);
                 setCountdown(15);
                 setIsBettingOpen(true);
-                setHasPlacedBet(false);
+                setHasPlacedBet1(false);
+                setHasPlacedBet2(false);
             }, 2000);
         }
 
@@ -113,30 +117,71 @@ export default function Aviator() {
         }
     }, [resultMessage]);
 
-    // Function to place the bet
-    const placeBet = () => {
-        if (betAmount && betAmount > 0 && isBettingOpen) {
+    // Function to place Bet 1
+    const placeBet1 = async () => {
+        if (betAmount1 && betAmount1 > 0 && isBettingOpen) {
+            await updateUserWallet(user?.uid, (Number(walletBalance) - betAmount1).toFixed(2));
+            setWalletBalance(String(Number(walletBalance) - betAmount1));
             setResultMessage(null);
-            setHasPlacedBet(true); // Mark that a bet has been placed
+            setHasPlacedBet1(true);
         } else {
-            setResultMessage('Please enter a valid bet amount.');
+            setResultMessage('Please enter a valid bet amount for Bet 1.');
         }
     };
 
-    // Function to cancel the bet
-    const cancelBet = () => {
-        setBetAmount(null);
-        setHasPlacedBet(false);
-        setResultMessage('Bet canceled.');
+    // Function to place Bet 2
+    const placeBet2 = async () => {
+        if (betAmount2 && betAmount2 > 0 && isBettingOpen) {
+            await updateUserWallet(user?.uid, (Number(walletBalance) - betAmount2).toFixed(2));
+            setWalletBalance(String(Number(walletBalance) - betAmount2));
+            setResultMessage(null);
+            setHasPlacedBet2(true); 
+        } else {
+            setResultMessage('Please enter a valid bet amount for Bet 2.');
+        }
     };
 
-    // Cash out function
-    const cashOut = () => {
-        if (betAmount) {
-            const winnings = (betAmount * multiplier).toFixed(2);
-            setResultMessage(`You cashed out at ${multiplier.toFixed(2)}x! You won ₹${winnings}.`);
-            setBetAmount(null);
-            setHasPlacedBet(false);
+    // Function to cancel Bet 1
+    const cancelBet1 = async () => {
+        if (betAmount1 !== null) {
+            await updateUserWallet(user?.uid, (Number(walletBalance) + betAmount1).toFixed(2));
+            setWalletBalance(String(Number(walletBalance) + betAmount1));
+        }
+        setBetAmount1(100);
+        setHasPlacedBet1(false);
+    };
+
+    // Function to cancel Bet 2
+    const cancelBet2 = () => {
+        if (betAmount2 !== null) {
+            updateUserWallet(user?.uid, (Number(walletBalance) + betAmount2).toFixed(2));
+            setWalletBalance(String(Number(walletBalance) + betAmount2));
+        }
+        setBetAmount2(100);
+        setHasPlacedBet2(false);
+    };
+
+    // Cash out for Bet 1
+    const cashOut1 = async () => {
+        if (betAmount1) {
+            const winnings = (betAmount1 * multiplier).toFixed(2);
+            await updateUserWallet(user?.uid, (Number(walletBalance) + Number(winnings)).toFixed(2));
+            setWalletBalance(String(Number(walletBalance) + Number(winnings)));
+            setResultMessage(`Cashed out ${multiplier.toFixed(2)}x! Won ₹${winnings}.`);
+            setBetAmount1(100);
+            setHasPlacedBet1(false);
+        }
+    };
+
+    // Cash out for Bet 2
+    const cashOut2 = async () => {
+        if (betAmount2) {
+            const winnings = (betAmount2 * multiplier).toFixed(2);
+            await updateUserWallet(user?.uid, (Number(walletBalance) + Number(winnings)).toFixed(2));
+            setWalletBalance(String(Number(walletBalance) + Number(winnings)));
+            setResultMessage(`Cashed out ${multiplier.toFixed(2)}x! Won ₹${winnings}.`);
+            setBetAmount2(100);
+            setHasPlacedBet2(false);
         }
     };
 
@@ -152,50 +197,83 @@ export default function Aviator() {
                     {walletBalance}
                 </div>
             </div>
-            <div className="form-game-name">Aviator Game</div>
-            <div className="aviator-container">
-                <div className="aviator-header">Place Your Bets</div>
-                <div className="aviator-content">
+            <div className="aviator-bets-content">
+                <div className='aviator-plane'>
                     {isBettingOpen ? (
-                        <p className="aviator-countdown-text">Place your bet! Time remaining: {countdown}s</p>
+                        <p className="aviator-countdown-text">{countdown}s...</p>
                     ) : (
-                        <p className="aviator-multiplier-text">{multiplier.toFixed(2)}x</p>
+                        <>
+                            <p className="aviator-multiplier-text">{multiplier.toFixed(2)}x</p>
+                        </>
                     )}
-                    <div className="aviator-bet">
-                        <input
-                            type="number"
-                            placeholder="Amount"
-                            value={betAmount ?? ''}
-                            onChange={(e) => setBetAmount(Number(e.target.value))}
-                            className="aviator-input"
-                            disabled={!isBettingOpen || hasPlacedBet}
-                        />
-
-                        {isBettingOpen && !hasPlacedBet ? (
-                            <button
-                                className="aviator-bet-btn"
-
-                                onClick={placeBet}
-                                disabled={!isBettingOpen || hasPlacedBet}
-                            >
-                                Place Bet
-                            </button>
-                        ) : isRunning && hasPlacedBet ? (
-                            <button className="aviator-cashout-btn" onClick={cashOut}>
-                                Cash Out
-                            </button>
-                        ) : isRunning && !hasPlacedBet ? (
-                            <button className="aviator-bet-btn" onClick={placeBet} disabled={!isBettingOpen || hasPlacedBet}>Place Bet</button>) : null}
-
-                        {hasPlacedBet && !isRunning && (
-                            <button className="aviator-cancel-btn" onClick={cancelBet}>
-                                Cancel Bet
-                            </button>
-                        )}
-                    </div>
-
-                    {resultMessage && <p className="aviator-result">{resultMessage}</p>}
                 </div>
+
+                {resultMessage && <p className="aviator-result">{resultMessage}</p>}
+
+                <div className="aviator-inputs">
+
+                    <input
+                        type="number"
+                        placeholder="Amount"
+                        value={betAmount1 ?? 100}
+                        onChange={(e) => setBetAmount1(Number(e.target.value))}
+                        className="aviator-inputbox"
+                        disabled={!isBettingOpen || hasPlacedBet1}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Amount"
+                        value={betAmount2 ?? 100}
+                        onChange={(e) => setBetAmount2(Number(e.target.value))}
+                        className="aviator-inputbox"
+                        disabled={!isBettingOpen || hasPlacedBet2}
+                    />
+                </div>
+
+                <div className="aviator-buttons">
+
+                    {isBettingOpen && !hasPlacedBet1 ? (
+                        <button
+                            className="aviator-bet-btn"
+                            onClick={placeBet1}
+                            disabled={!isBettingOpen || hasPlacedBet1}
+                        >
+                            Bet ₹{(betAmount1 ?? 100).toFixed(2)}
+                        </button>
+                    ) : isRunning && hasPlacedBet1 ? (
+                        <button className="aviator-cashout-btn" onClick={cashOut1}>
+                            Cash Out {(multiplier * (betAmount1 ?? 0)).toFixed(2)}
+                        </button>
+                    ) : isRunning && !hasPlacedBet1 ? (
+                        <button className="aviator-bet-btn" onClick={placeBet1} disabled={!isBettingOpen || hasPlacedBet1}>Bet</button>) : null}
+
+                    {hasPlacedBet1 && !isRunning && (
+                        <button className="aviator-cancel-btn" onClick={cancelBet1}>
+                            Cancel Bet
+                        </button>
+                    )}
+                    {isBettingOpen && !hasPlacedBet2 ? (
+                        <button
+                            className="aviator-bet-btn"
+                            onClick={placeBet2}
+                            disabled={!isBettingOpen || hasPlacedBet2}
+                        >
+                            Bet ₹{(betAmount2 ?? 100).toFixed(2)}
+                        </button>
+                    ) : isRunning && hasPlacedBet2 ? (
+                        <button className="aviator-cashout-btn" onClick={cashOut2}>
+                            Cash Out {(multiplier * (betAmount2 ?? 0)).toFixed(2)}
+                        </button>
+                    ) : isRunning && !hasPlacedBet2 ? (
+                        <button className="aviator-bet-btn" onClick={placeBet2} disabled={!isBettingOpen || hasPlacedBet2}>Bet</button>) : null}
+
+                    {hasPlacedBet2 && !isRunning && (
+                        <button className="aviator-cancel-btn" onClick={cancelBet2}>
+                            Cancel Bet
+                        </button>
+                    )}
+                </div>
+
             </div>
         </div>
     );
