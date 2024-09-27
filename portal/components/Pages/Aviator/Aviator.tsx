@@ -2,7 +2,7 @@
 import { SetStateAction, useEffect, useState } from 'react';
 import { subscribeToCrashLimits } from '../../../api/firestoreAdminService';
 import { BiSolidWalletAlt, BiUserCircle } from 'react-icons/bi';
-import { fetchProfileData, fetchUserBalance, updateUserWallet } from '@/api/firestoreService';
+import { fetchProfileData, fetchUserBalance, createAviatorUserBet, updateAviatorBetsOnCrash, updateUserWallet, cancelAviatorUserBet, updateAviatorBetsOnCashout } from '@/api/firestoreService';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 
@@ -92,7 +92,7 @@ export default function Aviator() {
             setIsRunning(false);
             clearInterval(interval!);
             setResultMessage(`Crashed! ${crashPoint.toFixed(2)}x.`);
-
+            updateBetStatusOnCrash();
             crashDelayTimeout = setTimeout(() => {
                 setResultMessage(null);
                 setCountdown(15);
@@ -112,16 +112,22 @@ export default function Aviator() {
         if (resultMessage) {
             const messageTimer = setTimeout(() => {
                 setResultMessage(null);
-            }, 10000);
+            }, 5000);
             return () => clearTimeout(messageTimer);
         }
     }, [resultMessage]);
+
+    // Function to update the bet status on crash
+    const updateBetStatusOnCrash = async () => {
+        await updateAviatorBetsOnCrash(user?.uid, crashPoint?.toFixed(2) ?? 0);
+    }
 
     // Function to place Bet 1
     const placeBet1 = async () => {
         if (betAmount1 && betAmount1 > 0 && isBettingOpen) {
             await updateUserWallet(user?.uid, (Number(walletBalance) - betAmount1).toFixed(2));
             setWalletBalance(String(Number(walletBalance) - betAmount1));
+            await createAviatorUserBet(user?.uid, betAmount1, "bet1", "pending");
             setResultMessage(null);
             setHasPlacedBet1(true);
         } else {
@@ -134,8 +140,9 @@ export default function Aviator() {
         if (betAmount2 && betAmount2 > 0 && isBettingOpen) {
             await updateUserWallet(user?.uid, (Number(walletBalance) - betAmount2).toFixed(2));
             setWalletBalance(String(Number(walletBalance) - betAmount2));
+            await createAviatorUserBet(user?.uid, betAmount2, "bet2", "pending");
             setResultMessage(null);
-            setHasPlacedBet2(true); 
+            setHasPlacedBet2(true);
         } else {
             setResultMessage('Please enter a valid bet amount for Bet 2.');
         }
@@ -146,16 +153,18 @@ export default function Aviator() {
         if (betAmount1 !== null) {
             await updateUserWallet(user?.uid, (Number(walletBalance) + betAmount1).toFixed(2));
             setWalletBalance(String(Number(walletBalance) + betAmount1));
+            await cancelAviatorUserBet(user?.uid, "bet1");
         }
         setBetAmount1(100);
         setHasPlacedBet1(false);
     };
 
     // Function to cancel Bet 2
-    const cancelBet2 = () => {
+    const cancelBet2 = async () => {
         if (betAmount2 !== null) {
-            updateUserWallet(user?.uid, (Number(walletBalance) + betAmount2).toFixed(2));
+            await updateUserWallet(user?.uid, (Number(walletBalance) + betAmount2).toFixed(2));
             setWalletBalance(String(Number(walletBalance) + betAmount2));
+            await cancelAviatorUserBet(user?.uid, "bet2");
         }
         setBetAmount2(100);
         setHasPlacedBet2(false);
@@ -167,6 +176,7 @@ export default function Aviator() {
             const winnings = (betAmount1 * multiplier).toFixed(2);
             await updateUserWallet(user?.uid, (Number(walletBalance) + Number(winnings)).toFixed(2));
             setWalletBalance(String(Number(walletBalance) + Number(winnings)));
+            await updateAviatorBetsOnCashout(user?.uid, multiplier, winnings, "bet1");
             setResultMessage(`Cashed out ${multiplier.toFixed(2)}x! Won ₹${winnings}.`);
             setBetAmount1(100);
             setHasPlacedBet1(false);
@@ -179,6 +189,7 @@ export default function Aviator() {
             const winnings = (betAmount2 * multiplier).toFixed(2);
             await updateUserWallet(user?.uid, (Number(walletBalance) + Number(winnings)).toFixed(2));
             setWalletBalance(String(Number(walletBalance) + Number(winnings)));
+            await updateAviatorBetsOnCashout(user?.uid, multiplier, winnings, "bet2");
             setResultMessage(`Cashed out ${multiplier.toFixed(2)}x! Won ₹${winnings}.`);
             setBetAmount2(100);
             setHasPlacedBet2(false);

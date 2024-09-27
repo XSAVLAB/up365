@@ -417,7 +417,7 @@ export const addBet = async (betData) => {
 };
 
 // Function to update user wallet
-export const updateUserWallet = async (userId, newBalance) => { 
+export const updateUserWallet = async (userId, newBalance) => {
   const db = getFirestore();
   const userWalletRef = doc(db, "users", userId);
   await updateDoc(userWalletRef, {
@@ -1046,3 +1046,111 @@ export const fetchUpiID = async () => {
   }
 };
 
+// Aviator section
+
+// Function to create new bet data in Firestore
+export const createAviatorUserBet = async (
+  userId,
+  betAmount,
+  betNumber,
+  status
+) => {
+  try {
+    const betData = {
+      userId,
+      betAmount,
+      betNumber,
+      status,
+      timestamp: formatTimestamp(),
+    };
+
+    const betsCollectionRef = collection(db, "aviatorUserBets");
+
+    await addDoc(betsCollectionRef, betData);
+
+    console.log("Bet data successfully stored!");
+  } catch (error) {
+    console.error("Error storing bet data: ", error);
+    throw error;
+  }
+};
+// Function to update cancel aviator user bets
+export const cancelAviatorUserBet = async (userId, betNumber) => {
+  try {
+    const betsCollectionRef = collection(db, "aviatorUserBets");
+    const q = query(
+      betsCollectionRef,
+      where("userId", "==", userId),
+      where("status", "==", "pending"),
+      where("betNumber", "==", betNumber)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach(async (doc) => {
+      await updateDoc(doc.ref, {
+        status: "cancelled",
+      });
+    });
+  } catch (error) {
+    console.error("Error cancelling user bets: ", error);
+    throw error;
+  }
+};
+// Function to update aviatro user bets on cashout
+export const updateAviatorBetsOnCashout = async (
+  userId,
+  winningMultiplier,
+  cashoutAmount,
+  betNumber
+) => {
+  try {
+    const betsCollectionRef = collection(db, "aviatorUserBets");
+    const q = query(
+      betsCollectionRef,
+      where("userId", "==", userId),
+      where("status", "==", "pending"),
+      where("betNumber", "==", betNumber)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach(async (doc) => {
+      await updateDoc(doc.ref, {
+        status: "cashout",
+        winningMultiplier: winningMultiplier,
+        cashoutAmount: cashoutAmount,
+      });
+    });
+  } catch (error) {
+    console.error("Error updating user bets on cashout: ", error);
+    throw error;
+  }
+};
+
+// Function to update aviator user bets on crash
+export const updateAviatorBetsOnCrash = async (userId, crashMultiplier) => {
+  try {
+    const betsCollectionRef = collection(db, "aviatorUserBets");
+    const q = query(
+      betsCollectionRef,
+      where("userId", "==", userId),
+      where("status", "==", "pending")
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach(async (doc) => {
+      const betData = doc.data();
+      if (betData.status === "pending") {
+        await updateDoc(doc.ref, {
+          status: "crashed",
+          crashMultiplier: crashMultiplier,
+        });
+      }
+    });
+  } catch (error) {
+    console.error("Error updating user bets on crash: ", error);
+    throw error;
+  }
+};
