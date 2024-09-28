@@ -1,6 +1,6 @@
 'use client';
 import { SetStateAction, useEffect, useState } from 'react';
-import { subscribeToCrashLimits } from '../../../api/firestoreAdminService';
+import { subscribeToCrashLimits } from '../../../api/firestoreService';
 import { BiSolidWalletAlt, BiUserCircle } from 'react-icons/bi';
 import { fetchProfileData, fetchUserBalance, createAviatorUserBet, updateAviatorBetsOnCrash, updateUserWallet, cancelAviatorUserBet, updateAviatorBetsOnCashout } from '@/api/firestoreService';
 import { onAuthStateChanged, User } from 'firebase/auth';

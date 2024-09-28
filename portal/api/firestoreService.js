@@ -1048,6 +1048,29 @@ export const fetchUpiID = async () => {
 
 // Aviator section
 
+// Function to fetch the crash point limits (min and max) from currentCrashLimit in Firestore in real-time
+export const subscribeToCrashLimits = (callback) => {
+  try {
+    const currentCrashLimitRef = doc(
+      db,
+      "aviatorSettings",
+      "currentCrashLimit"
+    );
+
+    return onSnapshot(currentCrashLimitRef, (currentCrashLimitDoc) => {
+      if (currentCrashLimitDoc.exists()) {
+        callback(currentCrashLimitDoc.data());
+      } else {
+        console.error("Current crash limits not found");
+        callback(null);
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching current crash limits: ", error);
+    throw error;
+  }
+};
+
 // Function to create new bet data in Firestore
 export const createAviatorUserBet = async (
   userId,

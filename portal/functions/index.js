@@ -84,6 +84,61 @@ exports.onNewWithdrawal = functions.firestore
       }
     });
 
+// Aviator Game Crash Limit Function
+
+// Function to update the current crash limit
+exports.updateCurrentCrashLimit = functions.firestore
+    .document("aviatorUserBets/{betId}")
+    .onWrite(async (change, context) => {
+    // Fetch all the pending bets
+      const aviatorUserBetsRef = db.collection("aviatorUserBets");
+      const snapshot = await aviatorUserBetsRef
+          .where("status", "==", "pending")
+          .get();
+
+      const pendingBetsCount = snapshot.size; // Count of pending bets
+
+      // Fetch the crash limits from the aviatorSettings collection
+      const crashLimitsDoc = await db.doc("aviatorSettings/crashLimits").get();
+
+      if (!crashLimitsDoc.exists) {
+        console.error("Crash limits document not found.");
+        return;
+      }
+
+      const crashLimits = crashLimitsDoc.data();
+
+      let currentCrashLimit = {};
+
+      // Determine the current crash limit based on the number of pending bets
+      if (pendingBetsCount === 0) {
+        currentCrashLimit = {
+          minCrash: crashLimits.minCrashZero,
+          maxCrash: crashLimits.maxCrashZero,
+        };
+      } else if (pendingBetsCount <= 2) {
+        currentCrashLimit = {
+          minCrash: crashLimits.minCrashOneTwo,
+          maxCrash: crashLimits.maxCrashOneTwo,
+        };
+      } else {
+        currentCrashLimit = {
+          minCrash: crashLimits.minCrashThreePlus,
+          maxCrash: crashLimits.maxCrashThreePlus,
+        };
+      }
+
+      // Update the currentCrashLimit subcollection under aviatorSettings
+      const currentCrashLimitRef = db.doc("aviatorSettings/currentCrashLimit");
+
+      try {
+        await currentCrashLimitRef.set(currentCrashLimit);
+      } catch (error) {
+        console.error("Error updating currentCrashLimit:", error);
+      }
+    });
+
+// Lottery Bets Settling Function
 const settleLotteryBets = async (gameType, minNumber, maxNumber) => {
   try {
     const betAmounts = [100, 250, 500, 750, 1000];
