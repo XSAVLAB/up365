@@ -1,36 +1,42 @@
-"use client"
-import React from 'react';
+"use client";
+import React, { useEffect, useState } from 'react';
 import './AdsSlider.css';
-import img3 from '../../../public/images/img3.webp';
-import img4 from '../../../public/images/img4.webp';
-import img7 from '../../../public/images/img7.webp';
-import img8 from '../../../public/images/3DLottery.webp';
-import lottery from '../../../public/images/lotteryBg.webp';
-import ludo from '../../../public/images/ludoBgImg.webp';
-import poker from '../../../public/images/pokerBg.webp';
-import andarbahar from '../../../../portal/public/images/andarBaharBg.webp';
-import teenpatti from '../../../public/images/teenpattiBg.webp';
-import colorball from '../../../public/images/colorballBg.webp';
+import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
 import { useRouter } from 'next/navigation';
-
-const images = [img3, img4, lottery, ludo, poker, andarbahar, teenpatti, colorball, img3, img4, lottery, ludo, poker, andarbahar, teenpatti, colorball, img7, img8];
 
 function LandingPageImagesMarquee() {
     const router = useRouter();
+    const [imageURLs, setImageURLs] = useState<string[]>([]);
 
     const navigateToGames = () => {
         router.push('/');
     };
 
+    // Fetch images from Firebase Storage
+    useEffect(() => {
+        const fetchImages = async () => {
+            const storage = getStorage();
+            const storageRef = ref(storage, 'scroller-images/');
+            try {
+                const result = await listAll(storageRef);
+                const urls = await Promise.all(result.items.map((itemRef) => getDownloadURL(itemRef)));
+                setImageURLs(urls);
+            } catch (error) {
+                console.error("Error fetching images from Firebase Storage", error);
+            }
+        };
+        fetchImages();
+    }, []);
+
     return (
         <div className="marquee-container cursor-pointer my-3 mt-5 flex flex-col">
             <div className="marquee">
-                {images.concat(images).map((image, index) => (
+                {imageURLs.concat(imageURLs).map((url, index) => (
                     <div
                         key={index}
                         onClick={navigateToGames}
                         className="marquee-item"
-                        style={{ backgroundImage: `url(${image.src})` }}
+                        style={{ backgroundImage: `url(${url})` }}
                     />
                 ))}
             </div>

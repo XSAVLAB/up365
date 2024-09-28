@@ -15,6 +15,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { IconBellFilled } from '@tabler/icons-react';
 import { onSnapshot, doc } from 'firebase/firestore';
 import AviatorAdmin from '../Aviator/AviatorAdmin';
+import UploadScrollerImages from './UploadScrollerImages';
 
 interface User {
     id: string;
@@ -88,6 +89,8 @@ export default function Dashboard() {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [notification, setNotification] = useState('');
+    const [openSection, setOpenSection] = useState(null);
+
     const router = useRouter();
 
     useEffect(() => {
@@ -396,7 +399,14 @@ export default function Dashboard() {
     if (!isAdmin) {
         return <div>Loading...</div>;
     }
-
+    const toggleSection = (section: React.SetStateAction<null>) => {
+        // Toggle section, if clicked again, close it
+        if (openSection === section) {
+            setOpenSection(null);
+        } else {
+            setOpenSection(section);
+        }
+    };
 
     return (
         <>
@@ -668,82 +678,110 @@ export default function Dashboard() {
                                                             {message}
                                                         </div>
                                                     )}
-                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
-                                                        <div className="pay_method__paymethod-title mb-5 mb-md-6">
-                                                            <h5 className="n10-color">Enter the Marquee Text</h5>
-                                                        </div>
-                                                        <div className="pay_method__formarea">
-                                                            <form onSubmit={handleSubmitMarqueeText}>
-                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
-                                                                    <div className="w-100">
-                                                                        <input
-                                                                            className="n11-bg rounded-8"
-                                                                            type="text"
-                                                                            name="marqueeText"
-                                                                            placeholder="Enter Marquee Text"
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                                <button className="cmn-btn py-3 px-10" type="submit">
-                                                                    Update
-                                                                </button>
-                                                            </form>
-
-                                                        </div>
-                                                    </div>
-                                                    <hr />
-                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
-
+                                                    <div>
+                                                        {/* Marquee Text Section */}
                                                         <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
-                                                            <div className="pay_method__paymethod-title mb-5 mb-md-6">
-                                                                <h5 className="n10-color">Update Whatsapp Number</h5>
+                                                            <div
+                                                                className="pay_method__paymethod-title mb-5 mb-md-6 cursor-pointer"
+                                                                onClick={() => toggleSection('marquee' as any)}
+                                                            >
+                                                                <h5 className="n10-color">Marquee Text</h5>
                                                             </div>
-                                                            <div className="pay_method__formarea">
-                                                                <form onSubmit={handleSubmitWpNumber}>
-                                                                    <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
-                                                                        <div className="w-100">
-                                                                            <input
-                                                                                className="n11-bg rounded-8"
-                                                                                type="number"
-                                                                                name="whatsappNumber"
-                                                                                placeholder="Enter 10 Digit Whatsapp Number"
-                                                                            />
-
+                                                            {openSection === 'marquee' && (
+                                                                <div className="pay_method__formarea">
+                                                                    <form onSubmit={handleSubmitMarqueeText}>
+                                                                        <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                            <div className="w-100">
+                                                                                <input
+                                                                                    className="n11-bg rounded-8"
+                                                                                    type="text"
+                                                                                    name="marqueeText"
+                                                                                    placeholder="Enter Marquee Text"
+                                                                                />
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                    <button className="cmn-btn py-3 px-10" type="submit">
-                                                                        Update
-                                                                    </button>
-                                                                </form>
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <hr />
-                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
-                                                        <div className="pay_method__paymethod-title mb-5 mb-md-6">
-                                                            <h5 className="n10-color">Update the Offer Percentage</h5>
-                                                        </div>
-                                                        <div className="pay_method__formarea">
-                                                            <form onSubmit={handleSubmitOffer}>
-                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
-                                                                    <div className="w-100">
-                                                                        <input
-                                                                            className="n11-bg rounded-8"
-                                                                            type="number"
-                                                                            name="offerPercentage"
-                                                                            placeholder="Enter Percentage %"
-                                                                        />
-                                                                    </div>
+                                                                        <button className="cmn-btn py-3 px-10" type="submit">
+                                                                            Update
+                                                                        </button>
+                                                                    </form>
                                                                 </div>
-                                                                <button className="cmn-btn py-3 px-10" type="submit">
-                                                                    Update
-                                                                </button>
-                                                            </form>
-
+                                                            )}
                                                         </div>
 
+                                                        <hr />
 
+                                                        {/* WhatsApp Number Section */}
+                                                        <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                            <div
+                                                                className="pay_method__paymethod-title mb-5 mb-md-6 cursor-pointer"
+                                                                onClick={() => toggleSection('whatsapp' as any)}
+                                                            >
+                                                                <h5 className="n10-color">Whatsapp Number</h5>
+                                                            </div>
+                                                            {openSection === 'whatsapp' && (
+                                                                <div className="pay_method__formarea">
+                                                                    <form onSubmit={handleSubmitWpNumber}>
+                                                                        <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                            <div className="w-100">
+                                                                                <input
+                                                                                    className="n11-bg rounded-8"
+                                                                                    type="number"
+                                                                                    name="whatsappNumber"
+                                                                                    placeholder="Enter 10 Digit Whatsapp Number"
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                        <button className="cmn-btn py-3 px-10" type="submit">
+                                                                            Update
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <hr />
+
+                                                        {/* Offer Percentage Section */}
+                                                        <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                            <div
+                                                                className="pay_method__paymethod-title mb-5 mb-md-6 cursor-pointer"
+                                                                onClick={() => toggleSection('offer' as any)}
+                                                            >
+                                                                <h5 className="n10-color">Offer Percentage</h5>
+                                                            </div>
+                                                            {openSection === 'offer' && (
+                                                                <div className="pay_method__formarea">
+                                                                    <form onSubmit={handleSubmitOffer}>
+                                                                        <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                            <div className="w-100">
+                                                                                <input
+                                                                                    className="n11-bg rounded-8"
+                                                                                    type="number"
+                                                                                    name="offerPercentage"
+                                                                                    placeholder="Enter Percentage %"
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                        <button className="cmn-btn py-3 px-10" type="submit">
+                                                                            Update
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <hr />
+
+                                                        {/* Upload Scroller Images Section */}
+                                                        <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                            <div
+                                                                className="pay_method__paymethod-title mb-5 mb-md-6 cursor-pointer"
+                                                                onClick={() => toggleSection('scrollerImages' as any)}
+                                                            >
+                                                                <h5 className="n10-color">Scroller Images</h5>
+                                                            </div>
+                                                            {openSection === 'scrollerImages' && <UploadScrollerImages />}
+                                                        </div>
                                                     </div>
                                                 </Tab.Panel>
 

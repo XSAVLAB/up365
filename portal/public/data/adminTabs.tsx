@@ -1,4 +1,4 @@
-import { IconBarcode, IconBellRinging, IconCards, IconCreditCard, IconCreditCardOff, IconCricket, IconDiscount2, IconHelp, IconHistory, IconLogout, IconPlane, IconSettings, IconStatusChange, IconTextCaption, IconUser, IconUserEdit, IconWallet } from "@tabler/icons-react";
+import { IconBarcode, IconBellRinging, IconCards, IconCreditCard, IconCreditCardOff, IconCricket, IconDatabase, IconDiscount2, IconHelp, IconHistory, IconLogout, IconPlane, IconSettings, IconStatusChange, IconTextCaption, IconUser, IconUserEdit, IconWallet } from "@tabler/icons-react";
 import React from "react";
 
 export const dashboardTabs = [
@@ -38,8 +38,8 @@ export const dashboardTabs = [
   },
   {
     id: 7,
-    tabname: "Offers and Marquee",
-    icon: <IconDiscount2
+    tabname: "Uploads",
+    icon: <IconDatabase
       className="ti ti-settings fs-five n5-color" />,
   },
   {
