@@ -35,7 +35,7 @@ function TripleDigitLottery() {
     const [showRules, setShowRules] = useState(false);
     const [counter, setCounter] = useState(1);
     let [betCount, setBetCount] = useState(0);
-    const [number, setNumber] = useState(0);
+    const [number, setNumber] = useState(100);
     const [betAmount, setBetAmount] = useState(0);
     const [rewardAmount] = useState(0);
     const [showConfetti, setShowConfetti] = useState(false);

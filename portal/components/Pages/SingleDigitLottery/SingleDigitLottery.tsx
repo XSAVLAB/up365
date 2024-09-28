@@ -150,7 +150,7 @@ function SingleDigitLottery() {
                             value={number}
                             onChange={(e) => handleNumberClick(e.target.value)}
                             className='bet-select'>
-                            <option value="0">0</option>
+                            <option value="no-value">Select Bet Number</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
