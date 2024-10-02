@@ -4,7 +4,7 @@ import DynamicLudoBoard from "./DynamicLudoBoard";
 
 const BoardLayout = () => {
   return (
-    <div>
+    <div className="ludo-board-layout">
       <div className="my-4 flex justify-between">
         <PlayerCard key="P2" id="P2" />
         <PlayerCard key="P3" id="P3" />

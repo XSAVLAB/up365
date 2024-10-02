@@ -27,7 +27,7 @@ const DynamicLudoBoard = () => {
 
   useEffect(() => {
     if (gameStatus === 'start') {
-      router.push('/ludo-customize');
+      router.push('/ludo');
     }
     if (gameStatus === 'end') {
       router.push('/leaderboard');
@@ -77,7 +77,7 @@ const DynamicLudoBoard = () => {
 
         return (
           <circle
-            key={token.id} id={token.id ?? ''}
+            key={token.id} id={String(token.id) ?? ''}
             cx={token.px} cy={token.py}
             r={1.75} fill={color[player.id]}
             strokeWidth="0.7" stroke="black"

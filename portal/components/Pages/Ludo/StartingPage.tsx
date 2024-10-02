@@ -1,6 +1,8 @@
 'use client'
 import React, { useState } from 'react';
-import WaitingRoom from './WaitingRoom';
+import CustomizePlayers from '../LudoTesting/CustomizePlayers';
+import { store } from '@/redux/store';
+import { Provider } from 'react-redux';
 
 function StartingPage() {
     const [loading, setLoading] = useState(false);
@@ -23,7 +25,9 @@ function StartingPage() {
     return (
         <div className="form-container">
             {loading ? (
-                <WaitingRoom />
+                <Provider store={store}>
+                    <CustomizePlayers />
+                </Provider>
             ) : (
                 <>
                     <h1 className="form-game-name">Ludo</h1>

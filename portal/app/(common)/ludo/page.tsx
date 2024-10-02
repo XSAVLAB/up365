@@ -6,7 +6,8 @@ export default function page() {
     return (
         <>
             <HeaderMain />
-            <ComingSoon />
+            <StartingPage />
+            {/*<ComingSoon />*/}
         </>
     )
 }
