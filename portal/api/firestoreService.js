@@ -1048,6 +1048,25 @@ export const fetchUpiID = async () => {
 
 // Aviator section
 
+// Function to fetch the current game state in real-time using onSnapshot
+export const fetchAviatorGameState = (callback) => {
+  try {
+    const gameStateRef = doc(db, "aviatorGameState", "currentState");
+
+    const unsubscribe = onSnapshot(gameStateRef, (gameStateDoc) => {
+      if (gameStateDoc.exists()) {
+        const gameStateData = gameStateDoc.data();
+        callback(gameStateData.state);
+      } else {
+        callback(null);
+      }
+    });
+    return unsubscribe;
+  } catch (error) {
+    console.error("Error fetching game state in real-time: ", error);
+    throw error;
+  }
+};
 // Function to fetch the crash point limits (min and max) from currentCrashLimit in Firestore in real-time
 export const subscribeToCrashLimits = (callback) => {
   try {

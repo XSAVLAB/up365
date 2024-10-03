@@ -323,3 +323,98 @@ const settleColorBallBets = async () => {
     console.error("Error settling bets: ", error);
   }
 };
+
+// Aviator Functions
+
+const GAME_STATE_COLLECTION = "aviatorGameState";
+const GAME_STATE_DOC = "currentState";
+// Function to sleep for a specified time in milliseconds
+/**
+ * Sleeps for a specified time in milliseconds.
+ * @param {number} ms - The time to sleep in milliseconds.
+ * @return {Promise} - Resolves after the specified time.
+ */
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+exports.onAviatorGameStateChange = functions.firestore
+    .document("aviatorGameState/currentState")
+    .onUpdate(async (change, context) => {
+      const newState = change.after.data();
+
+      if (newState.state === "betting" && newState.timer === 0) {
+        await flyingPlane();
+      }
+
+      // If the game state is 'flying' and the plane has crashed
+      if (newState.state === "crashed" && newState.crashed === true) {
+        await bettingTime();
+      }
+    });
+
+// Function to update the current game state
+/**
+ * Updates the current game state in Firestore.
+ * @param {Object} state - The new game state.
+ * @return {Promise} - Firestore write promise.
+ */
+async function updateGameState(state) {
+  return db
+      .collection(GAME_STATE_COLLECTION)
+      .doc(GAME_STATE_DOC)
+      .set(state, {merge: true});
+}
+
+// Function for betting time timer
+/**
+ * Simulates a timer for the betting time.
+ * @return {Promise} - Resolves after 15 seconds.
+ */
+async function bettingTime() {
+  // Set the state to 'betting' with a timer of 15 seconds
+  await updateGameState({
+    state: "betting",
+    timer: 15,
+    crashed: false,
+  });
+
+  // Countdown for 15 seconds
+  for (let i = 15; i > -1; i--) {
+    if (i === 0) {
+      await updateGameState({timer: 0});
+    }
+    await sleep(1000); // 1 second delay
+  }
+}
+
+// Function for flying the plane/multiplier
+/**
+ * Simulates the plane flying and the multiplier increasing.
+ * @return {Promise} - Resolves when the plane crashes.
+ */
+async function flyingPlane() {
+  let multiplier = 1;
+  const minCrash = 1.01;
+  const maxCrash = 5;
+  const crashPoint = Math.random() * (maxCrash - minCrash) + minCrash;
+  await updateGameState({
+    state: "flying",
+    minCrash: minCrash,
+    maxCrash: maxCrash,
+  });
+
+  const interval = setInterval(async () => {
+    multiplier *= 1.01;
+
+    // Check if the plane should crash
+    if (multiplier >= crashPoint) {
+      clearInterval(interval);
+      await updateGameState({
+        state: "crashed",
+        crashed: true,
+        crashPoint: crashPoint.toFixed(2),
+        multiplier: crashPoint.toFixed(2),
+      });
+    }
+  }, 100);
+}
