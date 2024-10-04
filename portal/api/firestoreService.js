@@ -1095,6 +1095,7 @@ export const createAviatorUserBet = async (
   userId,
   betAmount,
   betNumber,
+  betStartTime,
   status
 ) => {
   try {
@@ -1102,6 +1103,7 @@ export const createAviatorUserBet = async (
       userId,
       betAmount,
       betNumber,
+      betStartTime,
       status,
       timestamp: formatTimestamp(),
     };
@@ -1207,7 +1209,7 @@ export const fetchAviatorLimitsRealTime = (callback) => {
     );
     const unsubscribe = onSnapshot(aviatorStateCollectionRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
-        const aviatorState = docSnapshot.data(); 
+        const aviatorState = docSnapshot.data();
         callback(aviatorState);
       } else {
         console.log("No such document!");

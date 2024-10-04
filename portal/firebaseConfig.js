@@ -17,7 +17,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
-const functions = getFunctions(app); // Initialize Firebase Functions
+const functions = getFunctions(app); 
 
 const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 

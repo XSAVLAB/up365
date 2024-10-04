@@ -373,8 +373,10 @@ async function updateGameState(state) {
  */
 async function bettingTime() {
   // Set the state to 'betting' with a timer of 15 seconds
+  const betStartTime = Date.now();
   await updateGameState({
     state: "betting",
+    betStartTime: betStartTime,
     timer: TIMER,
   });
 
@@ -397,13 +399,13 @@ async function flyingPlane() {
   const minCrash = 1.01;
   const maxCrash = 5;
   const crashPoint = Math.random() * (maxCrash - minCrash) + minCrash;
-  const startTime = Date.now();
+  const roundStartTime = Date.now();
   await updateGameState({
     state: "flying",
     minCrash: minCrash,
     maxCrash: maxCrash,
     crashPoint: crashPoint.toFixed(2),
-    startTime: startTime,
+    roundStartTime: roundStartTime,
   });
 
   const interval = setInterval(async () => {
@@ -422,18 +424,18 @@ async function flyingPlane() {
 // Function to dynamically calculate the current multiplier
 /**
  * Calculates the current multiplier based on the time elapsed.
- * @param {number} startTime - The time the plane started flying.
+ * @param {number} roundStartTime - The time the plane started flying.
  * @return {string} - The current multiplier.
  */
-function getCurrentMultiplier(startTime) {
-  const elapsed = (Date.now() - startTime) / 100;
+function getCurrentMultiplier(roundStartTime) {
+  const elapsed = (Date.now() - roundStartTime) / 100;
   const multiplier = Math.pow(1.01, elapsed);
   return multiplier.toFixed(2);
 }
 
 // HTTP callable function to get the current multiplier
 exports.getCurrentMultiplier = functions.https.onCall(async (data, context) => {
-  // Get the current game state to access startTime
+  // Get the current game state to access roundStartTime
   const gameStateDoc = await db
       .collection(GAME_STATE_COLLECTION)
       .doc(GAME_STATE_DOC)
@@ -442,7 +444,7 @@ exports.getCurrentMultiplier = functions.https.onCall(async (data, context) => {
   const gameState = gameStateDoc.data();
 
   if (gameState.state === "flying") {
-    const currentMultiplier = getCurrentMultiplier(gameState.startTime);
+    const currentMultiplier = getCurrentMultiplier(gameState.roundStartTime);
     return {multiplier: currentMultiplier};
   } else {
     throw new functions.https.HttpsError(
@@ -451,3 +453,45 @@ exports.getCurrentMultiplier = functions.https.onCall(async (data, context) => {
     );
   }
 });
+
+// Grouping the bets by rounds
+exports.groupAviatorBets = functions.firestore
+    .document("aviatorUserBets/{betId}")
+    .onCreate(async (snapshot, context) => {
+    // Get the bet data
+      const betData = snapshot.data();
+      const betStartTime = betData.betStartTime;
+
+      try {
+        const roundQuerySnapshot = await db
+            .collection("aviatorBetRounds")
+            .where("betStartTime", "==", betStartTime)
+            .limit(1)
+            .get();
+
+        let roundId;
+
+        if (!roundQuerySnapshot.empty) {
+          const round = roundQuerySnapshot.docs[0];
+          roundId = round.id;
+        } else {
+          const newRoundRef = db.collection("aviatorBetRounds").doc();
+          await newRoundRef.set({
+            betStartTime: betStartTime,
+            isCompleted: false,
+          });
+          roundId = newRoundRef.id;
+        }
+
+        await db
+            .collection("aviatorBetRounds")
+            .doc(roundId)
+            .collection("bets")
+            .doc(snapshot.id)
+            .set(betData);
+
+        console.log(`Bet ${snapshot.id} added to round ${roundId}`);
+      } catch (error) {
+        console.error("Error grouping bet into a round: ", error);
+      }
+    });
