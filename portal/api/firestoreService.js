@@ -1196,3 +1196,26 @@ export const updateAviatorBetsOnCrash = async (userId, crashMultiplier) => {
     throw error;
   }
 };
+
+// Function to listen to real-time updates for all fields in aviatorState
+export const fetchAviatorLimitsRealTime = (callback) => {
+  try {
+    const aviatorStateCollectionRef = doc(
+      db,
+      "aviatorGameState",
+      "currentState"
+    );
+    const unsubscribe = onSnapshot(aviatorStateCollectionRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const aviatorState = docSnapshot.data(); 
+        callback(aviatorState);
+      } else {
+        console.log("No such document!");
+      }
+    });
+
+    return unsubscribe;
+  } catch (error) {
+    console.log("Error fetching real-time aviator limits: ", error);
+  }
+};

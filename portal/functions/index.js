@@ -328,6 +328,7 @@ const settleColorBallBets = async () => {
 
 const GAME_STATE_COLLECTION = "aviatorGameState";
 const GAME_STATE_DOC = "currentState";
+const TIMER = 10;
 // Function to sleep for a specified time in milliseconds
 /**
  * Sleeps for a specified time in milliseconds.
@@ -347,7 +348,7 @@ exports.onAviatorGameStateChange = functions.firestore
       }
 
       // If the game state is 'flying' and the plane has crashed
-      if (newState.state === "crashed" && newState.crashed === true) {
+      if (newState.state === "crashed") {
         await bettingTime();
       }
     });
@@ -374,16 +375,15 @@ async function bettingTime() {
   // Set the state to 'betting' with a timer of 15 seconds
   await updateGameState({
     state: "betting",
-    timer: 15,
-    crashed: false,
+    timer: TIMER,
   });
 
-  // Countdown for 15 seconds
-  for (let i = 15; i > -1; i--) {
+  // Countdown
+  for (let i = TIMER; i > -1; i--) {
     if (i === 0) {
       await updateGameState({timer: 0});
     }
-    await sleep(1000); // 1 second delay
+    await sleep(1000);
   }
 }
 
@@ -397,10 +397,13 @@ async function flyingPlane() {
   const minCrash = 1.01;
   const maxCrash = 5;
   const crashPoint = Math.random() * (maxCrash - minCrash) + minCrash;
+  const startTime = Date.now();
   await updateGameState({
     state: "flying",
     minCrash: minCrash,
     maxCrash: maxCrash,
+    crashPoint: crashPoint.toFixed(2),
+    startTime: startTime,
   });
 
   const interval = setInterval(async () => {
@@ -411,10 +414,40 @@ async function flyingPlane() {
       clearInterval(interval);
       await updateGameState({
         state: "crashed",
-        crashed: true,
-        crashPoint: crashPoint.toFixed(2),
-        multiplier: crashPoint.toFixed(2),
       });
     }
   }, 100);
 }
+
+// Function to dynamically calculate the current multiplier
+/**
+ * Calculates the current multiplier based on the time elapsed.
+ * @param {number} startTime - The time the plane started flying.
+ * @return {string} - The current multiplier.
+ */
+function getCurrentMultiplier(startTime) {
+  const elapsed = (Date.now() - startTime) / 100;
+  const multiplier = Math.pow(1.01, elapsed);
+  return multiplier.toFixed(2);
+}
+
+// HTTP callable function to get the current multiplier
+exports.getCurrentMultiplier = functions.https.onCall(async (data, context) => {
+  // Get the current game state to access startTime
+  const gameStateDoc = await db
+      .collection(GAME_STATE_COLLECTION)
+      .doc(GAME_STATE_DOC)
+      .get();
+
+  const gameState = gameStateDoc.data();
+
+  if (gameState.state === "flying") {
+    const currentMultiplier = getCurrentMultiplier(gameState.startTime);
+    return {multiplier: currentMultiplier};
+  } else {
+    throw new functions.https.HttpsError(
+        "failed-precondition",
+        "The plane is not flying.",
+    );
+  }
+});

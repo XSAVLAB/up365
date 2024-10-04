@@ -3804,16 +3804,32 @@ input[type=radio] {
     color: #04ff00;
     font-weight: 700;
 }
+.crash-result{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
 .aviator-countdown-text{
 	font-size: 2rem;
 	color: white;
 }
 
-.aviator-result{
+.crash-result-text{
 	font-size: 2rem;
 	color: white;
 	padding: 20px;
 	margin: 20px;
+}
+.cashout-message{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.5rem;
+	padding: 10px;
+	margin: 10px;
+	border-radius: 20px;
+	background-color: #1eff00bb;
 }
 .crash-text {
 	color: red;

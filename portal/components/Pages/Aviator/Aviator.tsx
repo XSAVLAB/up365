@@ -1,27 +1,31 @@
 'use client';
 import { SetStateAction, useEffect, useState } from 'react';
-import { subscribeToCrashLimits } from '../../../api/firestoreService';
+import { fetchAviatorLimitsRealTime, subscribeToCrashLimits } from '../../../api/firestoreService';
 import { BiSolidWalletAlt, BiUserCircle } from 'react-icons/bi';
 import { fetchProfileData, fetchUserBalance, createAviatorUserBet, updateAviatorBetsOnCrash, updateUserWallet, cancelAviatorUserBet, updateAviatorBetsOnCashout } from '@/api/firestoreService';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
+import game from '@/redux/slices/game';
 
 export default function Aviator() {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<any>(null);
     const [walletBalance, setWalletBalance] = useState('0');
-    const [multiplier, setMultiplier] = useState(1);
-    const [isRunning, setIsRunning] = useState(false);
-    const [crashPoint, setCrashPoint] = useState<number | null>(null);
+
     const [betAmount1, setBetAmount1] = useState<number>(100);
     const [betAmount2, setBetAmount2] = useState<number>(100);
     const [hasPlacedBet1, setHasPlacedBet1] = useState(false);
     const [hasPlacedBet2, setHasPlacedBet2] = useState(false);
-    const [resultMessage, setResultMessage] = useState<string | null>(null);
-    const [minCrash, setMinCrash] = useState<number>(1);
-    const [maxCrash, setMaxCrash] = useState<number>(100);
+
+    const [multiplier, setMultiplier] = useState(1);
+    const [isRunning, setIsRunning] = useState(false);
     const [isBettingOpen, setIsBettingOpen] = useState(false);
-    const [countdown, setCountdown] = useState(15);
+    const [crashPoint, setCrashPoint] = useState<number | null>(null);
+
+    const [gameState, setGameState] = useState<string>('');
+
+    const [crashMessage, setcrashMessage] = useState<string | null>(null);
+    const [cashoutMessage, setcashoutMessage] = useState<string | null>(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -39,83 +43,63 @@ export default function Aviator() {
     }, []);
 
     useEffect(() => {
-        const unsubscribe = subscribeToCrashLimits((data: { minCrash: SetStateAction<number>; maxCrash: SetStateAction<number> }) => {
+        const unsubscribe = fetchAviatorLimitsRealTime((data: any) => {
             if (data) {
-                setMinCrash(data.minCrash);
-                setMaxCrash(data.maxCrash);
+                setCrashPoint(data.crashPoint);
+                setGameState(data.state);
+                console.log("Next crash", data.crashPoint)
             }
         });
-
-        return () => unsubscribe();
+        return () => unsubscribe && unsubscribe();
     }, []);
 
-    useEffect(() => {
-        setIsBettingOpen(true);
-        setCountdown(15);
-        setResultMessage(null);
-        setBetAmount1(100);
-        setBetAmount2(100);
-        setHasPlacedBet1(false);
-        setHasPlacedBet2(false);
-    }, []);
-
-    useEffect(() => {
-        let countdownInterval: NodeJS.Timeout | null = null;
-
-        if (countdown > 0) {
-            countdownInterval = setInterval(() => {
-                setCountdown((prev) => prev - 1);
-            }, 1000);
-        } else if (countdown === 0) {
-            setIsBettingOpen(false);
-            setIsRunning(true);
-            setMultiplier(1);
-            setCrashPoint(Math.random() * (maxCrash - minCrash) + minCrash);
-        }
-
-        return () => {
-            if (countdownInterval) clearInterval(countdownInterval);
-        };
-    }, [countdown, maxCrash, minCrash]);
 
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
-        let crashDelayTimeout: NodeJS.Timeout | null = null;
 
-        if (isRunning && crashPoint !== null) {
+        if (gameState === 'betting') {
+            setIsBettingOpen(true);
+            setMultiplier(1);
+            setcrashMessage(null);
+        }
+        else if (gameState === 'flying') {
+            setIsBettingOpen(false);
+            setIsRunning(true);
+            // Start incrementing the multiplier every 100ms
             interval = setInterval(() => {
-                setMultiplier((prev) => prev * 1.01);
+                setMultiplier((prevMultiplier) => {
+                    const newMultiplier = prevMultiplier * 1.01;
+
+                    // Check if crash point is reached inside the interval
+                    if (crashPoint !== null && newMultiplier >= crashPoint) {
+                        clearInterval(interval!);
+                        setIsRunning(false);
+                        setcrashMessage(`Crashed!`);
+                    }
+
+                    return newMultiplier;
+                });
             }, 100);
         }
-
-        if (crashPoint !== null && multiplier >= crashPoint) {
+        else if (gameState === 'crashed') {
             setIsRunning(false);
             clearInterval(interval!);
-            setResultMessage(`Crashed! ${crashPoint.toFixed(2)}x.`);
-            updateBetStatusOnCrash();
-            crashDelayTimeout = setTimeout(() => {
-                setResultMessage(null);
-                setCountdown(15);
-                setIsBettingOpen(true);
-                setHasPlacedBet1(false);
-                setHasPlacedBet2(false);
-            }, 2000);
-        }
+        };
 
         return () => {
-            clearInterval(interval!);
-            clearTimeout(crashDelayTimeout!);
+            if (interval) clearInterval(interval); // Cleanup the interval when component unmounts or when effect dependencies change
         };
-    }, [isRunning, multiplier, crashPoint]);
+    }, [gameState, crashPoint]); // Only trigger effect when gameState or crashPoint changes
+
 
     useEffect(() => {
-        if (resultMessage) {
+        if (cashoutMessage) {
             const messageTimer = setTimeout(() => {
-                setResultMessage(null);
+                setcashoutMessage(null);
             }, 5000);
             return () => clearTimeout(messageTimer);
         }
-    }, [resultMessage]);
+    }, [cashoutMessage]);
 
     // Function to update the bet status on crash
     const updateBetStatusOnCrash = async () => {
@@ -128,10 +112,10 @@ export default function Aviator() {
             await updateUserWallet(user?.uid, (Number(walletBalance) - betAmount1).toFixed(2));
             setWalletBalance(String(Number(walletBalance) - betAmount1));
             await createAviatorUserBet(user?.uid, betAmount1, "bet1", "pending");
-            setResultMessage(null);
+            setcashoutMessage(null);
             setHasPlacedBet1(true);
         } else {
-            setResultMessage('Please enter a valid bet amount for Bet 1.');
+            setcashoutMessage('Please enter a valid bet amount for Bet 1.');
         }
     };
 
@@ -141,10 +125,10 @@ export default function Aviator() {
             await updateUserWallet(user?.uid, (Number(walletBalance) - betAmount2).toFixed(2));
             setWalletBalance(String(Number(walletBalance) - betAmount2));
             await createAviatorUserBet(user?.uid, betAmount2, "bet2", "pending");
-            setResultMessage(null);
+            setcashoutMessage(null);
             setHasPlacedBet2(true);
         } else {
-            setResultMessage('Please enter a valid bet amount for Bet 2.');
+            setcashoutMessage('Please enter a valid bet amount for Bet 2.');
         }
     };
 
@@ -174,10 +158,11 @@ export default function Aviator() {
     const cashOut1 = async () => {
         if (betAmount1) {
             const winnings = (betAmount1 * multiplier).toFixed(2);
-            await updateUserWallet(user?.uid, (Number(walletBalance) + Number(winnings)).toFixed(2));
-            setWalletBalance(String(Number(walletBalance) + Number(winnings)));
+            const newWalletBalance = (Number(walletBalance) + Number(winnings)).toFixed(2);
+            await updateUserWallet(user?.uid, newWalletBalance);
+            setWalletBalance(String(newWalletBalance));
             await updateAviatorBetsOnCashout(user?.uid, multiplier, winnings, "bet1");
-            setResultMessage(`Cashed out ${multiplier.toFixed(2)}x! Won ₹${winnings}.`);
+            setcashoutMessage(`Cashed out at ${multiplier.toFixed(2)}x! Won ₹${winnings}.`);
             setBetAmount1(100);
             setHasPlacedBet1(false);
         }
@@ -187,10 +172,11 @@ export default function Aviator() {
     const cashOut2 = async () => {
         if (betAmount2) {
             const winnings = (betAmount2 * multiplier).toFixed(2);
-            await updateUserWallet(user?.uid, (Number(walletBalance) + Number(winnings)).toFixed(2));
-            setWalletBalance(String(Number(walletBalance) + Number(winnings)));
+            const newWalletBalance = (Number(walletBalance) + Number(winnings)).toFixed(2);
+            await updateUserWallet(user?.uid, newWalletBalance);
+            setWalletBalance(String(newWalletBalance));
             await updateAviatorBetsOnCashout(user?.uid, multiplier, winnings, "bet2");
-            setResultMessage(`Cashed out ${multiplier.toFixed(2)}x! Won ₹${winnings}.`);
+            setcashoutMessage(`Cashed out at ${multiplier.toFixed(2)}x! Won ₹${winnings}.`);
             setBetAmount2(100);
             setHasPlacedBet2(false);
         }
@@ -209,17 +195,23 @@ export default function Aviator() {
                 </div>
             </div>
             <div className="aviator-bets-content">
+                {cashoutMessage && <div className="cashout-message">{cashoutMessage}</div>}
                 <div className='aviator-plane'>
                     {isBettingOpen ? (
-                        <p className="aviator-countdown-text">{countdown}s...</p>
+                        <p className="aviator-countdown-text">Waiting for next round</p>
                     ) : (
                         <>
-                            <p className="aviator-multiplier-text">{multiplier.toFixed(2)}x</p>
+                            {crashMessage ? (
+                                <div className='crash-result'>
+                                    <p className="crash-result-text">{crashMessage}</p>
+                                    <p className="aviator-multiplier-text" style={{ color: 'red' }}>{multiplier.toFixed(2)}</p>
+                                </div>
+                            ) : (
+                                <p className="aviator-multiplier-text">{multiplier.toFixed(2)}x</p>
+                            )}
                         </>
                     )}
                 </div>
-
-                {resultMessage && <p className="aviator-result">{resultMessage}</p>}
 
                 <div className="aviator-inputs">
 
