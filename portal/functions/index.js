@@ -84,60 +84,6 @@ exports.onNewWithdrawal = functions.firestore
       }
     });
 
-// Aviator Game Crash Limit Function
-
-// Function to update the current crash limit
-exports.updateCurrentCrashLimit = functions.firestore
-    .document("aviatorUserBets/{betId}")
-    .onWrite(async (change, context) => {
-    // Fetch all the pending bets
-      const aviatorUserBetsRef = db.collection("aviatorUserBets");
-      const snapshot = await aviatorUserBetsRef
-          .where("status", "==", "pending")
-          .get();
-
-      const pendingBetsCount = snapshot.size; // Count of pending bets
-
-      // Fetch the crash limits from the aviatorSettings collection
-      const crashLimitsDoc = await db.doc("aviatorSettings/crashLimits").get();
-
-      if (!crashLimitsDoc.exists) {
-        console.error("Crash limits document not found.");
-        return;
-      }
-
-      const crashLimits = crashLimitsDoc.data();
-
-      let currentCrashLimit = {};
-
-      // Determine the current crash limit based on the number of pending bets
-      if (pendingBetsCount === 0) {
-        currentCrashLimit = {
-          minCrash: crashLimits.minCrashZero,
-          maxCrash: crashLimits.maxCrashZero,
-        };
-      } else if (pendingBetsCount <= 2) {
-        currentCrashLimit = {
-          minCrash: crashLimits.minCrashOneTwo,
-          maxCrash: crashLimits.maxCrashOneTwo,
-        };
-      } else {
-        currentCrashLimit = {
-          minCrash: crashLimits.minCrashThreePlus,
-          maxCrash: crashLimits.maxCrashThreePlus,
-        };
-      }
-
-      // Update the currentCrashLimit subcollection under aviatorSettings
-      const currentCrashLimitRef = db.doc("aviatorSettings/currentCrashLimit");
-
-      try {
-        await currentCrashLimitRef.set(currentCrashLimit);
-      } catch (error) {
-        console.error("Error updating currentCrashLimit:", error);
-      }
-    });
-
 // Lottery Bets Settling Function
 const settleLotteryBets = async (gameType, minNumber, maxNumber) => {
   try {
@@ -395,11 +341,23 @@ async function bettingTime() {
  * @return {Promise} - Resolves when the plane crashes.
  */
 async function flyingPlane() {
+  const crashLimitRef = db.collection("aviatorSettings")
+      .doc("currentCrashLimit");
+  const crashLimitSnapshot = await crashLimitRef.get();
+
+  if (!crashLimitSnapshot.exists) {
+    throw new Error("Crash limits document does not exist");
+  }
+
+  const crashLimits = crashLimitSnapshot.data();
+  const minCrash = crashLimits.minLimit || 1.01;
+  const maxCrash = crashLimits.maxLimit || 5;
+
   let multiplier = 1;
-  const minCrash = 1.01;
-  const maxCrash = 5;
   const crashPoint = Math.random() * (maxCrash - minCrash) + minCrash;
   const roundStartTime = Date.now();
+
+  // Update game state to "flying"
   await updateGameState({
     state: "flying",
     minCrash: minCrash,
@@ -411,15 +369,31 @@ async function flyingPlane() {
   const interval = setInterval(async () => {
     multiplier *= 1.01;
 
-    // Check if the plane should crash
     if (multiplier >= crashPoint) {
       clearInterval(interval);
+
+      await markRoundAsCompleted();
+
       await updateGameState({
         state: "crashed",
       });
     }
   }, 100);
 }
+
+/**
+ * @param {number} roundStartTime - The time the plane started flying.
+ */
+async function markRoundAsCompleted() {
+  const roundRef = db.collection("aviatorBetRounds");
+  const roundSnapshot = await roundRef.get();
+
+  if (!roundSnapshot.empty) {
+    const roundDoc = roundSnapshot.docs[0];
+    await roundDoc.ref.update({isCompleted: true});
+  }
+}
+
 
 // Function to dynamically calculate the current multiplier
 /**
@@ -458,40 +432,137 @@ exports.getCurrentMultiplier = functions.https.onCall(async (data, context) => {
 exports.groupAviatorBets = functions.firestore
     .document("aviatorUserBets/{betId}")
     .onCreate(async (snapshot, context) => {
-    // Get the bet data
       const betData = snapshot.data();
       const betStartTime = betData.betStartTime;
 
       try {
-        const roundQuerySnapshot = await db
-            .collection("aviatorBetRounds")
-            .where("betStartTime", "==", betStartTime)
-            .limit(1)
-            .get();
-
         let roundId;
 
-        if (!roundQuerySnapshot.empty) {
-          const round = roundQuerySnapshot.docs[0];
-          roundId = round.id;
-        } else {
-          const newRoundRef = db.collection("aviatorBetRounds").doc();
-          await newRoundRef.set({
-            betStartTime: betStartTime,
-            isCompleted: false,
-          });
-          roundId = newRoundRef.id;
-        }
+        // Start Firestore transaction
+        await db.runTransaction(async (transaction) => {
+        // Query for a round with the same betStartTime
+          const roundQuerySnapshot = await transaction.get(
+              db
+                  .collection("aviatorBetRounds")
+                  .where("betStartTime", "==", betStartTime)
+                  .limit(1),
+          );
 
-        await db
-            .collection("aviatorBetRounds")
-            .doc(roundId)
-            .collection("bets")
-            .doc(snapshot.id)
-            .set(betData);
+          const userCountIncrement = 1;
+
+          if (!roundQuerySnapshot.empty) {
+          // Round already exists, retrieve the round ID
+            const round = roundQuerySnapshot.docs[0];
+            roundId = round.id;
+
+            // Increment the userCount in the round document
+            transaction.update(db.collection("aviatorBetRounds").doc(roundId), {
+              userCount: admin.firestore.FieldValue
+                  .increment(userCountIncrement),
+            });
+          } else {
+            const allRoundsSnapshot = await transaction.get(
+                db.collection("aviatorBetRounds"),
+            );
+
+            allRoundsSnapshot.forEach((doc) => {
+              transaction.update(doc.ref, {isCompleted: true});
+            });
+
+            const newRoundRef = db.collection("aviatorBetRounds").doc();
+            roundId = newRoundRef.id;
+
+            // Create the new round with userCount = 1 and isCompleted = false
+            transaction.set(newRoundRef, {
+              betStartTime: betStartTime,
+              isCompleted: false,
+              userCount: 1,
+            });
+          }
+
+          // Add the bet to the round's 'bets' subcollection
+          transaction.set(
+              db
+                  .collection("aviatorBetRounds")
+                  .doc(roundId)
+                  .collection("bets")
+                  .doc(snapshot.id),
+              betData,
+          );
+        });
 
         console.log(`Bet ${snapshot.id} added to round ${roundId}`);
       } catch (error) {
-        console.error("Error grouping bet into a round: ", error);
+        console.error(
+            "Error grouping bet into a round and updating user count: ",
+            error,
+        );
       }
     });
+
+// Function to update crash limits based on user count in aviatorBetRounds
+exports.updateCrashLimitsOnRoundChange = functions.firestore
+    .document("aviatorBetRounds/{roundId}")
+    .onWrite(async (change, context) => {
+      const roundData = change.after.exists ? change.after.data() : null;
+
+      if (!roundData) {
+        return;
+      }
+
+      const {userCount, isCompleted} = roundData;
+
+      if (isCompleted) {
+        const activeRoundsSnapshot = await db.collection("aviatorBetRounds")
+            .where("isCompleted", "==", false)
+            .limit(1)
+            .get();
+
+        if (activeRoundsSnapshot.empty) {
+          await updateCrashLimitsBasedOnUserCount(0);
+        }
+        return;
+      }
+
+      await updateCrashLimitsBasedOnUserCount(userCount);
+    });
+
+/**
+ * Updates the crash limits based on the user count.
+ * @param {number} userCount - The number of users in the round.
+ */
+async function updateCrashLimitsBasedOnUserCount(userCount) {
+  const crashLimitsRef = db.collection("aviatorSettings")
+      .doc("crashLimits");
+  const crashLimitsSnapshot = await crashLimitsRef.get();
+
+  if (!crashLimitsSnapshot.exists) {
+    throw new Error("Crash limits document does not exist");
+  }
+
+  const crashLimits = crashLimitsSnapshot.data();
+
+  let minLimit;
+  let maxLimit;
+
+  if (userCount === 0) {
+    minLimit = crashLimits.minCrashZero;
+    maxLimit = crashLimits.maxCrashZero;
+  } else if (userCount === 1 || userCount === 2) {
+    minLimit = crashLimits.minCrashOneTwo;
+    maxLimit = crashLimits.maxCrashOneTwo;
+  } else if (userCount >= 3) {
+    minLimit = crashLimits.minCrashThreePlus;
+    maxLimit = crashLimits.maxCrashThreePlus;
+  }
+
+  const currentCrashLimitRef = db.collection("aviatorSettings")
+      .doc("currentCrashLimit");
+  await currentCrashLimitRef.set(
+      {
+        minLimit,
+        maxLimit,
+      },
+      {merge: true},
+  );
+}

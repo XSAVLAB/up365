@@ -7,9 +7,9 @@ export default function page() {
     return (
         <>
             <HeaderMain />
-            <ComingSoon />
-            {/*<TopSlider />
-            <TopCricket />*/}
+            {/* <ComingSoon /> */}
+            <TopSlider />
+            <TopCricket />
         </>
     )
 }

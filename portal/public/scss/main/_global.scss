@@ -3803,6 +3803,7 @@ input[type=radio] {
     font-size: 4rem;
     color: #04ff00;
     font-weight: 700;
+	z-index: 2;
 }
 .crash-result{
 	display: flex;
@@ -3810,16 +3811,27 @@ input[type=radio] {
 	align-items: center;
 	justify-content: center;
 }
+.aviator-countdown{
+	display:flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
 .aviator-countdown-text{
 	font-size: 2rem;
 	color: white;
 }
-
+@media (max-width:480px){
+	.aviator-countdown-text{
+		font-size: 1.2rem;
+	}
+}
 .crash-result-text{
 	font-size: 2rem;
 	color: white;
 	padding: 20px;
 	margin: 20px;
+	z-index: 2;
 }
 .cashout-message{
 	display: flex;
@@ -3848,7 +3860,7 @@ input[type=radio] {
     justify-content: space-between;
     margin-bottom: 20px;
 }
-.aviator-plane{
+.aviator-plane {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -3858,9 +3870,26 @@ input[type=radio] {
 	background-color: black;
 	margin-bottom: 10px;
 	border-radius: 20px;
+	position: relative; // Add this to position elements inside it
 	cursor: pointer;
 	transition: background-color 0.3s;
+
+	.aviator-video {
+		width: 100%;
+		height: 100%;
+		object-fit: fit;
+		border-radius: 20px;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 1; 
+	}
+
+	
+
+	
 }
+
 .aviator-inputs{
 	display: flex;
 	flex-direction: row;

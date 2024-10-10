@@ -180,28 +180,15 @@ export default function Aviator() {
 
     // Cash out for Bet 2
     const cashOut2 = async () => {
-        try {
-            const currentMultiplier = await getCurrentMultiplier();
-            console.log("Current Multiplier", currentMultiplier);
-
-            const finalMultiplier = currentMultiplier !== undefined ? currentMultiplier : multiplier;
-
-            const winnings = (betAmount2 * finalMultiplier).toFixed(2);
+        if (betAmount2) {
+            const winnings = (betAmount2 * multiplier).toFixed(2);
             const newWalletBalance = (Number(walletBalance) + Number(winnings)).toFixed(2);
-
+            await updateUserWallet(user?.uid, newWalletBalance);
             setWalletBalance(String(newWalletBalance));
-            setcashoutMessage(`Cashed out at ${finalMultiplier}x! Won ₹${winnings}.`);
-
-            setBetAmount1(100);
+            await updateAviatorBetsOnCashout(user?.uid, multiplier, winnings, "bet2");
+            setcashoutMessage(`Cashed out at ${multiplier.toFixed(2)}x! Won ₹${winnings}.`);
+            setBetAmount2(100);
             setHasPlacedBet2(false);
-
-            await Promise.all([
-                updateUserWallet(user?.uid, newWalletBalance),
-                updateAviatorBetsOnCashout(user?.uid, finalMultiplier, winnings, "bet2")
-            ]);
-
-        } catch (error) {
-            console.error("Error during cashout:", error);
         }
     };
 
@@ -220,21 +207,41 @@ export default function Aviator() {
             <div className="aviator-bets-content">
                 {cashoutMessage && <div className="cashout-message">{cashoutMessage}</div>}
                 <div className='aviator-plane'>
-                    {isBettingOpen ? (
-                        <><p className="aviator-countdown-text">Waiting for next round</p><p className="aviator-countdown-text">Place Bet</p></>
+                    {isRunning ? (
+                        <>
+                            <video
+                                className="aviator-video"
+                                src="/videos/aviator.mp4"
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                            />
+                            <p className="aviator-multiplier-text">{multiplier.toFixed(2)}x</p>
+                        </>
                     ) : (
                         <>
-                            {crashMessage ? (
-                                <div className='crash-result'>
-                                    <p className="crash-result-text">{crashMessage}</p>
-                                    <p className="aviator-multiplier-text" style={{ color: 'red' }}>{multiplier.toFixed(2)}</p>
+                            {isBettingOpen ? (
+                                <div className='aviator-countdown'>
+                                    <p className="aviator-countdown-text">Waiting for next round</p>
+                                    <p className="aviator-countdown-text">Place Bet</p>
                                 </div>
                             ) : (
-                                <p className="aviator-multiplier-text">{multiplier.toFixed(2)}x</p>
+                                <>
+                                    {crashMessage ? (
+                                        <div className='crash-result'>
+                                            <p className="crash-result-text">{crashMessage}</p>
+                                            <p className="aviator-multiplier-text" style={{ color: 'red' }}>{multiplier.toFixed(2)}</p>
+                                        </div>
+                                    ) : (
+                                        <p className="aviator-multiplier-text">{multiplier.toFixed(2)}x</p>
+                                    )}
+                                </>
                             )}
                         </>
                     )}
                 </div>
+
 
                 <div className="aviator-inputs">
 
