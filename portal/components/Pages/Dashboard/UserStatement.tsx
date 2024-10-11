@@ -78,13 +78,14 @@ export default function UserStatement({ userId }: UserStatementProps) {
     const handleDownloadExcel = () => {
         // Map the data, ensuring all rows are properly filled even if some fields are empty
         const data = filteredData.map(entry => ({
-            'Timestamp': entry.timestamp || '',  // Ensure this field is not undefined or null
+            'Timestamp': entry.timestamp || '',
             'Deposit': entry.type === 'Deposit' ? entry.amount : '',
             'Withdraw': entry.type === 'Withdrawal' ? entry.amount : '',
             'Bet': entry.type === 'Bet' ? entry.amount : '',
             'Game Bet': entry.type === 'Game Bet' ? entry.amount : '',
-            'Reward': (entry.type === 'Bet' || entry.type === 'Game Bet') ? entry.rewardAmount : '',
-            'Balance': entry.balance || ''       // Ensure this field is not undefined or null
+            'Aviator Bet': entry.type === 'Aviator Bet' ? entry.amount : '',
+            'Reward': (entry.type === 'Bet' || entry.type === 'Game Bet' || entry.type === 'Aviator Bet') ? entry.rewardAmount : '',
+            'Balance': entry.balance || ''
         }));
 
         const headers = [
@@ -93,6 +94,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
             'Withdraw',
             'Sports Bet Debit',
             'Game Bet Debit',
+            'Aviator Bet Debit',
             'Rewards',
             'Balance',
         ];
@@ -106,7 +108,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
 
         // Set column widths for better display in Excel
         const columnWidths = [
-            { wch: 20 },  // Adjust this for timestamp
+            { wch: 20 },
             { wch: 15 },
             { wch: 15 },
             { wch: 20 },
@@ -137,7 +139,8 @@ export default function UserStatement({ userId }: UserStatementProps) {
                 entry.type === 'Withdrawal' ? entry.amount : '',
                 entry.type === 'Bet' ? entry.amount : '',
                 entry.type === 'Game Bet' ? entry.amount : '',
-                (entry.type === 'Bet' || entry.type === 'Game Bet') ? entry.rewardAmount : '',
+                entry.type === 'Aviator Bet' ? entry.amount : '',
+                (entry.type === 'Bet' || entry.type === 'Game Bet' || entry.type === 'Aviator Bet') ? entry.rewardAmount : '',
                 entry.balance
             ];
             tableRows.push(entryData);
@@ -187,6 +190,7 @@ export default function UserStatement({ userId }: UserStatementProps) {
                             <th>Withdraw</th>
                             <th>Sports Bet Debit</th>
                             <th>Game Bet Debit</th>
+                            <th>Aviator Bet Debit</th>
                             <th>Rewards</th>
                             <th>Balance</th>
                         </tr>
@@ -199,8 +203,9 @@ export default function UserStatement({ userId }: UserStatementProps) {
                                 <td>{entry.type === 'Withdrawal' ? entry.amount : '-'}</td>
                                 <td>{entry.type === 'Bet' ? entry.amount : '-'}</td>
                                 <td>{entry.type === 'Game Bet' ? entry.amount : '-'}</td>
+                                <td>{entry.type === 'Aviator Bet' ? entry.amount : '-'}</td>
                                 <td>{entry.rewardAmount ? entry.rewardAmount : '-'}</td>
-                                <td>{entry.balance}</td>
+                                <td>{entry.balance.toFixed(2)}</td>
                             </tr>
                         ))}
                     </tbody>

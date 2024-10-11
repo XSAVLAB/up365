@@ -311,6 +311,22 @@ async function updateGameState(state) {
       .doc(GAME_STATE_DOC)
       .set(state, {merge: true});
 }
+/**
+ * Updates the status of all pending bets to 'crashed'.
+ *  @return {Promise} - Resolves when all bets are updated.
+ */
+async function updateBetStatus() {
+  const betsRef = db.collection("aviatorUserBets");
+  const pendingBetsQuery = betsRef.where("status", "==", "pending");
+
+  const querySnapshot = await pendingBetsQuery.get();
+
+  const updatePromises = querySnapshot.docs.map((doc) => {
+    return doc.ref.update({status: "crashed"});
+  });
+
+  await Promise.all(updatePromises);
+}
 
 // Function for betting time timer
 /**
@@ -373,7 +389,7 @@ async function flyingPlane() {
       clearInterval(interval);
 
       await markRoundAsCompleted();
-
+      await updateBetStatus();
       await updateGameState({
         state: "crashed",
       });

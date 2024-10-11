@@ -760,13 +760,13 @@ export const settleColorBallBets = async () => {
   }
 };
 
-// Fetch all transactions (Statements) of the user
 export const fetchUserStatement = async (userId) => {
   try {
     const transactionsCollectionRef = collection(db, "transactions");
     const withdrawalsCollectionRef = collection(db, "withdrawals");
     const betsCollectionRef = collection(db, "sportsBets");
     const gameBetsCollectionRef = collection(db, "gameBets");
+    const aviatorBetsCollectionRef = collection(db, "aviatorUserBets");
 
     const transactionsSnapshot = await getDocs(
       query(
@@ -787,6 +787,9 @@ export const fetchUserStatement = async (userId) => {
     );
     const gameBetsSnapshot = await getDocs(
       query(gameBetsCollectionRef, where("userID", "==", userId))
+    );
+    const aviatorBetsSnapshot = await getDocs(
+      query(aviatorBetsCollectionRef, where("userId", "==", userId))
     );
 
     const transactionsData = transactionsSnapshot.docs.map((doc) => ({
@@ -827,11 +830,22 @@ export const fetchUserStatement = async (userId) => {
       userId: doc.data().userID,
     }));
 
+    const aviatorBetsData = aviatorBetsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      type: "Aviator Bet",
+      amount: parseFloat(doc.data().betAmount),
+      rewardAmount: parseFloat(doc.data().cashoutAmount) || 0,
+      status: doc.data().status,
+      timestamp: doc.data().timestamp,
+      userId: doc.data().userId,
+    }));
+
     const combinedData = [
       ...transactionsData,
       ...withdrawalsData,
       ...betsData,
       ...gameBetsData,
+      ...aviatorBetsData,
     ];
 
     // Sort combinedData by timestamp
@@ -845,12 +859,13 @@ export const fetchUserStatement = async (userId) => {
       } else if (
         entry.type === "Withdrawal" ||
         entry.type === "Bet" ||
-        entry.type === "Game Bet"
+        entry.type === "Game Bet" ||
+        entry.type === "Aviator Bet"
       ) {
         balance -= entry.amount;
       }
-      if (entry.rewardAmount) {
-        balance += entry.rewardAmount;
+      if (entry.rewardAmount || entry.cashoutAmount) {
+        balance += entry.rewardAmount || entry.cashoutAmount;
       }
       return {
         ...entry,

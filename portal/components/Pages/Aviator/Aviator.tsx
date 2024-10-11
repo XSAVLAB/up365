@@ -84,6 +84,7 @@ export default function Aviator() {
             setIsRunning(false);
             setHasPlacedBet1(false);
             setHasPlacedBet2(false);
+            updateBetStatusOnCrash();
         };
 
         return () => {
@@ -171,7 +172,7 @@ export default function Aviator() {
             const newWalletBalance = (Number(walletBalance) + Number(winnings)).toFixed(2);
             await updateUserWallet(user?.uid, newWalletBalance);
             setWalletBalance(String(newWalletBalance));
-            await updateAviatorBetsOnCashout(user?.uid, multiplier, winnings, "bet1");
+            await updateAviatorBetsOnCashout(user?.uid, multiplier, Number(winnings), "bet1");
             setcashoutMessage(`Cashed out at ${multiplier.toFixed(2)}x! Won ₹${winnings}.`);
             setBetAmount1(100);
             setHasPlacedBet1(false);
@@ -185,7 +186,7 @@ export default function Aviator() {
             const newWalletBalance = (Number(walletBalance) + Number(winnings)).toFixed(2);
             await updateUserWallet(user?.uid, newWalletBalance);
             setWalletBalance(String(newWalletBalance));
-            await updateAviatorBetsOnCashout(user?.uid, multiplier, winnings, "bet2");
+            await updateAviatorBetsOnCashout(user?.uid, multiplier, Number(winnings), "bet2");
             setcashoutMessage(`Cashed out at ${multiplier.toFixed(2)}x! Won ₹${winnings}.`);
             setBetAmount2(100);
             setHasPlacedBet2(false);
