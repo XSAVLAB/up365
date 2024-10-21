@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from "react";
 import { passTurn } from "@/redux/slices/game";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks/hooks";
@@ -15,7 +13,6 @@ const Dice: React.FC<DiceProps> = ({ playerId }) => {
   const dispatch = useAppDispatch();
   const [isRolling, setIsRolling] = useState(false);
   const [rollingDice, setRollingDice] = useState(0);
-
 
   const handleDiceClick = () => {
     if (!hasRolled) {
@@ -34,41 +31,42 @@ const Dice: React.FC<DiceProps> = ({ playerId }) => {
   };
 
   const handlePassTurn = () => {
-    if (isRolling)
-      return;
+    if (isRolling) return;
     dispatch(passTurn());
   };
 
-  const diceIcons = [<FaDiceD6 />, <FaDiceOne />, <FaDiceTwo />, <FaDiceThree />, <FaDiceFour />, <FaDiceFive />, <FaDiceSix />];
-
-  const common_CSS = "border-2 rounded-2xl shadow-lg shadow-slate-700 transition-all duration-400 ease-in-out hover:shadow-md";
-
-  const diceCursorClass = (isRolling || hasRolled) ? 'cursor-not-allowed' : 'cursor-pointer';
-
-  const passTurnClass = isRolling ? 'cursor-not-allowed' : 'cursor-pointer';
-
-  const breathingAnim = (playerId === currentTurn) ? 'breathingAnim' : '';
-
+  const diceIcons = [
+    <FaDiceD6 size={40} />,
+    <FaDiceOne size={40} />,
+    <FaDiceTwo size={40} />,
+    <FaDiceThree size={40} />,
+    <FaDiceFour size={40} />,
+    <FaDiceFive size={40} />,
+    <FaDiceSix size={40} />
+  ];
 
   return (
     <>
-      <button className={`mx-3 w-20 h-20 bg-slate-600 text-white ${breathingAnim} ${common_CSS} ${diceCursorClass} hover:bg-slate-700`}
+      <button
+        className={`dice-btn common-btn ${playerId === currentTurn ? 'breathing' : ''} ${isRolling || hasRolled ? 'disabled' : ''}`}
         onClick={handleDiceClick}
         disabled={isRolling || hasRolled}>
-        <span className="flex justify-center text-6xl">
+        <span className="flex justify-center">
           {isRolling ? diceIcons[rollingDice] : diceIcons[diceNumber]}
         </span>
       </button>
-      {currentTurn === playerId &&
+
+      {/* {currentTurn === playerId &&
         <button
           key={`PT${playerId}`}
           disabled={isRolling}
           onClick={handlePassTurn}
-          className={`w-36 h-20 mx-1 ml-2 px-6 py-2 border-orange-700 bg-amber-500 text-slate-900 text-xl font-mono font-semibold ${passTurnClass} ${common_CSS}`}>
+          className={`pass-turn-btn common-btn ${isRolling ? 'disabled' : ''}`}>
           Pass Turn
         </button>
-      }
+      } */}
     </>
   );
 };
+
 export default Dice;

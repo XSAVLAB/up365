@@ -3485,7 +3485,88 @@ input[type=radio] {
     height: 50px;
 }
 
+$bg-color: #374151; // Slate color
+$bg-hover-color: #4b5563; // Slate hover color
+$text-color: #ffffff; // Text color
+$border-color: #1f2937; // Border color
+$shadow-color: #334155; // Shadow color
+$pass-btn-bg: #f59e0b; // Amber for Pass Turn button
+$pass-btn-text-color: #1e293b; // Text color for Pass Turn button
+$border-radius: 1rem; // Border radius
+$transition-time: 0.4s; // Transition duration
 
+// Mixin for reusable shadow style
+@mixin box-shadow($color) {
+  box-shadow: 0 10px 15px -3px $color, 0 4px 6px -2px $color;
+}
+
+// Breathing animation
+@keyframes breathingAnim {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Common button styles
+.common-btn {
+  border: 2px solid $border-color;
+  border-radius: $border-radius;
+  @include box-shadow($shadow-color);
+  transition: all $transition-time ease-in-out;
+  &:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Dice button styles
+.dice-btn {
+  background-color: $bg-color;
+  color: $text-color;
+  width: 4rem;
+  height: 4rem;
+  &:hover {
+    background-color: $bg-hover-color;
+  }
+  &.disabled {
+    cursor: not-allowed;
+  }
+}
+
+// Pass Turn button styles
+.pass-turn-btn {
+  background-color: $pass-btn-bg;
+  color: $pass-btn-text-color;
+  width: 9rem;
+  height: 5rem;
+  font-size: 1.25rem;
+  padding: 0.5rem 1rem;
+  &:hover {
+    background-color: darken($pass-btn-bg, 10%);
+  }
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+// Breathing animation when it's the player's turn
+.breathing {
+  animation: breathingAnim 1.5s infinite;
+}
+
+
+.ludo-controls{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin:10px;
+}
 // ================Ludo Testing================== //
 
 // Ludo Redux Starts

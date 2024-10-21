@@ -26,9 +26,9 @@ const DynamicLudoBoard = () => {
 
 
   useEffect(() => {
-    if (gameStatus === 'start') {
-      router.push('/ludo');
-    }
+    // if (gameStatus === 'start') {
+    //   router.push('/ludo');
+    // }
     if (gameStatus === 'end') {
       router.push('/leaderboard');
     }

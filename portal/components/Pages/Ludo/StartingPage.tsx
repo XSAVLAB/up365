@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import CustomizePlayers from '../LudoTesting/CustomizePlayers';
 import { store } from '@/redux/store';
 import { Provider } from 'react-redux';
+import BoardLayout from '../LudoTesting/BoardLayout';
 
 function StartingPage() {
     const [loading, setLoading] = useState(false);
@@ -16,9 +17,7 @@ function StartingPage() {
 
     const handleRoomSelection = () => {
         setLoading(true);
-        // Simulating delay before displaying the waiting room
         setTimeout(() => {
-            // You can implement the logic to wait for other players here
         }, 1000);
     };
 
@@ -26,8 +25,10 @@ function StartingPage() {
         <div className="form-container">
             {loading ? (
                 <Provider store={store}>
-                    <CustomizePlayers />
-                </Provider>
+                    <main className="flex justify-center items-center sm:scale-100 scale-50 w-full h-full">
+                        <BoardLayout />
+                    </main>
+                </Provider >
             ) : (
                 <>
                     <h1 className="form-game-name">Ludo</h1>
