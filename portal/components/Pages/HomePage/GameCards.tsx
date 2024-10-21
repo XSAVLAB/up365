@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const games = [
-    { name: 'Aviator', image: '/images/aviator.jpeg', video: "https://www.youtube.com/embed/sT1FEs2j120?si=MFnIhark0ZbnY8LW", playUrl: '/aviator' },
+    { name: 'Aviator', image: '/images/Aviator.jpeg', video: "https://www.youtube.com/embed/sT1FEs2j120?si=MFnIhark0ZbnY8LW", playUrl: '/aviator' },
     { name: 'Single Digit Lottery', image: '/images/single-digit-lottery.jpg', video: "https://www.youtube.com/embed/sT1FEs2j120?si=MFnIhark0ZbnY8LW", playUrl: '/single-digit-lottery' },
     { name: 'Double Digit Lottery', image: '/images/double-digit-lottery.jpg', video: "https://www.youtube.com/embed/fqFtA7bkrp4?si=dNIA52HpLN3aUmZE", playUrl: '/double-digit-lottery' },
     { name: 'Triple Digit Lottery', image: '/images/triple-digit-lottery.jpg', video: "https://www.youtube.com/embed/cQITIWkjphY?si=zIfp0XM09CVMkb7K", playUrl: '/triple-digit-lottery' },

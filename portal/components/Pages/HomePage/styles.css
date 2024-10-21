@@ -1,6 +1,6 @@
 /* styles.css */
 .navbar {
-    background-color: #000616;
+    background-color: --p1;
     color: white;
     padding: 16px;
     position: sticky;
@@ -71,7 +71,7 @@
     position: absolute;
     top: 100%;
     right: 16px;
-    background-color: #000616;
+    background-color: --p1;
     border: 1px solid #35c31e;
     border-radius: 0.5rem;
     z-index: 50;
@@ -119,7 +119,7 @@
 }
 
 .main-body-scroller {
-    background-color: #000616;
+    background-color: --p1;
     color: white;
     padding: 16px;
     position: sticky;
@@ -170,7 +170,7 @@
     margin: auto;
     padding: 16px 4px;
     position: relative;
-    background-color: #000616;
+    background-color: --p1;
     overflow: hidden;
 }
 

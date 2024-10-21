@@ -76,7 +76,7 @@
 }
 .top_matches {
     &__main {
-        margin: 30px 0 0 303px;
+        margin: 30px 0 0 250px;
         @include maxQuery(991) {
             margin: 0 -10px 0 12px;
         }
@@ -332,7 +332,7 @@ th, td {
     display: flex;
     flex-direction: column;
     padding: 20px;
-    background-color: #000616;
+    background-color: --p1;
     color: #fff;
     border-radius: 10px;
     margin: 20px;
@@ -528,7 +528,7 @@ th, td {
 
 .bets-table-container {
     padding: 20px;
-    background-color: #000616;
+    background-color: --p1;
     color: #fff;
     border-radius: 10px;
     margin: 20px;
@@ -654,7 +654,7 @@ th, td {
 
 .bets-table-container-home {
   padding: 20px;
-  background-color: #000616;
+  background-color: --p1;
   color: #fff;
   border-radius: 10px;
   margin: 20px;
