@@ -69,7 +69,7 @@ const Home: React.FC = () => {
             <MainBodyScroller scrollToGames={scrollToGames} />
             <MarqueeText />
             <LandingPageImagesMarquee />
-            <Slider />
+            {/* <Slider /> */}
             <div ref={gamesRef}>
                 <GamesCards />
             </div>

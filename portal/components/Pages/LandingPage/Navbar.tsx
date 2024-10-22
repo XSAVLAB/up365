@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { TiThMenu } from 'react-icons/ti';
 import { useRouter } from 'next/navigation';
-import './styles.css'; // Import the custom CSS file
+import './styles.css';
 
 function LandingPageNavbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);

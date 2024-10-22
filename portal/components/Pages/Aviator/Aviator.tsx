@@ -49,7 +49,7 @@ export default function Aviator() {
                 setCrashPoint(data.crashPoint);
                 setGameState(data.state);
                 setbetStartTime(data.betStartTime);
-                console.log("Next crash", data.crashPoint)
+                // console.log("Next crash", data.crashPoint)
             }
         });
         return () => unsubscribe && unsubscribe();
@@ -108,7 +108,11 @@ export default function Aviator() {
 
     // Function to place Bet 1
     const placeBet1 = async () => {
-        if (betAmount1 && betAmount1 > 0 && isBettingOpen) {
+        if (betAmount1 && betAmount1 >= 100 && isBettingOpen) {
+            if (Number(walletBalance) < betAmount1) {
+                setcashoutMessage('Insufficient balance.');
+                return;
+            }
             await updateUserWallet(user?.uid, (Number(walletBalance) - betAmount1).toFixed(2));
             setWalletBalance(String(Number(walletBalance) - betAmount1));
             await createAviatorUserBet(user?.uid, betAmount1, "bet1", betStartTime, "pending");
@@ -121,7 +125,11 @@ export default function Aviator() {
 
     // Function to place Bet 2
     const placeBet2 = async () => {
-        if (betAmount2 && betAmount2 > 0 && isBettingOpen) {
+        if (betAmount2 && betAmount2 >= 100 && isBettingOpen) {
+            if (Number(walletBalance) < betAmount2) {
+                setcashoutMessage('Insufficient balance.');
+                return;
+            }
             await updateUserWallet(user?.uid, (Number(walletBalance) - betAmount2).toFixed(2));
             setWalletBalance(String(Number(walletBalance) - betAmount2));
             await createAviatorUserBet(user?.uid, betAmount2, "bet2", betStartTime, "pending");
