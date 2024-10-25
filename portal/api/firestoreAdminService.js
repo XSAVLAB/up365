@@ -14,8 +14,7 @@ import {
 } from "firebase/firestore";
 import { auth } from "@/firebaseConfig";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
-import { parse } from "date-fns";
-
+import { max, parse } from "date-fns";
 // Time formater:
 const formatTimestamp = () => {
   const now = new Date();
@@ -576,6 +575,45 @@ export const subscribeToCrashLimits = (callback) => {
     });
   } catch (error) {
     console.error("Error fetching crash limits: ", error);
+    throw error;
+  }
+};
+
+// Fetch user counts and total bet amount for Aviator game
+export const fetchCurrentAviatorUsers = (onChangeCallback, onErrorCallback) => {
+  const aviatorBetRoundsRef = collection(db, "aviatorBetRounds");
+
+  const q = query(aviatorBetRoundsRef, where("isCompleted", "==", false));
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      snapshot.forEach((doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          onChangeCallback(data);
+        }
+      });
+    },
+    (error) => {
+      onErrorCallback(error);
+    }
+  );
+};
+
+// Set the current crash limits to 0 for crashing the plane
+export const crashAviatorPlane = async () => {
+  try {
+    const gameStateRef = doc(db, "aviatorGameState", "currentState");
+    const gameStateSnap = await getDoc(gameStateRef);
+
+    if (gameStateSnap.exists() && gameStateSnap.data().state === "flying") {
+      await updateDoc(gameStateRef, { state: "crashed" });
+    } else {
+      console.log("Plane is not currently flying; no action taken.");
+    }
+  } catch (error) {
+    console.error("Error crashing the plane: ", error);
     throw error;
   }
 };

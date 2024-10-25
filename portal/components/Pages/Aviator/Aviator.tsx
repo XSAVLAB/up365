@@ -87,6 +87,7 @@ export default function Aviator() {
             setIsRunning(false);
             setHasPlacedBet1(false);
             setHasPlacedBet2(false);
+            setcrashMessage(`FLEW AWAY`);
             updateBetStatusOnCrash();
             triggerCrashEffect();
         };
@@ -175,16 +176,16 @@ export default function Aviator() {
         setHasPlacedBet2(false);
     };
     // Function to get current multiplier
-    const getCurrentMultiplier = async () => {
-        try {
-            const getMultiplierFunction = httpsCallable(functions, "getCurrentMultiplier");
-            const result = await getMultiplierFunction();
-            const data = result.data as { multiplier: number };
-            return data.multiplier;
-        } catch (error) {
-            console.error("Error fetching multiplier:", error);
-        }
-    };
+    // const getCurrentMultiplier = async () => {
+    //     try {
+    //         const getMultiplierFunction = httpsCallable(functions, "getCurrentMultiplier");
+    //         const result = await getMultiplierFunction();
+    //         const data = result.data as { multiplier: number };
+    //         return data.multiplier;
+    //     } catch (error) {
+    //         console.error("Error fetching multiplier:", error);
+    //     }
+    // };
 
     // Cash out for Bet 1
     const cashOut1 = async () => {
@@ -246,8 +247,6 @@ export default function Aviator() {
                         <>
                             {isBettingOpen ? (
                                 <div className='aviator-countdown'>
-                                    {/* <p className="aviator-countdown-text">Waiting for next round</p>
-                                    <p className="aviator-countdown-text">Place Bet</p> */}
 
                                     <div className="ring">
                                         <img src="/images/loading.png" alt="Loading" />
@@ -264,7 +263,6 @@ export default function Aviator() {
                                                 <div className="crash-effect-container">
                                                     <div className="fire-blast"></div>
                                                     <div className="shockwave"></div>
-                                                    {/* Generate multiple particle explosions */}
                                                     {[...Array(5)].map((_, index) => (
                                                         <div key={index} className="particle"></div>
                                                     ))}

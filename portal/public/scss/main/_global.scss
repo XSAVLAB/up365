@@ -3779,6 +3779,11 @@ $transition-time: 0.4s; // Transition duration
 	font-size: 2rem;
 	color: white;
 }
+.btn-admin-aviator{
+	display: flex;
+	align-items: center;
+	gap: 200px;
+}
 @media (max-width:480px){
 	.aviator-countdown-text{
 		font-size: 1.2rem;

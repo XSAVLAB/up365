@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { setCrashLimits, subscribeToCrashLimits } from '../../../../api/firestoreAdminService';
-
+import { crashAviatorPlane, setCrashLimits, subscribeToCrashLimits } from '../../../../api/firestoreAdminService';
+import { fetchCurrentAviatorUsers } from '../../../../api/firestoreAdminService';
 export default function Admin() {
     const [minCrashZero, setMinCrashZero] = useState(1);
     const [maxCrashZero, setMaxCrashZero] = useState(100);
@@ -12,11 +12,14 @@ export default function Admin() {
     const [minCrashThreePlus, setMinCrashThreePlus] = useState(1);
     const [maxCrashThreePlus, setMaxCrashThreePlus] = useState(100);
 
+    const [currentUserCount, setCurrentUserCount] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(0);
+
     const [message, setMessage] = useState<string | null>(null);
 
     // Subscribe to real-time crash limits updates from Firestore
     useEffect(() => {
-        const unsubscribe = subscribeToCrashLimits((limits: any) => {
+        const unsubscribeLimits = subscribeToCrashLimits((limits: any) => {
             if (limits) {
                 setMinCrashZero(limits.minCrashZero);
                 setMaxCrashZero(limits.maxCrashZero);
@@ -29,12 +32,23 @@ export default function Admin() {
             }
         });
 
-        // Cleanup listener on component unmount
-        return () => unsubscribe();
+        const unsubscribeRound = fetchCurrentAviatorUsers(
+            (data: { userCount: any; totalBetAmount: any; }) => {
+                setCurrentUserCount(data.userCount || 0);
+                setTotalAmount(data.totalBetAmount || 0);
+            },
+            (error: any) => {
+                console.error('Error fetching round data:', error);
+            }
+        );
+
+        return () => {
+            unsubscribeLimits();
+            unsubscribeRound();
+        };
     }, []);
 
     const updateLimits = async () => {
-        // Check if min/max inputs are valid across all forms
         if (
             minCrashZero < maxCrashZero &&
             minCrashOneTwo < maxCrashOneTwo &&
@@ -58,6 +72,16 @@ export default function Admin() {
             setMessage('Minimum crash point should be less than the maximum crash point in all fields.');
         }
     };
+
+    const crashPlane = async () => {
+        try {
+            await crashAviatorPlane();
+            setMessage('Plane crashed successfully');
+        } catch (error) {
+            console.error("Error crashing plane: ", error);
+            setMessage('Failed to crash plane');
+        }
+    };
     // Reset message after 5 seconds
     useEffect(() => {
         if (message) {
@@ -67,6 +91,7 @@ export default function Admin() {
             return () => clearTimeout(timeout);
         }
     }, [message]);
+
     return (
         <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
             {message && (
@@ -77,8 +102,8 @@ export default function Admin() {
             <div className="pay_method__paymethod-title mb-5 mb-md-6">
                 <h5 className="n10-color">Aviator Controller</h5>
             </div>
-            <div>Number of users in current round: 0</div>
-            <div>Total Amount in the round: 0</div>
+            <div>Users : {currentUserCount}</div>
+            <div>Total Amount:{totalAmount}</div>
             {/* Form for "If 0 Users" */}
             <hr />
             <div className="mb-5">
@@ -163,8 +188,10 @@ export default function Admin() {
                     </div>
                 </div>
             </div>
-
-            <button className="cmn-btn py-3 px-10" onClick={updateLimits}>Update Limits</button>
+            <div className='btn-admin-aviator'>
+                <button className="btn btn-success" onClick={updateLimits}>Update</button>
+                <button className="btn btn-danger" onClick={crashPlane}>Crash</button>
+            </div>
         </div>
     );
 }
