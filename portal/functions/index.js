@@ -336,6 +336,17 @@ async function updateBetStatus() {
 async function bettingTime() {
   // Set the state to 'betting' with a timer of 15 seconds
   const betStartTime = Date.now();
+
+  // Create a new round for this betting session
+  const newRoundRef = db.collection("aviatorBetRounds").doc();
+  await newRoundRef.set({
+    betStartTime: betStartTime,
+    isCompleted: false,
+    userCount: 0,
+    totalBetAmount: 0,
+  });
+
+  // Update game state
   await updateGameState({
     state: "betting",
     betStartTime: betStartTime,
@@ -381,14 +392,13 @@ async function flyingPlane() {
     crashPoint: crashPoint.toFixed(2),
     roundStartTime: roundStartTime,
   });
-
+  await markRoundAsCompleted();
   const interval = setInterval(async () => {
     multiplier *= 1.01;
 
     if (multiplier >= crashPoint) {
       clearInterval(interval);
 
-      await markRoundAsCompleted();
       await updateBetStatus();
       await updateGameState({
         state: "crashed",
@@ -401,12 +411,16 @@ async function flyingPlane() {
  * @param {number} roundStartTime - The time the plane started flying.
  */
 async function markRoundAsCompleted() {
-  const roundRef = db.collection("aviatorBetRounds");
+  const roundRef = db.collection("aviatorBetRounds")
+      .where("isCompleted", "==", false);
   const roundSnapshot = await roundRef.get();
 
   if (!roundSnapshot.empty) {
-    const roundDoc = roundSnapshot.docs[0];
-    await roundDoc.ref.update({isCompleted: true});
+    const batch = db.batch();
+    roundSnapshot.forEach((doc) => {
+      batch.update(doc.ref, {isCompleted: true});
+    });
+    await batch.commit();
   }
 }
 
@@ -450,13 +464,14 @@ exports.groupAviatorBets = functions.firestore
     .onCreate(async (snapshot, context) => {
       const betData = snapshot.data();
       const betStartTime = betData.betStartTime;
+      const betAmount = betData.betAmount;
 
       try {
         let roundId;
 
         // Start Firestore transaction
         await db.runTransaction(async (transaction) => {
-        // Query for a round with the same betStartTime
+          // Query for a round with the same betStartTime
           const roundQuerySnapshot = await transaction.get(
               db
                   .collection("aviatorBetRounds")
@@ -467,32 +482,25 @@ exports.groupAviatorBets = functions.firestore
           const userCountIncrement = 1;
 
           if (!roundQuerySnapshot.empty) {
-          // Round already exists, retrieve the round ID
+            // Round already exists, retrieve the round ID
             const round = roundQuerySnapshot.docs[0];
             roundId = round.id;
 
-            // Increment the userCount in the round document
+            // Increment the userCount and totalBetAmount in the round document
             transaction.update(db.collection("aviatorBetRounds").doc(roundId), {
               userCount: admin.firestore.FieldValue
                   .increment(userCountIncrement),
+              totalBetAmount: admin.firestore.FieldValue
+                  .increment(betAmount),
             });
           } else {
             const allRoundsSnapshot = await transaction.get(
                 db.collection("aviatorBetRounds"),
             );
 
+            // Mark all previous rounds as completed
             allRoundsSnapshot.forEach((doc) => {
               transaction.update(doc.ref, {isCompleted: true});
-            });
-
-            const newRoundRef = db.collection("aviatorBetRounds").doc();
-            roundId = newRoundRef.id;
-
-            // Create the new round with userCount = 1 and isCompleted = false
-            transaction.set(newRoundRef, {
-              betStartTime: betStartTime,
-              isCompleted: false,
-              userCount: 1,
             });
           }
 

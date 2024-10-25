@@ -28,6 +28,8 @@ export default function Aviator() {
     const [crashMessage, setcrashMessage] = useState<string | null>(null);
     const [cashoutMessage, setcashoutMessage] = useState<string | null>(null);
 
+    const [fireBlastVisible, setFireBlastVisible] = useState(false);
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
@@ -74,7 +76,8 @@ export default function Aviator() {
                     if (crashPoint !== null && newMultiplier >= crashPoint) {
                         clearInterval(interval!);
                         setIsRunning(false);
-                        setcrashMessage(`Crashed!`);
+                        setcrashMessage(`FLEW AWAY`);
+                        triggerCrashEffect();
                     }
                     return newMultiplier;
                 });
@@ -85,12 +88,22 @@ export default function Aviator() {
             setHasPlacedBet1(false);
             setHasPlacedBet2(false);
             updateBetStatusOnCrash();
+            triggerCrashEffect();
         };
 
         return () => {
             if (interval) clearInterval(interval);
         };
     }, [gameState, crashPoint]);
+
+    // Function to trigger crash effect
+    const triggerCrashEffect = () => {
+        setFireBlastVisible(true);
+        setTimeout(() => {
+            setFireBlastVisible(false);
+        }, 1200); // Hide after the animation finishes
+    };
+
 
     useEffect(() => {
         if (cashoutMessage) {
@@ -103,7 +116,7 @@ export default function Aviator() {
 
     // Function to update the bet status on crash
     const updateBetStatusOnCrash = async () => {
-        await updateAviatorBetsOnCrash(user?.uid, crashPoint?.toFixed(2) ?? 0);
+        await updateAviatorBetsOnCrash(user?.uid, multiplier);
     }
 
     // Function to place Bet 1
@@ -216,6 +229,7 @@ export default function Aviator() {
             <div className="aviator-bets-content">
                 {cashoutMessage && <div className="cashout-message">{cashoutMessage}</div>}
                 <div className='aviator-plane'>
+
                     {isRunning ? (
                         <>
                             <video
@@ -232,14 +246,30 @@ export default function Aviator() {
                         <>
                             {isBettingOpen ? (
                                 <div className='aviator-countdown'>
-                                    <p className="aviator-countdown-text">Waiting for next round</p>
-                                    <p className="aviator-countdown-text">Place Bet</p>
+                                    {/* <p className="aviator-countdown-text">Waiting for next round</p>
+                                    <p className="aviator-countdown-text">Place Bet</p> */}
+
+                                    <div className="ring">
+                                        <img src="/images/loading.png" alt="Loading" />
+                                        <span className="loading-span"></span>
+                                    </div>
                                 </div>
                             ) : (
                                 <>
                                     {crashMessage ? (
                                         <div className='crash-result'>
+
                                             <p className="crash-result-text">{crashMessage}</p>
+                                            {fireBlastVisible && (
+                                                <div className="crash-effect-container">
+                                                    <div className="fire-blast"></div>
+                                                    <div className="shockwave"></div>
+                                                    {/* Generate multiple particle explosions */}
+                                                    {[...Array(5)].map((_, index) => (
+                                                        <div key={index} className="particle"></div>
+                                                    ))}
+                                                </div>
+                                            )}
                                             <p className="aviator-multiplier-text" style={{ color: 'red' }}>{multiplier.toFixed(2)}</p>
                                         </div>
                                     ) : (
@@ -289,7 +319,7 @@ export default function Aviator() {
                     ) : isRunning && !hasPlacedBet1 ? (
                         <button className="aviator-bet-btn" onClick={placeBet1} disabled={!isBettingOpen || hasPlacedBet1}>Bet</button>) : null}
 
-                    {hasPlacedBet1 && !isRunning && (
+                    {isBettingOpen && hasPlacedBet1 && !isRunning && (
                         <button className="aviator-cancel-btn" onClick={cancelBet1}>
                             Cancel Bet
                         </button>
@@ -309,7 +339,7 @@ export default function Aviator() {
                     ) : isRunning && !hasPlacedBet2 ? (
                         <button className="aviator-bet-btn" onClick={placeBet2} disabled={!isBettingOpen || hasPlacedBet2}>Bet</button>) : null}
 
-                    {hasPlacedBet2 && !isRunning && (
+                    {isBettingOpen && hasPlacedBet2 && !isRunning && (
                         <button className="aviator-cancel-btn" onClick={cancelBet2}>
                             Cancel Bet
                         </button>

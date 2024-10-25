@@ -55,7 +55,8 @@ export default function Page() {
           <div className="loading-plane">
             <div className="ring">
               <img src="/images/loading.png" alt="Loading" />
-              <span className="loading-span"></span></div>
+              <span className="loading-span"></span>
+            </div>
           </div>
         </div>
       ) : user ? (

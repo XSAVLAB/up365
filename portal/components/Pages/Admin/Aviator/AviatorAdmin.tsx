@@ -58,7 +58,15 @@ export default function Admin() {
             setMessage('Minimum crash point should be less than the maximum crash point in all fields.');
         }
     };
-
+    // Reset message after 5 seconds
+    useEffect(() => {
+        if (message) {
+            const timeout = setTimeout(() => {
+                setMessage(null);
+            }, 5000);
+            return () => clearTimeout(timeout);
+        }
+    }, [message]);
     return (
         <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
             {message && (
@@ -69,11 +77,12 @@ export default function Admin() {
             <div className="pay_method__paymethod-title mb-5 mb-md-6">
                 <h5 className="n10-color">Aviator Controller</h5>
             </div>
-
+            <div>Number of users in current round: 0</div>
+            <div>Total Amount in the round: 0</div>
             {/* Form for "If 0 Users" */}
             <hr />
             <div className="mb-5">
-                <h6>If 0 Users</h6>
+                <h5>If 0 Users</h5>
                 <div className="d-flex align-items-center gap-4">
                     <div>
                         <label className='result-message'>Minimum Crash Point:</label>
@@ -102,7 +111,7 @@ export default function Admin() {
             <hr />
 
             <div className="mb-5">
-                <h6>If 1,2 Users</h6>
+                <h5>If 1,2 Users</h5>
                 <div className="d-flex align-items-center gap-4">
                     <div>
                         <label className='result-message'>Minimum Crash Point:</label>
@@ -130,7 +139,7 @@ export default function Admin() {
 
             {/* Form for "If 3+ Users" */}
             <div className="mb-5">
-                <h6>If 3+ Users</h6>
+                <h5>If 3+ Users</h5>
                 <div className="d-flex align-items-center gap-4">
                     <div>
                         <label className='result-message'>Minimum Crash Point:</label>
