@@ -1,7 +1,7 @@
 export const tabThree = [
     {
-        imgSrc: "/images/icon/soccer-icon.png",
-        buttonName: "Soccer"
+        imgSrc: "/images/icon/football-icon.png",
+        buttonName: "Football"
     },
     {
         imgSrc: "/images/icon/fifa-volta.png",
@@ -24,8 +24,8 @@ export const tabThree = [
         buttonName: "eCricket"
     },
     {
-        imgSrc: "/images/icon/america-football.png",
-        buttonName: "American Football"
+        imgSrc: "/images/icon/america-football1.png",
+        buttonName: "American Football1"
     },
     {
         imgSrc: "/images/icon/ice-hockey.png",
@@ -233,7 +233,7 @@ export const basketballUpCE = [
   },
 ];
 
-export const soccerUpComing = [
+export const footballUpComing = [
     {
       id: "1",
       floorball: "/images/icon/floorball.png",
@@ -811,10 +811,10 @@ export const eCricketUpCE = [
   
 ];
 
-export const amricanFootballUpCE = [
+export const amricanFootball1UpCE = [
   {
     id: "1",
-    basketball: "/images/icon/america-football.png",
+    basketball: "/images/icon/america-football1.png",
     titletwo: "USA Regular Season",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -834,7 +834,7 @@ export const amricanFootballUpCE = [
     point: "3.5"
   },{
     id: "2",
-    basketball: "/images/icon/america-football.png",
+    basketball: "/images/icon/america-football1.png",
     titletwo: "USA Regular Season",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -855,7 +855,7 @@ export const amricanFootballUpCE = [
   },
   {
     id: "3",
-    basketball: "/images/icon/america-football.png",
+    basketball: "/images/icon/america-football1.png",
     titletwo: "USA NCAA",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -876,7 +876,7 @@ export const amricanFootballUpCE = [
   },
   {
     id: "4",
-    basketball: "/images/icon/Uamerica-football.png",
+    basketball: "/images/icon/Uamerica-football1.png",
     titletwo: "USA Regular",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -897,7 +897,7 @@ export const amricanFootballUpCE = [
   },
   {
     id: "5",
-    basketball: "/images/icon/america-football.png",
+    basketball: "/images/icon/america-football1.png",
     titletwo: "USA Regular",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -918,7 +918,7 @@ export const amricanFootballUpCE = [
   },
   {
     id: "6",
-    basketball: "/images/icon/america-football.png",
+    basketball: "/images/icon/america-football1.png",
     titletwo: "USA Regular",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -939,7 +939,7 @@ export const amricanFootballUpCE = [
   },
   {
     id: "7",
-    basketball: "/images/icon/america-football.png",
+    basketball: "/images/icon/america-football1.png",
     titletwo: "USA Regular Season",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -960,7 +960,7 @@ export const amricanFootballUpCE = [
   },
   {
     id: "8",
-    basketball: "/images/icon/america-football.png",
+    basketball: "/images/icon/america-football1.png",
     titletwo: "USA NCAA",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -981,7 +981,7 @@ export const amricanFootballUpCE = [
   },
   {
     id: "9",
-    basketball: "/images/icon/Uamerica-football.png",
+    basketball: "/images/icon/Uamerica-football1.png",
     titletwo: "USA Regular",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -1002,7 +1002,7 @@ export const amricanFootballUpCE = [
   },
   {
     id: "10",
-    basketball: "/images/icon/america-football.png",
+    basketball: "/images/icon/america-football1.png",
     titletwo: "USA Regular",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -1023,7 +1023,7 @@ export const amricanFootballUpCE = [
   },
   {
     id: "11",
-    basketball: "/images/icon/america-football.png",
+    basketball: "/images/icon/america-football1.png",
     titletwo: "USA Regular",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -1044,7 +1044,7 @@ export const amricanFootballUpCE = [
   },
   {
     id: "12",
-    basketball: "/images/icon/america-football.png",
+    basketball: "/images/icon/america-football1.png",
     titletwo: "USA Regular Season",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",

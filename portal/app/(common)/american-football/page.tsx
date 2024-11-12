@@ -1,11 +1,11 @@
 import HeaderMain from '@/components/Shared/HeaderMain';
-import UpCmingAmericanFootball from '@/components/Pages/AmericanFootball/UpCmingAmericanFootball';
+import UpCmingAmericanFootball1 from '@/components/Pages/AmericanFootball1/UpCmingAmericanFootball1';
 
 export default function page() {
     return (
         <>
             <HeaderMain />
-            <UpCmingAmericanFootball />
+            <UpCmingAmericanFootball1 />
         </>
     )
 }

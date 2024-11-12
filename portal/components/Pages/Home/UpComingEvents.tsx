@@ -1,7 +1,7 @@
 "use client";
 import { Tab } from "@headlessui/react";
 import Image from "next/image";
-import { tabThree, soccerUpComing, tennisUpCE, basketballUpCE, eCricketUpCE, amricanFootballUpCE, nb2klast, fifaVoltaLast } from "@/public/data/tabThree";
+import { tabThree, footballUpComing, tennisUpCE, basketballUpCE, eCricketUpCE, amricanFootball1UpCE, nb2klast, fifaVoltaLast } from "@/public/data/tabThree";
 import { useState } from 'react';
 
 export default function UpComingEvents() {
@@ -55,7 +55,7 @@ export default function UpComingEvents() {
                                                     </Tab.List>
                                                     <Tab.Panels>
                                                         <Tab.Panel className="tabitem active">
-                                                            {soccerUpComing.map(
+                                                            {footballUpComing.map(
                                                                 ({
                                                                     id,
                                                                     floorball,
@@ -4723,7 +4723,7 @@ export default function UpComingEvents() {
                                                             </div>
                                                         </Tab.Panel>
                                                         <Tab.Panel className="tabitem active">
-                                                            {amricanFootballUpCE.map(
+                                                            {amricanFootball1UpCE.map(
                                                                 ({
                                                                     id,
                                                                     titletwo,
@@ -4747,7 +4747,7 @@ export default function UpComingEvents() {
                                                                                     <div
                                                                                         className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4 ">
                                                                                         <div className="d-flex align-items-center gap-1">
-                                                                                            <Image src="/images/icon/america-football.png" width={16} height={16}
+                                                                                            <Image src="/images/icon/america-football1.png" width={16} height={16}
                                                                                                 alt="Icon" /> <span
                                                                                                     className="fs-eight cpoint">USA Regular
                                                                                                 Season</span>

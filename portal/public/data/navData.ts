@@ -9,7 +9,7 @@ export const popularData=[
   },
   {
     id: 12299,
-    image: "/images/icon/soccer-icon.png",
+    image: "/images/icon/football-icon.png",
     linkText: "Sports",
     
   },
@@ -68,9 +68,9 @@ export const sportsData = [
   },
   {
     id: 57940,
-    image: "/images/icon/soccer-icon.png",
-    linkText: "Soccer",
-    href: "/soccer",
+    image: "/images/icon/football-icon.png",
+    linkText: "Football",
+    href: "/football",
   },
   // {
   //   id: 13736,
@@ -92,9 +92,9 @@ export const sportsData = [
   // },
   // {
   //   id: 57911,
-  //   image: "/images/icon/america-football.png",
-  //   linkText: "American Football",
-  //   href: "/american-football",
+  //   image: "/images/icon/america-football1.png",
+  //   linkText: "American Football1",
+  //   href: "/american-football1",
   // },
   // {
   //   id: 33764,
@@ -259,8 +259,8 @@ export const naviTemData = [
   },
   {
     id: 151272,
-    linkText: "Soccer",
-    href: "/soccer",
+    linkText: "Football",
+    href: "/football",
   },
   // {
   //   id: 155534,

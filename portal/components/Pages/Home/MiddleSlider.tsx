@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
-import { IconBallFootball } from "@tabler/icons-react";
+import { IconBallFootball1 } from "@tabler/icons-react";
 
 export default function MiddleSilder() {
   return (
@@ -79,7 +79,7 @@ export default function MiddleSilder() {
                             </div>
                           </SwiperSlide>
                           <SwiperSlide>
-                          <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
+                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop text-center mb-4 mb-md-6">
                                 <span className="fs-ten d-block mb-1">Stamford Bridge</span>
                                 <span className="n3-color cpoint">Week 10</span>
@@ -105,7 +105,7 @@ export default function MiddleSilder() {
                             </div>
                           </SwiperSlide>
                           <SwiperSlide>
-                          <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
+                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop text-center mb-4 mb-md-6">
                                 <span className="fs-ten d-block mb-1">Stamford Bridge</span>
                                 <span className="n3-color cpoint">Week 10</span>
@@ -131,7 +131,7 @@ export default function MiddleSilder() {
                             </div>
                           </SwiperSlide>
                           <SwiperSlide>
-                          <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
+                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop text-center mb-4 mb-md-6">
                                 <span className="fs-ten d-block mb-1">Stamford Bridge</span>
                                 <span className="n3-color cpoint">Week 10</span>
@@ -157,7 +157,7 @@ export default function MiddleSilder() {
                             </div>
                           </SwiperSlide>
                           <SwiperSlide>
-                          <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
+                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop text-center mb-4 mb-md-6">
                                 <span className="fs-ten d-block mb-1">Stamford Bridge</span>
                                 <span className="n3-color cpoint">Week 10</span>
@@ -183,7 +183,7 @@ export default function MiddleSilder() {
                             </div>
                           </SwiperSlide>
                           <SwiperSlide>
-                          <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
+                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop text-center mb-4 mb-md-6">
                                 <span className="fs-ten d-block mb-1">Stamford Bridge</span>
                                 <span className="n3-color cpoint">Week 10</span>
@@ -209,7 +209,7 @@ export default function MiddleSilder() {
                             </div>
                           </SwiperSlide>
                           <SwiperSlide>
-                          <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
+                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop text-center mb-4 mb-md-6">
                                 <span className="fs-ten d-block mb-1">Stamford Bridge</span>
                                 <span className="n3-color cpoint">Week 10</span>
@@ -235,7 +235,7 @@ export default function MiddleSilder() {
                             </div>
                           </SwiperSlide>
                           <SwiperSlide>
-                          <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
+                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop text-center mb-4 mb-md-6">
                                 <span className="fs-ten d-block mb-1">Stamford Bridge</span>
                                 <span className="n3-color cpoint">Week 10</span>

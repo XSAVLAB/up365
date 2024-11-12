@@ -7,7 +7,7 @@ import { MdFiberNew } from "react-icons/md";
 import { GiWallet, GiCoins } from "react-icons/gi";
 import { useRouter } from "next/navigation";
 import './styles.css'; // Import the custom CSS file
-import { IconBallFootball, IconCricket } from "@tabler/icons-react";
+import { IconBallFootball1, IconCricket } from "@tabler/icons-react";
 
 interface MainBodyScrollerProps {
   scrollToGames: () => void;
@@ -28,8 +28,8 @@ const MainBodyScroller: React.FC<MainBodyScrollerProps> = ({ scrollToGames }) =>
   const navigateCricketPage = () => {
     router.push("/cricket");
   }
-  const navigateFootballPage = () => {
-    router.push("/soccer");
+  const navigateFootball1Page = () => {
+    router.push("/football");
   }
 
   return (
@@ -52,9 +52,9 @@ const MainBodyScroller: React.FC<MainBodyScrollerProps> = ({ scrollToGames }) =>
             <IconCricket size={25} />
             <span>Cricket</span>
           </div>
-          <div className="nav-item" onClick={navigateFootballPage}>
-            <IconBallFootball size={25} />
-            <span>Football</span>
+          <div className="nav-item" onClick={navigateFootball1Page}>
+            <IconBallFootball1 size={25} />
+            <span>Football1</span>
           </div>
           {/* <div className="nav-item" onClick={navigateLoginPage}>
             <BiSolidOffer size={25} />

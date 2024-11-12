@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { Tab } from "@headlessui/react";
-import { tabOne, soccerMatch, basketballMatch, iceHockeyMatch } from "@/public/data/tabOne";
+import { tabOne, footballMatch, basketballMatch, iceHockeyMatch } from "@/public/data/tabOne";
 import { useState } from "react";
 
 export default function HeroMatches() {
@@ -15,7 +15,7 @@ export default function HeroMatches() {
       border: `1px solid ${activeItem === itemName ? '#35C31E' : '#2C3655'}`,
     };
   };
-  
+
   return (
     <>
       <section className="top_matches">
@@ -55,10 +55,10 @@ export default function HeroMatches() {
                           </Tab.List>
                           <Tab.Panels>
                             <Tab.Panel className="tabitem active">
-                              {soccerMatch.map(
+                              {footballMatch.map(
                                 ({
                                   id,
-                                  football,
+                                  football1,
                                   titletwo,
                                   times,
                                   updown,
@@ -83,7 +83,7 @@ export default function HeroMatches() {
                                         <div className="top_matches__clubname">
                                           <div className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4 ">
                                             <div className="d-flex align-items-center gap-1">
-                                              <Image src={football}
+                                              <Image src={football1}
                                                 width={16}
                                                 height={16}
                                                 alt="Icon"
@@ -280,10 +280,10 @@ export default function HeroMatches() {
                               )}
                             </Tab.Panel>
                             <Tab.Panel className="tabitem active">
-                              {soccerMatch.map(
+                              {footballMatch.map(
                                 ({
                                   id,
-                                  football,
+                                  football1,
                                   titletwo,
                                   times,
                                   updown,
@@ -309,7 +309,7 @@ export default function HeroMatches() {
                                           <div className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4 ">
                                             <div className="d-flex align-items-center gap-1">
                                               <Image
-                                                src={football}
+                                                src={football1}
                                                 width={16}
                                                 height={16}
                                                 alt="Icon"

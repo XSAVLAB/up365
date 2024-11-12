@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
-import { IconBallFootball } from "@tabler/icons-react";
+import { IconBallFootball1 } from "@tabler/icons-react";
 
 export default function TopSlider() {
   return (
@@ -56,7 +56,7 @@ export default function TopSlider() {
                             <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop d-flex align-items-center justify-content-between mb-4 mb-md-6">
                                 <div className="d-flex align-items-center gap-2">
-                                  <IconBallFootball className="n5-color" />
+                                  <IconBallFootball1 className="n5-color" />
                                   <span className="fs-seven n5-color cpoint">
                                     Premier league
                                   </span>
@@ -112,7 +112,7 @@ export default function TopSlider() {
                             <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop d-flex align-items-center justify-content-between mb-4 mb-md-6">
                                 <div className="d-flex align-items-center gap-2">
-                                  <IconBallFootball className="n5-color" />
+                                  <IconBallFootball1 className="n5-color" />
                                   <span className="fs-seven n5-color cpoint">
                                     Premier league
                                   </span>
@@ -168,7 +168,7 @@ export default function TopSlider() {
                             <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop d-flex align-items-center justify-content-between mb-4 mb-md-6">
                                 <div className="d-flex align-items-center gap-2">
-                                  <IconBallFootball className="n5-color" />
+                                  <IconBallFootball1 className="n5-color" />
                                   <span className="fs-seven n5-color cpoint">
                                     Premier league
                                   </span>
@@ -224,7 +224,7 @@ export default function TopSlider() {
                             <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop d-flex align-items-center justify-content-between mb-4 mb-md-6">
                                 <div className="d-flex align-items-center gap-2">
-                                  <IconBallFootball className="n5-color" />
+                                  <IconBallFootball1 className="n5-color" />
                                   <span className="fs-seven n5-color cpoint">
                                     Premier league
                                   </span>
@@ -280,7 +280,7 @@ export default function TopSlider() {
                             <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop d-flex align-items-center justify-content-between mb-4 mb-md-6">
                                 <div className="d-flex align-items-center gap-2">
-                                  <IconBallFootball className="n5-color" />
+                                  <IconBallFootball1 className="n5-color" />
                                   <span className="fs-seven n5-color cpoint">
                                     Premier league
                                   </span>
@@ -336,7 +336,7 @@ export default function TopSlider() {
                             <div className="hero_area__topslider-card swiper-slide p-4 p-md-6">
                               <div className="hero_area__topslider-cardtop d-flex align-items-center justify-content-between mb-4 mb-md-6">
                                 <div className="d-flex align-items-center gap-2">
-                                  <IconBallFootball className="n5-color" />
+                                  <IconBallFootball1 className="n5-color" />
                                   <span className="fs-seven n5-color cpoint">
                                     Premier league
                                   </span>

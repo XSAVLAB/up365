@@ -13,7 +13,7 @@ export default function TopBasketball() {
                                     <div className="top_matches__title d-flex align-items-center gap-2 mb-4 mb-md-5">
                                         <Image src="/images/icon/king.png" width={32}
                                             height={32} alt="Icon" />
-                                        <h3>Top Soccer</h3>
+                                        <h3>Top Football</h3>
                                     </div>
                                     <div className="top_matches__content">
                                         {basketballMatch.map(

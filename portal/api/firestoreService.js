@@ -328,9 +328,9 @@ export const fetchUserWalletOnUpdate = (userId, onUpdate) => {
 };
 
 // Fetch active series match data from Firestore
-export const fetchFootballMatches = async () => {
+export const fetchFootball1Matches = async () => {
   try {
-    const matchDataCollection = collection(db, "footballData");
+    const matchDataCollection = collection(db, "football1Data");
     // const q = query(matchDataCollection, where("active", "==", true));
     const matchDataSnapshot = await getDocs(matchDataCollection);
     const matchData = matchDataSnapshot.docs.flatMap(

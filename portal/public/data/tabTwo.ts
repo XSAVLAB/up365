@@ -1,7 +1,7 @@
 export const tabTwo = [
     {
-        imgSrc: "/images/icon/soccer-icon.png",
-        buttonName: "Soccer"
+        imgSrc: "/images/icon/football-icon.png",
+        buttonName: "Football"
     },
     {
         imgSrc: "/images/icon/fifa-volta.png",
@@ -24,8 +24,8 @@ export const tabTwo = [
         buttonName: "eCricket"
     },
     {
-        imgSrc: "/images/icon/america-football.png",
-        buttonName: "American Football"
+        imgSrc: "/images/icon/america-football1.png",
+        buttonName: "American Football1"
     },
     {
         imgSrc: "/images/icon/ice-hockey.png",
@@ -234,10 +234,10 @@ export const tabTwo = [
   
 // ];
 
-export const liveSoccerMatch = [
+export const liveFootballMatch = [
     {
       id: "1",
-      football: "/images/icon/floorball.png",
+      football1: "/images/icon/floorball.png",
       titletwo: "Turkiye. Super Limelight",
       times: "56′ 2nd half",
       updown: "/images/icon/live.png",
@@ -258,7 +258,7 @@ export const liveSoccerMatch = [
   },
   {
     id: "2",
-    football: "/images/icon/floorball.png",
+    football1: "/images/icon/floorball.png",
     titletwo: "Turkiye. Super Limelight",
     times: "56′ 2nd half",
     updown: "/images/icon/live.png",
@@ -279,7 +279,7 @@ export const liveSoccerMatch = [
 },
 {
   id: "3",
-  football: "/images/icon/floorball.png",
+  football1: "/images/icon/floorball.png",
   titletwo: "Turkiye. Super Limelight",
   times: "56′ 2nd half",
   updown: "/images/icon/live.png",
@@ -300,7 +300,7 @@ export const liveSoccerMatch = [
 },
 {
   id: "4",
-  football: "/images/icon/floorball.png",
+  football1: "/images/icon/floorball.png",
   titletwo: "Turkiye. Super Limelight",
   times: "56′ 2nd half",
   updown: "/images/icon/live.png",

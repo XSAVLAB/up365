@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { soccerMatch } from "@/public/data/tabOne";
+import { footballMatch } from "@/public/data/tabOne";
 
 export default function TopTennis() {
     return (
@@ -13,13 +13,13 @@ export default function TopTennis() {
                                     <div className="top_matches__title d-flex align-items-center gap-2 mb-4 mb-md-5">
                                         <Image src="/images/icon/king.png" width={32}
                                             height={32} alt="Icon" />
-                                        <h3>Top Soccer</h3>
+                                        <h3>Top Football</h3>
                                     </div>
                                     <div className="top_matches__content">
-                                        {soccerMatch.map(
+                                        {footballMatch.map(
                                             ({
                                                 id,
-                                                football,
+                                                football1,
                                                 titletwo,
                                                 times,
                                                 updown,
@@ -45,7 +45,7 @@ export default function TopTennis() {
                                                                 <div className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4 ">
                                                                     <div className="d-flex align-items-center gap-1">
                                                                         <Image
-                                                                            src={football}
+                                                                            src={football1}
                                                                             width={16}
                                                                             height={16}
                                                                             alt="Icon"

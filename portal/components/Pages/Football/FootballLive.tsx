@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { liveSoccerMatch } from "@/public/data/tabTwo";
+import { liveFootballMatch } from "@/public/data/tabTwo";
 
-export default function SoccerLive() {
+export default function FootballLive() {
   return (
     <section className="top_matches">
       <div className="container-fluid">
@@ -16,10 +16,10 @@ export default function SoccerLive() {
                     <h3>Live Matches</h3>
                   </div>
                   <div className="top_matches__content">
-                    {liveSoccerMatch.map(
+                    {liveFootballMatch.map(
                       ({
                         id,
-                        football,
+                        football1,
                         titletwo,
                         times,
                         updown,

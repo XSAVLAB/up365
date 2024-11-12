@@ -1,10 +1,10 @@
 'use client'
 import Image from "next/image";
-import { fetchFootballMatches } from "@/api/firestoreService";
+import { fetchFootball1Matches } from "@/api/firestoreService";
 import { useEffect, useState } from "react";
 import BettingModal from "../../Shared/BettingModal";
 
-export default function TopSoccer() {
+export default function TopFootball() {
   const [matches, setMatches] = useState<any[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,8 +12,8 @@ export default function TopSoccer() {
   useEffect(() => {
     const getMatchData = async () => {
       try {
-        const matchData = await fetchFootballMatches();
-        // console.log("Football match data:");
+        const matchData = await fetchFootball1Matches();
+        // console.log("Football1 match data:");
         // console.log(matchData);
         setMatches(matchData);
       } catch (error) {
@@ -27,7 +27,7 @@ export default function TopSoccer() {
   const handleMatchClick = (team1: any, team2: any, team1Img: any, team2Img: any, seriesName: any, dateTime: any) => {
 
     const match = {
-      matchType: "soccer",
+      matchType: "football",
       seriesName,
       dateTime,
       team1,
@@ -50,7 +50,7 @@ export default function TopSoccer() {
                   <div className="col-12">
                     <div className="top_matches__title d-flex align-items-center gap-2 mb-4 mb-md-5">
                       <Image src="/images/icon/king.png" width={32} height={32} alt="Icon" />
-                      <h3>Top Soccer</h3>
+                      <h3>Top Football</h3>
                     </div>
 
                     <div className="top_matches__content">

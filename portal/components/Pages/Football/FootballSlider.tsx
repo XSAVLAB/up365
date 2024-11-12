@@ -4,12 +4,12 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
-import { IconBallFootball } from "@tabler/icons-react";
+import { IconBallFootball1 } from "@tabler/icons-react";
 import BettingModal from "../../Shared/BettingModal";
-import { fetchFootballMatches } from "@/api/firestoreService";
+import { fetchFootball1Matches } from "@/api/firestoreService";
 import { match } from "assert";
 
-export default function SoccerSlider() {
+export default function FootballSlider() {
     const [matches, setMatches] = useState<any[]>([]);
     const [selectedMatch, setSelectedMatch] = useState<any | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,8 +17,8 @@ export default function SoccerSlider() {
     useEffect(() => {
         const getMatchData = async () => {
             try {
-                const matchData = await fetchFootballMatches();
-                // console.log("Football match data:");
+                const matchData = await fetchFootball1Matches();
+                // console.log("Football1 match data:");
                 // console.log(matchData);
                 setMatches(matchData);
             } catch (error) {
@@ -32,7 +32,7 @@ export default function SoccerSlider() {
     const handleMatchClick = (team1: any, team2: any, team1Img: any, team2Img: any, seriesName: any, dateTime: any) => {
 
         const match = {
-            matchType: "soccer",
+            matchType: "football",
             seriesName,
             dateTime,
             team1,
@@ -99,7 +99,7 @@ export default function SoccerSlider() {
                                                                 <div className="hero_area__topslider-card swiper-slide p-4 p-md-6" onClick={() => handleMatchClick(homeTeam.name, awayTeam.name, homeTeam.crest, awayTeam.crest, competition.name, utcDate)}>
                                                                     <div className="hero_area__topslider-cardtop d-flex align-items-center justify-content-between mb-4 mb-md-6">
                                                                         <div className="d-flex align-items-center gap-2">
-                                                                            <IconBallFootball className="n5-color" />
+                                                                            <IconBallFootball1 className="n5-color" />
                                                                             <span className="fs-seven n5-color cpoint">
                                                                                 {competition.name}                                                                            </span>
                                                                         </div>{" "}

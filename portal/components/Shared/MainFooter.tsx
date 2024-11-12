@@ -25,7 +25,7 @@
 //                                             </li>
 //                                             <li className="iconstyle d-flex align-items-center">
 //                                                 <IconArrowBadgeRight className="fs-five rtawin" />
-//                                                 <Link className="fs-ten n4-color" href="/soccer">Football</Link>
+//                                                 <Link className="fs-ten n4-color" href="/football">Football1</Link>
 //                                             </li>
 //                                             {/* <li className="iconstyle d-flex align-items-center">
 //                                                 <IconArrowBadgeRight className="fs-five rtawin" />

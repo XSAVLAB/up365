@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { fifaVoltaLast } from "@/public/data/tabThree";
 
-export default function UpCmingSoccer() {
+export default function UpCmingFootball() {
     return (
         <section className="top_matches">
             <div className="container-fluid">

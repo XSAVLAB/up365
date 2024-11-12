@@ -30,7 +30,7 @@ export default function SideNav() {
                 </li>
                 <li className="active" onClick={() => setActiveCategory('Sports')}>
                     <button className="d-flex align-items-center gap-2">
-                        <i className="ti ti-soccer n5-color fs-five"></i> Sports
+                        <i className="ti ti-football n5-color fs-five"></i> Sports
                     </button>
                 </li>
             </ul>
