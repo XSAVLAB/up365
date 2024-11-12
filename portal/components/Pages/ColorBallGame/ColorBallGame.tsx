@@ -7,6 +7,9 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleColorBallBets, fetchProfileData } from '../../../api/firestoreService';
 import Confetti from 'react-confetti';
+import ActiveLotterBets from '@/components/Pages/ColorBallGame/ActiveLotteryBets';
+import AllLotteryBets from '@/components/Pages/ColorBallGame/AllLotteryBets';
+import LotterResult from '@/components/Pages/ColorBallGame/LotteryResult';
 
 
 const gameTimer = 180;
@@ -249,6 +252,9 @@ function ColorBallGame() {
                     )}
                 </div>
             </div>
+            <LotterResult />
+            <ActiveLotterBets />
+            <AllLotteryBets />
         </div>
     );
 }

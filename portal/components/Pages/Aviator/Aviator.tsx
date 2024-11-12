@@ -252,6 +252,7 @@ export default function Aviator() {
                                         <img src="/images/loading.png" alt="Loading" />
                                         <span className="loading-span"></span>
                                     </div>
+                                    <div>Place your bets...</div>
                                 </div>
                             ) : (
                                 <>

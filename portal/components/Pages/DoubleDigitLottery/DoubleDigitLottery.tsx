@@ -7,6 +7,9 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets, fetchProfileData } from '../../../api/firestoreService';
 import Confetti from 'react-confetti';
+import ActiveLotterBets from '@/components/Pages/DoubleDigitLottery/ActiveLotteryBets';
+import AllLotteryBets from '@/components/Pages/DoubleDigitLottery/AllLotteryBets';
+import LotterResult from '@/components/Pages/DoubleDigitLottery/LotteryResult';
 
 const gameTimer = 180;
 
@@ -189,6 +192,9 @@ function DoubleDigitLottery() {
                     )}
                 </div>
             </div>
+            <LotterResult />
+            <ActiveLotterBets />
+            <AllLotteryBets />
         </div>
     );
 }

@@ -77,6 +77,11 @@
 .top_matches {
     &__main {
         margin: 30px 0 0 250px;
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/images/bg_main.jpeg");
+        background-repeat: repeat;
+        background-position: center;
+        background-size: cover;
+        background-attachment: fixed;
         @include maxQuery(991) {
             margin: 0 -10px 0 12px;
         }
@@ -332,7 +337,12 @@ th, td {
     display: flex;
     flex-direction: column;
     padding: 20px;
-    background-color: --p1;
+    // background-color: --p1; 
+    background: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.6)), url("/images/bg_main.jpeg");
+    background-repeat: repeat;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
     color: #fff;
     border-radius: 10px;
     margin: 20px;
@@ -365,7 +375,7 @@ th, td {
     .info-box {
       display: flex;
       align-items: center;
-      background-color: #0b1b485a;
+      background-color: #202a45;
       padding: 10px;
       border-radius: 10px;
       margin-bottom: 50px;

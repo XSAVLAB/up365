@@ -1,5 +1,7 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const axios = require("axios");
+
 admin.initializeApp();
 const db = admin.firestore();
 
@@ -590,3 +592,73 @@ async function updateCrashLimitsBasedOnUserCount(userCount) {
       {merge: true},
   );
 }
+
+
+/**
+ *
+ * @return {Promise} - Resolves when the game state is updated.
+ */
+async function fetchCricketData() {
+  const API_KEY = "2dc77f32-82dc-4048-9b54-50baa8ab8ef8";
+  const url = `https://api.cricapi.com/v1/cricScore?apikey=${API_KEY}`;
+  try {
+    const response = await axios.get(url);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching cricket data:", error);
+    throw error;
+  }
+}
+
+/**
+ * @param {Array} matches - The cricket matches to group.
+ * @return {Object} - The cricket matches grouped by series.
+*/
+function groupMatchesBySeries(matches) {
+  return matches.reduce((acc, match) => {
+    const seriesName = match.series
+        .replace(/[^\w\s]/gi, "")
+        .replace(/\s+/g, "_");
+    if (!seriesName) {
+      console.error("Invalid series name:", match.series);
+      return acc;
+    }
+    if (!acc[seriesName]) {
+      acc[seriesName] = [];
+    }
+    acc[seriesName].push(match);
+    return acc;
+  }, {});
+}
+
+/**
+ * @param {Object} seriesMatches - The cricket matches grouped by series.
+*/
+async function storeCricketMatchesInFirestore(seriesMatches) {
+  const batch = db.batch();
+  for (const [seriesName, matches] of Object.entries(seriesMatches)) {
+    const seriesDocRef = db.collection("cricketData").doc(seriesName);
+    batch.set(seriesDocRef, {matches}, {merge: true});
+  }
+  await batch.commit();
+  console.log("Cricket matches stored in Firestore successfully");
+}
+
+exports.updateCricketMatches = functions.pubsub
+    .schedule("every 15 minutes")
+    .onRun(async (context) => {
+      try {
+        // Fetch cricket data from the API
+        const cricketMatches = await fetchCricketData();
+
+        // Group matches by series
+        const seriesMatches = groupMatchesBySeries(cricketMatches);
+
+        // Store cricket matches in Firestore
+        await storeCricketMatchesInFirestore(seriesMatches);
+
+        console.log("Cricket data update complete");
+      } catch (error) {
+        console.error("Error updating cricket matches:", error);
+      }
+    });
