@@ -277,7 +277,6 @@ const settleColorBallBets = async () => {
 const GAME_STATE_COLLECTION = "aviatorGameState";
 const GAME_STATE_DOC = "currentState";
 const TIMER = 10;
-// Function to sleep for a specified time in milliseconds
 /**
  * Sleeps for a specified time in milliseconds.
  * @param {number} ms - The time to sleep in milliseconds.
@@ -292,12 +291,20 @@ exports.onAviatorGameStateChange = functions.firestore
       const newState = change.after.data();
 
       if (newState.state === "betting" && newState.timer === 0) {
-        await flyingPlane();
+        try {
+          await flyingPlane();
+        } catch (error) {
+          console.error("Error during flyingPlane:", error);
+        }
       }
 
       // If the game state is 'flying' and the plane has crashed
       if (newState.state === "crashed") {
-        await bettingTime();
+        try {
+          await bettingTime();
+        } catch (error) {
+          console.error("Error during bettingTime:", error);
+        }
       }
     });
 
@@ -395,18 +402,12 @@ async function flyingPlane() {
     roundStartTime: roundStartTime,
   });
   await markRoundAsCompleted();
-  const interval = setInterval(async () => {
+  while (multiplier < crashPoint) {
     multiplier *= 1.01;
-
-    if (multiplier >= crashPoint) {
-      clearInterval(interval);
-
-      await updateBetStatus();
-      await updateGameState({
-        state: "crashed",
-      });
-    }
-  }, 100);
+    await sleep(100);
+  }
+  await updateBetStatus();
+  await updateGameState({state: "crashed"});
 }
 
 /**

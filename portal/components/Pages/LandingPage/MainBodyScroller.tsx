@@ -7,7 +7,7 @@ import { MdFiberNew } from "react-icons/md";
 import { GiWallet, GiCoins } from "react-icons/gi";
 import { useRouter } from "next/navigation";
 import './styles.css'; // Import the custom CSS file
-import { IconBallFootball1, IconCricket } from "@tabler/icons-react";
+import { IconBallFootball, IconCricket } from "@tabler/icons-react";
 
 interface MainBodyScrollerProps {
   scrollToGames: () => void;
@@ -53,7 +53,7 @@ const MainBodyScroller: React.FC<MainBodyScrollerProps> = ({ scrollToGames }) =>
             <span>Cricket</span>
           </div>
           <div className="nav-item" onClick={navigateFootball1Page}>
-            <IconBallFootball1 size={25} />
+            <IconBallFootball size={25} />
             <span>Football1</span>
           </div>
           {/* <div className="nav-item" onClick={navigateLoginPage}>
