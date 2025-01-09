@@ -276,7 +276,7 @@ const settleColorBallBets = async () => {
 
 const GAME_STATE_COLLECTION = "aviatorGameState";
 const GAME_STATE_DOC = "currentState";
-const TIMER = 10;
+const TIMER = 20;
 /**
  * Sleeps for a specified time in milliseconds.
  * @param {number} ms - The time to sleep in milliseconds.

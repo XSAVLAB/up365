@@ -54,6 +54,12 @@ export const gameData=[
     linkText: "Triple Digit Lottery",
     href: "/triple-digit-lottery",
   },
+  {
+    id:13257,
+    image: "/images/icon/stade.png",
+    linkText: "Teen Patti",
+    href: "/teen-patti",
+  },
 
 
   
