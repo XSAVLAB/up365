@@ -348,13 +348,15 @@ import { FaInstagram } from 'react-icons/fa';
 import { BsWhatsapp } from 'react-icons/bs';
 import { LiaFacebook } from "react-icons/lia";
 import { PiTelegramLogoDuotone } from "react-icons/pi";
+import Image from 'next/image';
 
 export default function MainFooter() {
     return (
         <div className='custom-footer'>
             <div className='custom-footer-logo-container'>
                 <a href='/' rel='noopener noreferrer' target='_self'>
-                    <img src="/images/up365LogoDark.webp" alt="logo not available" className='custom-footer-logo' />
+                    <Image className="logo" width={84} height={84} src="/images/logo.png" alt="Logo" />
+
                 </a>
             </div>
             <div className='custom-footer-description'>
@@ -418,7 +420,7 @@ export default function MainFooter() {
                 </div>
             </div>
             <div className='custom-footer-copyright'>
-                <p>@ Copyright-2023: UP365 Gaming created by <a href="https://www.up365gaming.com/" target="_blank" rel="noopener noreferrer" className='font-bold underline underline-offset-4 hover:text-blue-700'>up365gaming</a></p>
+                <p>@ Copyright-2023: Game Of Gem created by <a href="https://www.gameofgem.com/" target="_blank" rel="noopener noreferrer" className='font-bold underline underline-offset-4 hover:text-blue-700'>Game Of Gem</a></p>
             </div>
         </div>
     );

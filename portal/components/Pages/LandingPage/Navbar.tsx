@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { TiThMenu } from 'react-icons/ti';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import './styles.css';
 
 function LandingPageNavbar() {
@@ -40,7 +41,7 @@ function LandingPageNavbar() {
     return (
         <nav className="navbar">
             <div onClick={navigateNull}>
-                <img src='/images/up365LogoDark.webp' alt="UP365 Gaming" />
+                <Image className="logo" width={84} height={84} src="/images/logo.png" alt="Logo" />
             </div>
             <div className="navbar-buttons">
                 <button onClick={navigateToLoginForm} className="navbar-login-button">

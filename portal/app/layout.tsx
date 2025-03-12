@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   manifest: "/manifest.json",
-  title: "UP365 - Sports Betting Platform",
+  title: "Game Of Gem - Sports Betting Platform",
   description: "Made with actualities",
 };
 export const viewport: Viewport = {

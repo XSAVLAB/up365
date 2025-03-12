@@ -270,7 +270,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                 <div className="fixed_footer__card-btm px-4 py-4">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                         <span className="d-block">Bet amount:</span>
-                        <span className="d-block">Your balance: <b>₹ {balance}</b></span>
+                        <span className="d-block">Your balance: <b>Coins {balance}</b></span>
                     </div>
                     <div className="input-group mb-3">
                         <input type="text" className="form-control" value={betAmount} onChange={handleBetAmountChange} />

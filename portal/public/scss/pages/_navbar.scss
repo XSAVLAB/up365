@@ -20,11 +20,11 @@
         @include maxQuery(991) {
             margin-left: 133px;
             border-left: none;
-            height: 79px;
+            height: 96px;
         }
 
         @include maxQuery(768) {
-            height: 71px;
+            height: 96px;
         }
 
         .right-area {
