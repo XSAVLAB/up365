@@ -5,10 +5,11 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation';
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
 import { auth, db, isAdmin } from '../../../firebaseConfig';
-import { signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, FacebookAuthProvider, TwitterAuthProvider, signInWithPopup } from "firebase/auth";
 import { doPasswordReset, doSignInWithGoogle } from '@/firebase/auth';
 import { getDoc, doc } from 'firebase/firestore';
 import { createProfile } from '@/api/firestoreService';
+import PhoneAuth from '../PhoneAuth/PhoneAuth';
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -164,6 +165,9 @@ export default function Login() {
                                         <h3 className="mb-6 mb-md-8">Login</h3>
                                         <div className="login_section__form">
                                             {message && <p className="message">{message}</p>}
+                                            {/* Here will be the otp form */}
+                                            <PhoneAuth />
+                                            <span className="mb-6">Or continue with Email</span>
                                             <form onSubmit={handleLogin}>
                                                 <div className="mb-5 mb-md-6">
                                                     <input

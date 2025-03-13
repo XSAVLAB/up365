@@ -39,7 +39,6 @@ const CreateAccount = () => {
         setMessage('');
 
         try {
-            // Check if the phone number already exists in Firestore
             const q = query(collection(db, 'users'), where('phoneNumber', '==', phoneNumber));
             const querySnapshot = await getDocs(q);
 
@@ -48,7 +47,6 @@ const CreateAccount = () => {
                 return;
             }
 
-            // Proceed with account creation if the phone number is not registered
             const userCredential = await doCreateUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
 
