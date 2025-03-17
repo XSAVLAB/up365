@@ -446,6 +446,15 @@ export const updateUpiID = async (upiID) => {
   }
 };
 
+export const updateBankDetails = async (bankName, accountNumber, ifscCode) => {
+  try {
+    const bankDetailsRef = doc(db, "bankDetails", "bankDetails");
+    await updateDoc(bankDetailsRef, { bankName, accountNumber, ifscCode });
+  } catch (error) {
+    console.error("Error updating bank details:", error);
+  }
+};
+
 // Function to get today's date in the same format as stored timestamps
 const getTodayDate = () => {
   const today = new Date();

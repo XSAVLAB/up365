@@ -11,6 +11,7 @@ import { createProfile } from '../../../api/firestoreService'
 import { FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth, db } from '@/firebaseConfig';
 import { getDoc, doc, collection, getDocs, query, where } from 'firebase/firestore';
+import PhoneAuth from '../PhoneAuth/PhoneAuth';
 
 const CreateAccount = () => {
     const [firstName, setFirstName] = useState('');
@@ -39,13 +40,13 @@ const CreateAccount = () => {
         setMessage('');
 
         try {
-            const q = query(collection(db, 'users'), where('phoneNumber', '==', phoneNumber));
-            const querySnapshot = await getDocs(q);
+            // const q = query(collection(db, 'users'), where('phoneNumber', '==', phoneNumber));
+            // const querySnapshot = await getDocs(q);
 
-            if (!querySnapshot.empty) {
-                setMessage('Mobile number already registered!');
-                return;
-            }
+            // if (!querySnapshot.empty) {
+            //     setMessage('Mobile number already registered!');
+            //     return;
+            // }
 
             const userCredential = await doCreateUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
@@ -189,17 +190,9 @@ const CreateAccount = () => {
                                                         onChange={(e) => setLastName(e.target.value)}
                                                     />
                                                 </div>
-                                                <div className="mb-5 mb-md-6">
-                                                    <input
-                                                        className="n11-bg"
-                                                        name="phoneNumber"
-                                                        placeholder="Mobile Number"
-                                                        type="number"
-                                                        required
-                                                        value={phoneNumber}
-                                                        onChange={(e) => setphoneNumber(e.target.value)}
-                                                    />
-                                                </div>
+                                                <PhoneAuth firstName={firstName} lastName={lastName} />
+                                                <span className="mb-6">Or continue with Email</span>
+
                                                 <div className="mb-5 mb-md-6">
                                                     <input
                                                         className="n11-bg"
@@ -248,9 +241,9 @@ const CreateAccount = () => {
                                         <div className="login_section__socialmedia text-center mb-6">
                                             <span className="mb-6">Or continue with</span>
                                             <div className="login_section__social d-center gap-3">
-                                                <Link href="#" onClick={(e) => { onFacebookSignin(e) }} className="n11-bg px-3 py-2 rounded-5">
+                                                {/* <Link href="#" onClick={(e) => { onFacebookSignin(e) }} className="n11-bg px-3 py-2 rounded-5">
                                                     <IconBrandFacebookFilled className="ti ti-brand-facebook-filled fs-four" />
-                                                </Link>
+                                                </Link> */}
 
                                                 <Link href="#" onClick={(e) => { onGoogleSignIn(e) }} className="n11-bg px-3 py-2 rounded-5">
                                                     <IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" />

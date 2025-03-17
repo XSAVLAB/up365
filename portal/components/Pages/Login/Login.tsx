@@ -165,7 +165,6 @@ export default function Login() {
                                         <h3 className="mb-6 mb-md-8">Login</h3>
                                         <div className="login_section__form">
                                             {message && <p className="message">{message}</p>}
-                                            {/* Here will be the otp form */}
                                             <PhoneAuth />
                                             <span className="mb-6">Or continue with Email</span>
                                             <form onSubmit={handleLogin}>
@@ -199,9 +198,9 @@ export default function Login() {
                                         <div className="login_section__socialmedia text-center mb-6">
                                             <span className="mb-6">Or continue with</span>
                                             <div className="login_section__social d-center gap-3">
-                                                <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleFacebookLogin}>
+                                                {/* <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleFacebookLogin}>
                                                     <IconBrandFacebookFilled className="ti ti-brand-facebook-filled fs-four" />
-                                                </Link>
+                                                </Link> */}
                                                 {/* <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleTwitterLogin}>
                                                     <IconBrandTwitterFilled className="ti ti-brand-twitter-filled fs-four" />
                                                 </Link> */}

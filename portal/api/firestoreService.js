@@ -1061,6 +1061,22 @@ export const fetchUpiID = async () => {
   }
 };
 
+export const fetchBankDetails = async () => {
+  try {
+    const bankDetailsRef = doc(db, "bankDetails", "bankDetails");
+    const bankDetailsDoc = await getDoc(bankDetailsRef);
+
+    if (bankDetailsDoc.exists()) {
+      return bankDetailsDoc.data();
+    } else {
+      return { bankName: "", accountNumber: "", ifscCode: "" };
+    }
+  } catch (e) {
+    console.error("Error fetching bank details:", e);
+    return { bankName: "", accountNumber: "", ifscCode: "" };
+  }
+};
+
 // Aviator section
 
 // Function to fetch the current game state in real-time using onSnapshot

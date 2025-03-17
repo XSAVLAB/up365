@@ -277,29 +277,7 @@ export default function Dashboard() {
                                                         </div>
                                                     </div> */}
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
-                                                        <div className="pay_method__paymethod-title mb-5 mb-md-6">
-                                                            <h5 className="n10-color">Choose or enter your withdrawal amount</h5>
-                                                        </div>
-                                                        <div
-                                                            className="pay_method__amount d-flex align-content-center justify-content-between py-3 px-5 px-md-6 mb-6 mb-md-8 flex-wrap gap-3">
-                                                            <div className="pay_method__amount-actual">
-                                                                <span className="fs-seven mb-3">Available balance</span>
-                                                                <div className="d-flex align-items-center gap-3">
-                                                                    <span className="fw-bol">₹ {walletBalance}</span>
-                                                                    <i className="ti ti-refresh fs-seven cpoint"></i>
-                                                                </div>
-                                                            </div>
-                                                            <span className="v-line lgx d-none d-sm-block"></span>
-                                                            <div className="pay_method__amount-sports">
-                                                                <span className="fs-seven mb-3">Bonus No Sports</span>
-                                                                <span className="fw-bol d-block">₹ 0.00</span>
-                                                            </div>
-                                                            <span className="v-line lgx d-none d-sm-block"></span>
-                                                            <div className="pay_method__amount-sports">
-                                                                <span className="fs-seven mb-3">Bonus in casino</span>
-                                                                <span className="fw-bol d-block">₹ 0.00</span>
-                                                            </div>
-                                                        </div>
+                                                        
                                                         <WithdrawalAmount />
                                                     </div>
                                                 </Tab.Panel>

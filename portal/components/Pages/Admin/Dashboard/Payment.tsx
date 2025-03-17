@@ -1,13 +1,13 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll, deleteObject } from "firebase/storage";
-import { updateUpiID } from "@/api/firestoreAdminService";
+import { updateBankDetails, updateUpiID } from "@/api/firestoreAdminService";
 import { storage } from "@/firebaseConfig";
 
 export default function Payment() {
     const [message, setMessage] = useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-
+    const [bankDetails, setBankDetails] = useState<any | null>(null);
     const deleteExistingQR = async () => {
         const qrCodesRef = ref(storage, 'qr-codes');
         const list = await listAll(qrCodesRef);
@@ -68,6 +68,22 @@ export default function Payment() {
             showMessage("Failed to update UPI ID.");
         }
     };
+    const handleAccDetailsSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        try {
+            const formData = new FormData(event.currentTarget);
+            const bankName = formData.get("bankName") as string;
+            const accountNumber = formData.get("accountNumber") as string;
+            const ifscCode = formData.get("ifscCode") as string;
+
+            await updateBankDetails(bankName, accountNumber, ifscCode);
+            showMessage("Bank details updated successfully!");
+        } catch (error) {
+            console.error("Error updating bank details", error);
+            showMessage("Failed to update bank details.");
+        }
+    };
+
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -90,6 +106,44 @@ export default function Payment() {
                                 type="text"
                                 name="upiID"
                                 placeholder="Enter New UPI ID"
+                            />
+                        </div>
+                    </div>
+                    <button className="cmn-btn py-3 px-10" type="submit">
+                        Update
+                    </button>
+                </form>
+
+            </div>
+            <hr className="my-6" />
+            <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                <h5 className="n10-color">Account No. Update</h5>
+            </div>
+            <div className="pay_method__formarea">
+                <form onSubmit={handleAccDetailsSubmit}>
+                    <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                        <div className="w-100">
+                            <input
+                                className="n11-bg rounded-8"
+                                type="text"
+                                name="bankName"
+                                placeholder="Enter Bank Name"
+                            />
+                        </div>
+                        <div className="w-100">
+                            <input
+                                className="n11-bg rounded-8"
+                                type="text"
+                                name="accountNumber"
+                                placeholder="Enter Account Number"
+                            />
+                        </div>
+                        <div className="w-100">
+                            <input
+                                className="n11-bg rounded-8"
+                                type="text"
+                                name="ifscCode"
+                                placeholder="Enter IFSC Code"
                             />
                         </div>
                     </div>

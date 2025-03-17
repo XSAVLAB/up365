@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@/public/scss/style.scss";
 import MainFooter from "@/components/Shared/MainFooter";
-import FooterCard from "@/components/Shared/FooterCard";
 
 const inter = Inter({ subsets: ["latin"] });
 

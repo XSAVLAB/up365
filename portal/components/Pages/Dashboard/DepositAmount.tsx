@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { amountData } from '@/public/data/dashBoard';
 import { db, auth } from '@/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { updateUserCardDetails, addTransaction, fetchUpiID, fetchWhatsappNumber } from '@/api/firestoreService';
+import { updateUserCardDetails, addTransaction, fetchUpiID, fetchWhatsappNumber, fetchBankDetails } from '@/api/firestoreService';
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
 // import confetti from 'canvas-confetti';
-import { BsWhatsapp } from "react-icons/bs";
+import { BsClipboard, BsWhatsapp } from "react-icons/bs";
+import { IconArrowBack, IconCopy } from '@tabler/icons-react';
 
 export default function DepositAmount() {
     const [activeItem, setActiveItem] = useState<{ id: number; amount: string } | null>(amountData[0]);
@@ -28,8 +29,10 @@ export default function DepositAmount() {
     const [showQRCode, setShowQRCode] = useState(false);
     const [showUPI, setShowUPI] = useState(false);
     const [showDebitCard, setShowDebitCard] = useState(false);
+    const [showBankDetails, setShowBankDetails] = useState(false);
     const [paymentStep, setPaymentStep] = useState(false);
     const [upiID, setUpiID] = useState('');
+    const [bankDetails, setBankDetails] = useState<{ bankName?: string; accountNumber?: string; ifscCode?: string }>({});
     const [qrCodeUrl, setQrCodeUrl] = useState('');
     const [whatsappNumber, setWhatsappNumber] = useState<any>('');
     useEffect(() => {
@@ -59,7 +62,10 @@ export default function DepositAmount() {
         const fetchData = async () => {
             try {
                 const fetchedUpiID = await fetchUpiID();
+                const fetchedBankDetails = await fetchBankDetails();
+
                 setUpiID(fetchedUpiID);
+                setBankDetails(fetchedBankDetails);
             } catch {
                 setUpiID("Something went wrong! Please try another method.");
             }
@@ -67,6 +73,8 @@ export default function DepositAmount() {
 
         fetchData();
     }, []);
+
+
     useEffect(() => {
         const fetchQRCode = async () => {
             try {
@@ -116,6 +124,7 @@ export default function DepositAmount() {
     const handlePaymentOption = (option: string) => {
         setShowQRCode(option === 'qr');
         setShowUPI(option === 'upi');
+        setShowBankDetails(option === 'bank');
         setShowDebitCard(option === 'card');
         setPaymentStep(true);
     };
@@ -149,7 +158,7 @@ export default function DepositAmount() {
                     amount: formDepositData.amount,
                     status: 'pending',
                 });
-                setSuccessMessage(`Deposit request for ₹${formDepositData.amount} submitted successfully.`);
+                // setSuccessMessage(`Deposit request for ₹${formDepositData.amount} submitted successfully.`);
                 setErrorMessage('');
                 // triggerConfetti();
             } catch (error) {
@@ -171,7 +180,7 @@ export default function DepositAmount() {
                     isSuccessShown: false,
                 });
                 setPaymentStep(true);
-                setSuccessMessage(`Deposit request for ₹${formDepositData.amount} submitted successfully.`);
+                // setSuccessMessage(`Deposit request for ₹${formDepositData.amount} submitted successfully.`);
                 setErrorMessage('');
                 // triggerConfetti();
             } catch (error) {
@@ -202,9 +211,28 @@ export default function DepositAmount() {
         const whatsappURL = `https://wa.me/${adminPhoneNumber}?text=${encodeURIComponent(message)}`;
         window.open(whatsappURL, '_blank');
     };
+    const handleGoBack = () => {
+        setPaymentStep(false);
+        setShowQRCode(false);
+        setShowUPI(false);
+        setShowDebitCard(false);
+        setShowBankDetails(false);
+    };
+
+    const handleCopy = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            setSuccessMessage("Copied!");
+        } catch (error) {
+            console.error("Failed to copy UPI ID", error);
+        }
+    };
+
     return (
         <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
-            <div className="pay_method__paymethod-title mb-5 mb-md-6">
+            <a onClick={handleGoBack} className="g1-color cursor-pointer"><IconArrowBack /> Back</a>
+
+            <div className="pay_method__paymethod-title mb-5 mt-4 mb-md-6">
                 <h5 className="n10-color">Deposit Amount...</h5>
             </div>
             {!paymentStep ? (
@@ -213,8 +241,8 @@ export default function DepositAmount() {
                         <h6 className="n10-color">Choose deposit amount</h6>
                     </div>
                     <div className="pay_method__paymethod-alitem mb-5 mb-md-6">
-                        {successMessage && <div className="alert alert-success">{successMessage}</div>}
-                        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+                        {/* {successMessage && <div className="alert alert-success">{successMessage}</div>}
+                        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>} */}
                         <div className="pay_method__paymethod-items d-flex align-items-center gap-4 gap-sm-5 gap-md-6">
                             {amountData.map((singleData) => (
                                 <div
@@ -243,13 +271,18 @@ export default function DepositAmount() {
                         <span>Total</span>
                         <span>₹ {formDepositData.amount}</span>
                     </div>
-                    <button onClick={handleDeposit} className="py-4 px-5 n11-bg rounded-2 w-100 cmn-btn">
+                    {/* <a onClick={handleWhatsAppClick} className="g1-color cursor-pointer">Need Help?</a> */}
+                    <button onClick={handleWhatsAppClick} className="cmn-btn px-xxl-11">Need Help? <BsWhatsapp /></button>
+
+
+                    <button onClick={handleDeposit} className="py-4 px-5 mt-4 n11-bg rounded-2 w-100 cmn-btn">
                         Deposit
                     </button>
+
                 </>
             ) : (
                 <>
-                    {!showQRCode && !showUPI && !showDebitCard && (
+                    {!showQRCode && !showUPI && !showDebitCard && !showBankDetails && (
                         <>
                             <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                 <h6 className="n10-color">Choose payment method</h6>
@@ -261,9 +294,12 @@ export default function DepositAmount() {
                                 <button onClick={() => handlePaymentOption('upi')} className="py-2 px-3 btn btn-primary">
                                     Pay on UPI ID
                                 </button>
-                                <button onClick={() => handlePaymentOption('card')} className="py-2 px-3 btn btn-primary">
-                                    Pay with Debit Card
+                                <button onClick={() => handlePaymentOption('bank')} className="py-2 px-3 btn btn-primary">
+                                    Pay directly to Bank Account
                                 </button>
+                                {/* <button onClick={() => handlePaymentOption('card')} className="py-2 px-3 btn btn-primary">
+                                    Pay with Debit Card
+                                </button> */}
                             </div>
                         </>
                     )}
@@ -286,13 +322,33 @@ export default function DepositAmount() {
 
                     {showUPI && (
                         <div className="text-center">
-                            <p>Pay using UPI ID: <strong>{upiID}</strong></p>
+                            {successMessage && <div className="alert alert-success">{successMessage}</div>}
+                            <p className='mb-3'>
+                                Pay using UPI ID: <strong>{upiID} </strong>
+                                <button onClick={() => handleCopy(upiID)}>
+                                    <IconCopy />
+                                </button>
+                            </p>
                             <p>Amount: <b>₹{formDepositData.amount}</b></p>
-                            <button onClick={handleWhatsAppClick} className="cmn-btn px-xxl-11">Share <BsWhatsapp /></button>
+                            <button onClick={handleWhatsAppClick} className="cmn-btn px-xxl-11">
+                                Share <BsWhatsapp />
+                            </button>
+                        </div>
+                    )}
+                    {showBankDetails && bankDetails && (
+                        <div className="text-center">
+                            <p>Bank Name: <strong>{bankDetails.bankName || "N/A"}</strong></p>
+                            <p>Account No.: <strong>{bankDetails.accountNumber || "N/A"}</strong></p>
+                            <p>IFSC Code: <strong>{bankDetails.ifscCode || "N/A"}</strong></p>
+                            <p>Amount: <b>₹{formDepositData.amount}</b></p>
+                            <button onClick={handleWhatsAppClick} className="cmn-btn px-xxl-11">
+                                Share <BsWhatsapp />
+                            </button>
                         </div>
                     )}
 
-                    {showDebitCard && (
+
+                    {/* {showDebitCard && (
                         <>
                             <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                 <h5 className="n10-color">Enter your card details</h5>
@@ -422,7 +478,7 @@ export default function DepositAmount() {
                                 </form>
                             </div>
                         </>
-                    )}
+                    )} */}
                 </>
             )}
         </div>
