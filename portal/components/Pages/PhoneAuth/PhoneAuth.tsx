@@ -5,7 +5,7 @@ import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "../../../firebas
 import { ConfirmationResult } from "firebase/auth";
 import { PhoneAuthProvider, signInWithCredential } from "firebase/auth";
 import { db } from "@/firebaseConfig";
-import { getDoc, doc } from "firebase/firestore";
+import { getDoc, doc, collection, getDocs, query, where } from "firebase/firestore";
 import { useRouter } from 'next/navigation';
 import { createProfile } from "@/api/firestoreService";
 
@@ -21,7 +21,7 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ firstName, lastName }) => {
   const [sending, setSending] = useState<boolean>(false);
   const [verifying, setVerifying] = useState<boolean>(false);
   const [message, setMessage] = useState('');
-  const [resendTimer, setResendTimer] = useState(30); 
+  const [resendTimer, setResendTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
   const router = useRouter();
 
@@ -50,12 +50,21 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ firstName, lastName }) => {
 
   const sendOTP = async () => {
     if (!phoneNumber) return alert("Enter phone number");
+    const formattedPhoneNumber = `+91${phoneNumber}`;
+    const q = query(collection(db, "users"), where("phoneNumber", "==", formattedPhoneNumber));
+    const querySnapshot = await getDocs(q);
 
+    console.log("Query Result:", querySnapshot.docs);
+
+    if (querySnapshot.empty) {
+      router.push("/create-acount");
+      return;
+    }
     setSending(true);
     setupRecaptcha();
 
     try {
-      const confirmation: ConfirmationResult = await signInWithPhoneNumber(auth, `+91${phoneNumber}`, (window as any).recaptchaVerifier);
+      const confirmation: ConfirmationResult = await signInWithPhoneNumber(auth, formattedPhoneNumber, (window as any).recaptchaVerifier);
       setVerificationId(confirmation.verificationId);
       setResendTimer(30);
       setCanResend(false);
