@@ -269,48 +269,67 @@ export const updateWithdrawalStatus = async (
   }
 };
 
-// Fetch Approved Transactions
+// Helper function to get user details by ID
+const getUserDetails = async (userId) => {
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    const userData = userSnap.data();
+    return `${userData.firstName} ${userData.lastName}`;
+  }
+  return "Unknown User";
+};
+
+// Fetch Approved Transactions with User Name
 export const fetchApprovedTransactions = async () => {
   try {
     const transactionsCollection = collection(db, "transactions");
-    const q = query(
-      transactionsCollection,
-      where("status", "==", "approved")
-      // orderBy("timestamp", "asc")
-    );
+    const q = query(transactionsCollection, where("status", "==", "approved"));
     const querySnapshot = await getDocs(q);
-    const approvedTransactionsData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    return approvedTransactionsData.sort((a, b) => {
-      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
-      console.log(dateA);
-      console.log(dateB);
-      console.log(dateB - dateA);
-      return dateB - dateA;
-    });
+
+    const transactions = await Promise.all(
+      querySnapshot.docs.map(async (doc) => {
+        const transaction = doc.data();
+        const fullName = await getUserDetails(transaction.userId);
+        return {
+          id: doc.id,
+          ...transaction,
+          fullName,
+        };
+      })
+    );
+
+    return transactions.sort(
+      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+    );
   } catch (error) {
     console.error("Error fetching approved transactions: ", error);
     throw error;
   }
 };
 
-// Fetch Approved Withdrawals
+// Fetch Approved Withdrawals with User Name
 export const fetchApprovedWithdrawals = async () => {
   try {
     const withdrawalsCollection = collection(db, "withdrawals");
-    const q = query(
-      withdrawalsCollection,
-      where("status", "==", "approved")
-      // orderBy("timestamp", "asc")
-    );
+    const q = query(withdrawalsCollection, where("status", "==", "approved"));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+
+    const withdrawals = await Promise.all(
+      querySnapshot.docs.map(async (doc) => {
+        const withdrawal = doc.data();
+        const fullName = await getUserDetails(withdrawal.userId);
+        return {
+          id: doc.id,
+          ...withdrawal,
+          fullName,
+        };
+      })
+    );
+
+    return withdrawals.sort(
+      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+    );
   } catch (error) {
     console.error("Error fetching approved withdrawals: ", error);
     throw error;

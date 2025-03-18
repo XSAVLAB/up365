@@ -4,12 +4,14 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation';
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
+import { FcGoogle } from 'react-icons/fc';
 import { auth, db, isAdmin } from '../../../firebaseConfig';
 import { signInWithEmailAndPassword, FacebookAuthProvider, TwitterAuthProvider, signInWithPopup } from "firebase/auth";
 import { doPasswordReset, doSignInWithGoogle } from '@/firebase/auth';
 import { getDoc, doc } from 'firebase/firestore';
 import { createProfile } from '@/api/firestoreService';
 import PhoneAuth from '../PhoneAuth/PhoneAuth';
+import { MdThumbsUpDown } from 'react-icons/md';
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -165,7 +167,7 @@ export default function Login() {
                                         <h3 className="mb-6 mb-md-8">Login</h3>
                                         <div className="login_section__form">
                                             {message && <p className="message">{message}</p>}
-                                            <PhoneAuth />
+                                            <PhoneAuth currentPage='login' />
                                             <span className="mb-6">Or continue with Email</span>
                                             <form onSubmit={handleLogin}>
                                                 <div className="mb-5 mb-md-6">
@@ -204,15 +206,16 @@ export default function Login() {
                                                 {/* <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleTwitterLogin}>
                                                     <IconBrandTwitterFilled className="ti ti-brand-twitter-filled fs-four" />
                                                 </Link> */}
-                                                <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={onGoogleSignIn}>
-                                                    <IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" />
+                                                <Link href="#" className="bg-white rounded-5 px-2 py-2" onClick={onGoogleSignIn}>
+                                                    <FcGoogle className="ti ti-brand-google fs-four fw-bold" />
                                                 </Link>
                                             </div>
-                                            <span className="d-center gap-1">
+                                            <span className="d-center gap-1 mt-4">
                                                 <button className="g1-color" onClick={handleForgotPassword}>Forgot Password?</button>
                                             </span>
                                         </div>
                                         <span className="d-center gap-1">Create your account? <Link className="g1-color" href="/create-acount">Sign Up Now</Link></span>
+                                        <span className="d-center gap-1 mt-4">Powered by <strong><MdThumbsUpDown /> BetFair</strong></span>
                                     </div>
                                 </div>
                             </div>

@@ -145,13 +145,11 @@ export default function HeaderTwo() {
                         </ul>
                     </div>
                     <div className="right-area custom-pos custom-postwo position-relative d-flex gap-3 gap-xl-7 align-items-center me-5 me-xl-10 align-items-center">
-                        {user && (
+                        <div className="d-flex align-items-center gap-2 mt-1">
                             <div className="wallet-balance text-end d-none d-sm-block">
                                 <span className="fs-seven mb-1 d-block">Your balance</span>
-                                <span className="fw-bold d-block">Coins {walletBalance}</span>
                             </div>
-                        )}
-                        <div className="d-flex align-items-center gap-2 mt-1">
+                            <span className="fw-bold d-block">Coins {walletBalance}</span>
                             <Link href="/dashboard" className="cmn-btn px-xxl-11">Deposit</Link>
                             {/* <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleWhatsAppClick}>
                                 <FaWhatsapp height={24} width={24} className="ti ti-whatsapp fs-four" />

@@ -8,13 +8,15 @@ import { db } from "@/firebaseConfig";
 import { getDoc, doc, collection, getDocs, query, where } from "firebase/firestore";
 import { useRouter } from 'next/navigation';
 import { createProfile } from "@/api/firestoreService";
+import { current } from "@reduxjs/toolkit";
 
 interface PhoneAuthProps {
   firstName?: string;
   lastName?: string;
+  currentPage: string;
 }
 
-const PhoneAuth: React.FC<PhoneAuthProps> = ({ firstName, lastName }) => {
+const PhoneAuth: React.FC<PhoneAuthProps> = ({ firstName, lastName, currentPage }) => {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [otp, setOtp] = useState<string>("");
   const [verificationId, setVerificationId] = useState<string | null>(null);
@@ -57,8 +59,10 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ firstName, lastName }) => {
     console.log("Query Result:", querySnapshot.docs);
 
     if (querySnapshot.empty) {
-      router.push("/create-acount");
-      return;
+      if (currentPage === "login") {
+        router.push("/create-acount");
+        return;
+      }
     }
     setSending(true);
     setupRecaptcha();

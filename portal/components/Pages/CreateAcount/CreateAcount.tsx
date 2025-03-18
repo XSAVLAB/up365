@@ -12,6 +12,8 @@ import { FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth, db } from '@/firebaseConfig';
 import { getDoc, doc, collection, getDocs, query, where } from 'firebase/firestore';
 import PhoneAuth from '../PhoneAuth/PhoneAuth';
+import { FcGoogle } from 'react-icons/fc';
+import { MdThumbsUpDown } from 'react-icons/md';
 
 const CreateAccount = () => {
     const [firstName, setFirstName] = useState('');
@@ -167,76 +169,73 @@ const CreateAccount = () => {
                                         <div className="login_section__form">
                                             {message && <p className="message">{message}</p>}
 
-                                            <form onSubmit={onSubmit}>
-                                                <div className="mb-5 mb-md-6">
-                                                    <input
-                                                        className="n11-bg"
-                                                        name="firstName"
-                                                        placeholder="First Name"
-                                                        type="text"
-                                                        required
-                                                        value={firstName}
-                                                        onChange={(e) => setFirstName(e.target.value)}
-                                                    />
-                                                </div>
-                                                <div className="mb-5 mb-md-6">
-                                                    <input
-                                                        className="n11-bg"
-                                                        name="lastName"
-                                                        placeholder="Last Name"
-                                                        type="text"
-                                                        required
-                                                        value={lastName}
-                                                        onChange={(e) => setLastName(e.target.value)}
-                                                    />
-                                                </div>
-                                                <PhoneAuth firstName={firstName} lastName={lastName} />
-                                                <span className="mb-6">Or continue with Email</span>
+                                            <div className="mb-5 mb-md-6">
+                                                <input
+                                                    className="n11-bg"
+                                                    name="firstName"
+                                                    placeholder="First Name"
+                                                    type="text"
+                                                    required
+                                                    value={firstName}
+                                                    onChange={(e) => setFirstName(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="mb-5 mb-md-6">
+                                                <input
+                                                    className="n11-bg"
+                                                    name="lastName"
+                                                    placeholder="Last Name"
+                                                    type="text"
+                                                    required
+                                                    value={lastName}
+                                                    onChange={(e) => setLastName(e.target.value)}
+                                                />
+                                            </div>
+                                            <PhoneAuth firstName={firstName} lastName={lastName} currentPage='create-account' />
+                                            <span className="mb-6">Or continue with Email</span>
 
-                                                <div className="mb-5 mb-md-6">
-                                                    <input
-                                                        className="n11-bg"
-                                                        name="email"
-                                                        placeholder="Email"
-                                                        type="email"
-                                                        required
-                                                        value={email}
-                                                        onChange={(e) => setEmail(e.target.value)}
-                                                    />
-                                                </div>
-                                                <div className="mb-5 mb-md-6">
-                                                    <input
-                                                        className="n11-bg"
-                                                        name="password"
-                                                        placeholder="Password"
-                                                        type="password"
-                                                        required
-                                                        value={password}
-                                                        onChange={(e) => setPassword(e.target.value)}
-                                                    />
-                                                </div>
-                                                <div className="d-flex align-items-center flex-wrap flex-sm-nowrap gap-2 mb-6">
-                                                    <input type="checkbox" required onChange={handleTermsChange} />
-                                                    <span>
-                                                        By signing up, I hereby confirm that I am over 18, I read and accepted
-                                                        the <a href="#">terms and conditions</a>
-                                                    </span>
-                                                </div>
-                                                <div className="d-flex align-items-center flex-wrap flex-sm-nowrap gap-2 mb-6">
-                                                    <input type="checkbox" onChange={handleConsentChange} />
-                                                    <span>
-                                                        I consent to the use of my email and mobile number for future
-                                                        communications, updates, and promotional purposes.
-                                                    </span>
-                                                </div>
-                                                <button
-                                                    className={`cmn-btn px-5 py-3 mb-6 w-100 ${!isTermsAccepted ? 'btn-disabled' : ''}`}
-                                                    type="submit"
-                                                    disabled={!isTermsAccepted}
-                                                >
-                                                    Sign Up
-                                                </button>
-                                            </form>
+                                            <div className="mb-5 mb-md-6">
+                                                <input
+                                                    className="n11-bg"
+                                                    name="email"
+                                                    placeholder="Email"
+                                                    type="email"
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="mb-5 mb-md-6">
+                                                <input
+                                                    className="n11-bg"
+                                                    name="password"
+                                                    placeholder="Password"
+                                                    type="password"
+                                                    value={password}
+                                                    onChange={(e) => setPassword(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="d-flex align-items-center flex-wrap flex-sm-nowrap gap-2 mb-6">
+                                                <input type="checkbox" required onChange={handleTermsChange} />
+                                                <span>
+                                                    By signing up, I hereby confirm that I am over 18, I read and accepted
+                                                    the <a href="#">terms and conditions</a>
+                                                </span>
+                                            </div>
+                                            <div className="d-flex align-items-center flex-wrap flex-sm-nowrap gap-2 mb-6">
+                                                <input type="checkbox" onChange={handleConsentChange} />
+                                                <span>
+                                                    I consent to the use of my email and mobile number for future
+                                                    communications, updates, and promotional purposes.
+                                                </span>
+                                            </div>
+                                            <button
+                                                className={`cmn-btn px-5 py-3 mb-6 w-100 ${!isTermsAccepted ? 'btn-disabled' : ''}`}
+                                                type="submit"
+                                                disabled={!isTermsAccepted}
+                                                onClick={onSubmit}
+                                            >
+                                                Sign Up
+                                            </button>
                                         </div>
                                         <div className="login_section__socialmedia text-center mb-6">
                                             <span className="mb-6">Or continue with</span>
@@ -245,12 +244,13 @@ const CreateAccount = () => {
                                                     <IconBrandFacebookFilled className="ti ti-brand-facebook-filled fs-four" />
                                                 </Link> */}
 
-                                                <Link href="#" onClick={(e) => { onGoogleSignIn(e) }} className="n11-bg px-3 py-2 rounded-5">
-                                                    <IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" />
+                                                <Link href="#" className="bg-white rounded-5 px-2 py-2" onClick={onGoogleSignIn}>
+                                                    <FcGoogle className="ti ti-brand-google fs-four fw-bold" />
                                                 </Link>
                                             </div>
                                         </div>
                                         <span className="d-center gap-1">Already a member? <Link className="g1-color" href="/login">Login</Link></span>
+                                        <span className="d-center gap-1 mt-4">Powered by <strong><MdThumbsUpDown /> BetFair</strong></span>
                                     </div>
                                 </div>
                             </div>

@@ -1,4 +1,3 @@
-// History.js
 import React, { useState, useEffect } from 'react';
 import { fetchApprovedTransactions, fetchApprovedWithdrawals } from '../../../../api/firestoreAdminService';
 import { saveAs } from 'file-saver';
@@ -7,6 +6,7 @@ import * as XLSX from 'xlsx';
 interface Transaction {
     id: string;
     userId: string;
+    fullName: string;  
     amount: string;
     status: string;
     timestamp: string;
@@ -15,13 +15,16 @@ interface Transaction {
 interface Withdrawal {
     id: string;
     userId: string;
+    fullName: string; 
     amount: string;
     status: string;
     timestamp: string;
 }
+
 export default function History() {
     const [approvedTransactions, setApprovedTransactions] = useState<Transaction[]>([]);
     const [approvedWithdrawals, setApprovedWithdrawals] = useState<Withdrawal[]>([]);
+
     useEffect(() => {
         const fetchApprovedData = async () => {
             try {
@@ -42,41 +45,44 @@ export default function History() {
     const handleDownloadExcel = () => {
         const data = [
             ...approvedTransactions.map(transaction => ({
+                'User Name': transaction.fullName,
                 'User ID': transaction.userId,
                 'Deposit': transaction.amount,
                 'Withdraw': '',
                 'Status': transaction.status,
-                'Timestamp': transaction.timestamp 
+                'Timestamp': transaction.timestamp
             })),
             ...approvedWithdrawals.map(withdrawal => ({
+                'User Name': withdrawal.fullName,
                 'User ID': withdrawal.userId,
                 'Deposit': '',
                 'Withdraw': withdrawal.amount,
                 'Status': withdrawal.status,
-                'Timestamp': withdrawal.timestamp 
+                'Timestamp': withdrawal.timestamp
             }))
         ];
 
         const headers = [
+            'User Name',
             'User ID',
             'Deposit',
             'Withdraw',
             'Status',
-            'Timestamp' 
+            'Timestamp'
         ];
 
         const workbook = XLSX.utils.book_new();
-
         const worksheet = XLSX.utils.json_to_sheet(data, { skipHeader: true });
 
         XLSX.utils.sheet_add_aoa(worksheet, [headers], { origin: 'A1' });
 
         const columnWidths = [
-            { wch: 15 },
-            { wch: 15 },
-            { wch: 15 },
-            { wch: 15 },
-            { wch: 20 } 
+            { wch: 20 },  // User Name
+            { wch: 15 },  // User ID
+            { wch: 15 },  // Deposit
+            { wch: 15 },  // Withdraw
+            { wch: 15 },  // Status
+            { wch: 20 }   // Timestamp
         ];
 
         worksheet['!cols'] = columnWidths;
@@ -89,7 +95,6 @@ export default function History() {
         saveAs(dataBlob, 'ApprovedData.xlsx');
     };
 
-
     return (
         <div className="pay_method__tabletwo">
             <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
@@ -98,6 +103,7 @@ export default function History() {
                     <thead>
                         <tr>
                             <th>Timestamp</th>
+                            <th>User Name</th>
                             <th>Deposit</th>
                             <th>Withdraw</th>
                             <th>Status</th>
@@ -108,6 +114,7 @@ export default function History() {
                         {approvedTransactions.map((transaction) => (
                             <tr key={transaction.id}>
                                 <td>{transaction.timestamp}</td>
+                                <td>{transaction.fullName}</td>
                                 <td>{transaction.amount}</td>
                                 <td>-</td>
                                 <td>{transaction.status}</td>
@@ -117,6 +124,7 @@ export default function History() {
                         {approvedWithdrawals.map((withdrawal) => (
                             <tr key={withdrawal.id}>
                                 <td>{withdrawal.timestamp}</td>
+                                <td>{withdrawal.fullName}</td>
                                 <td>-</td>
                                 <td>{withdrawal.amount}</td>
                                 <td>{withdrawal.status}</td>

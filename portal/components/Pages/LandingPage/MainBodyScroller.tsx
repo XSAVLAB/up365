@@ -1,9 +1,6 @@
 "use client"
 import React from "react";
 import { FaGamepad } from "react-icons/fa";
-import { AiFillHome } from "react-icons/ai";
-import { BiSolidOffer } from "react-icons/bi";
-import { MdFiberNew } from "react-icons/md";
 import { GiWallet, GiCoins } from "react-icons/gi";
 import { useRouter } from "next/navigation";
 import './styles.css'; // Import the custom CSS file
@@ -25,13 +22,6 @@ const MainBodyScroller: React.FC<MainBodyScrollerProps> = ({ scrollToGames }) =>
     router.push("/login");
   };
 
-  const navigateCricketPage = () => {
-    router.push("/cricket");
-  }
-  const navigateFootball1Page = () => {
-    router.push("/football");
-  }
-
   return (
     <nav className="main-body-scroller">
       <div className="container">
@@ -40,7 +30,7 @@ const MainBodyScroller: React.FC<MainBodyScrollerProps> = ({ scrollToGames }) =>
             <AiFillHome size={25} />
             <span>Home</span>
           </div> */}
-          <div className="nav-item" onClick={navigateGamesPage}>
+          <div className="nav-item" onClick={navigateLoginPage}>
             <FaGamepad size={25} />
             <span>Games</span>
           </div>
@@ -48,11 +38,11 @@ const MainBodyScroller: React.FC<MainBodyScrollerProps> = ({ scrollToGames }) =>
             <GiCoins size={25} />
             <span>Casino</span>
           </div>
-          <div className="nav-item" onClick={navigateCricketPage}>
+          <div className="nav-item" onClick={navigateLoginPage}>
             <IconCricket size={25} />
             <span>Cricket</span>
           </div>
-          <div className="nav-item" onClick={navigateFootball1Page}>
+          <div className="nav-item" onClick={navigateLoginPage}>
             <IconBallFootball size={25} />
             <span>Football1</span>
           </div>
