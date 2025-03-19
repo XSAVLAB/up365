@@ -93,8 +93,8 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ firstName, lastName, currentPage 
 
       if (!userDoc.exists()) {
         const profileData = {
-          firstName: "",
-          lastName: "",
+          firstName: firstName || "",
+          lastName: lastName || "",
           phoneNumber: user.phoneNumber,
           email: user.email || "",
           isConsentGiven: false,
