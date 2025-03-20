@@ -227,8 +227,10 @@ export default function Aviator() {
                     {walletBalance}
                 </div>
             </div>
-            <div className="aviator-bets-content">
+            <div className='aviator-message-box'>
                 {cashoutMessage && <div className="cashout-message">{cashoutMessage}</div>}
+            </div>
+            <div className="aviator-bets-content">
                 <div className='aviator-plane'>
 
                     {isRunning ? (

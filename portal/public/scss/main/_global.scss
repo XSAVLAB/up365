@@ -3796,13 +3796,16 @@ $transition-time: 0.4s; // Transition duration
 	margin: 20px;
 	z-index: 2;
 }
+.aviator-message-box{
+	height: 40px;
+	width: 100%;
+}
 .cashout-message{
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	font-size: 1.5rem;
-	padding: 10px;
-	margin: 10px;
+	padding: 4px;
 	border-radius: 20px;
 	background-color: #1eff00bb;
 }

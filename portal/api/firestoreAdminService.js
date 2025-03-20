@@ -280,58 +280,68 @@ const getUserDetails = async (userId) => {
   return "Unknown User";
 };
 
-// Fetch Approved Transactions with User Name
-export const fetchApprovedTransactions = async () => {
+// Fetch both Approved Transactions and Withdrawals in a single function
+export const fetchApprovedData = async () => {
   try {
     const transactionsCollection = collection(db, "transactions");
-    const q = query(transactionsCollection, where("status", "==", "approved"));
-    const querySnapshot = await getDocs(q);
+    const withdrawalsCollection = collection(db, "withdrawals");
+
+    const transactionsQuery = query(
+      transactionsCollection,
+      where("status", "==", "approved")
+    );
+    const withdrawalsQuery = query(
+      withdrawalsCollection,
+      where("status", "==", "approved")
+    );
+
+    const [transactionsSnapshot, withdrawalsSnapshot] = await Promise.all([
+      getDocs(transactionsQuery),
+      getDocs(withdrawalsQuery),
+    ]);
 
     const transactions = await Promise.all(
-      querySnapshot.docs.map(async (doc) => {
+      transactionsSnapshot.docs.map(async (doc) => {
         const transaction = doc.data();
         const fullName = await getUserDetails(transaction.userId);
         return {
           id: doc.id,
-          ...transaction,
           fullName,
+          userId: transaction.userId,
+          amount: transaction.amount,
+          status: transaction.status,
+          timestamp: transaction.timestamp,
+          type: "deposit",
         };
       })
     );
 
-    return transactions.sort(
-      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-    );
-  } catch (error) {
-    console.error("Error fetching approved transactions: ", error);
-    throw error;
-  }
-};
-
-// Fetch Approved Withdrawals with User Name
-export const fetchApprovedWithdrawals = async () => {
-  try {
-    const withdrawalsCollection = collection(db, "withdrawals");
-    const q = query(withdrawalsCollection, where("status", "==", "approved"));
-    const querySnapshot = await getDocs(q);
-
     const withdrawals = await Promise.all(
-      querySnapshot.docs.map(async (doc) => {
+      withdrawalsSnapshot.docs.map(async (doc) => {
         const withdrawal = doc.data();
         const fullName = await getUserDetails(withdrawal.userId);
         return {
           id: doc.id,
-          ...withdrawal,
           fullName,
+          userId: withdrawal.userId,
+          amount: withdrawal.amount,
+          status: withdrawal.status,
+          timestamp: withdrawal.timestamp,
+          type: "withdrawal",
         };
       })
     );
 
-    return withdrawals.sort(
-      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-    );
+    // Merge and sort data based on timestamp
+    const mergedData = [...transactions, ...withdrawals].sort((a, b) => {
+      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      return dateB - dateA; // Sort in descending order
+    });
+
+    return mergedData;
   } catch (error) {
-    console.error("Error fetching approved withdrawals: ", error);
+    console.error("Error fetching approved data: ", error);
     throw error;
   }
 };

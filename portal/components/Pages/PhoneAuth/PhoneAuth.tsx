@@ -52,6 +52,10 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ firstName, lastName, currentPage 
 
   const sendOTP = async () => {
     if (!phoneNumber) return alert("Enter phone number");
+    if (currentPage == "create-account") {
+      if (!firstName) return alert("Enter First Name");
+      if (!lastName) return alert("Enter Last Name");
+    }
     const formattedPhoneNumber = `+91${phoneNumber}`;
     const q = query(collection(db, "users"), where("phoneNumber", "==", formattedPhoneNumber));
     const querySnapshot = await getDocs(q);
@@ -131,7 +135,7 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ firstName, lastName, currentPage 
       </div>
 
       {!verificationId ? (
-        <button onClick={sendOTP} disabled={sending} className="cmn-btn px-5 py-3 mb-6 w-100">
+        <button onClick={sendOTP} disabled={sending || phoneNumber.length !== 10} className={`cmn-btn px-5 py-3 mb-6 w-100 ${phoneNumber.length !== 10 ? "btn-disabled" : ""}`}>
           {sending ? "Sending..." : "Get OTP"}
         </button>
       ) : (

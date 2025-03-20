@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 const ComingSoon: React.FC = () => {
     const calculateTimeLeft = () => {
-        const targetDate = new Date('2024-11-30T00:00:00');
+        const targetDate = new Date('2025-04-30T00:00:00');
         const now = new Date();
         const difference = targetDate.getTime() - now.getTime();
 
@@ -42,7 +42,7 @@ const ComingSoon: React.FC = () => {
                 <h1>Something Awesome is Coming Soon!</h1>
                 <p>We are working hard to give you a better experience. Stay tuned!</p>
 
-                <div className="timer">
+                {/* <div className="timer">
                     <div className="timer-item">
                         <span>{timeLeft.days}</span>
                         <span>Days</span>
@@ -59,7 +59,7 @@ const ComingSoon: React.FC = () => {
                         <span>{timeLeft.seconds}</span>
                         <span>Seconds</span>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );

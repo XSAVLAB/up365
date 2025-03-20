@@ -3,9 +3,16 @@
     transform: translateX(120%);
 }
 
+.header-scroll{
+    position: relative;
+    width: 100%;
+    z-index: 999;
+    background: black;
+}
+
 .header-section2 {
     width: 100%;
-    position: fixed;
+    position:absolute;
     z-index: 05;
 
     .navbar {

@@ -32,6 +32,7 @@ const HomePage: React.FC = () => {
                 const profileData = await fetchProfileData(currentUser.uid);
                 if (profileData && profileData.firstName) {
                     setUserName(profileData.firstName);
+                    console.log("Bonus Shown Already?: " + profileData.hasSeenBonus);
                 }
                 if (profileData && !profileData.hasSeenBonus) {
                     setShowBonus(true);
@@ -60,6 +61,7 @@ const HomePage: React.FC = () => {
             try {
                 if (user && user.uid) {
                     const depositCredited = await fetchDepositCredited(user.uid);
+                    console.log(depositCredited);
                     if (depositCredited.length > 0) {
                         const { amount, isSuccessShown } = depositCredited[0];
 
@@ -93,6 +95,7 @@ const HomePage: React.FC = () => {
         if (user) {
             try {
                 const userDocRef = doc(db, 'users', user.uid);
+                console.log("has seen bonus?: " + user.hasSeenBonus);
                 await setDoc(userDocRef, { hasSeenBonus: true }, { merge: true });
             } catch (error) {
                 console.error('Error updating profile data: ', error);

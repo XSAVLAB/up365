@@ -201,17 +201,20 @@ export const addTransaction = async (userId, transactionData) => {
 export const fetchDepositCredited = async (userId) => {
   try {
     const depositCreditedCollectionRef = collection(db, "transactions");
+    console.log(depositCreditedCollectionRef);
     const q = query(
       depositCreditedCollectionRef,
       where("userId", "==", userId),
       where("status", "==", "approved"),
       where("isSuccessShown", "==", false)
     );
+    console.log(q);
     const querySnapshot = await getDocs(q);
     const depositCredited = querySnapshot.docs.map((doc) => {
       const { amount, isSuccessShown } = doc.data();
       return { amount, isSuccessShown };
     });
+    console.log(depositCredited);
 
     return depositCredited;
   } catch (error) {
@@ -849,11 +852,16 @@ export const fetchUserStatement = async (userId) => {
     ];
 
     // Sort combinedData by timestamp
-    combinedData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    // combinedData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const sortedCombinedData = combinedData.sort((a, b) => {
+      const dateA = parse(a.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      const dateB = parse(b.timestamp, "d/M/yyyy, h:mm:ss a", new Date());
+      return dateA - dateB;
+    });
 
     // Calculate balance for each transaction
     let balance = 0;
-    const combinedDataWithBalance = combinedData.map((entry) => {
+    const combinedDataWithBalance = sortedCombinedData.map((entry) => {
       if (entry.type === "Deposit") {
         balance += entry.amount;
       } else if (
