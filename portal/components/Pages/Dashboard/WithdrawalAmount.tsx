@@ -143,7 +143,7 @@ export default function WithdrawalAmount() {
                         </button>
                     </form>
                     <div className="text-center mt-4">
-                        <span>Your withdrawal limit for the month: ₹ 50,000</span>
+                        <span>24/7 Easy Withdrawal</span>
                     </div>
                 </>
 

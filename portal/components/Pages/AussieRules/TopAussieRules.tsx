@@ -1,128 +1,210 @@
-import Image from "next/image";
-import { australia } from "@/public/data/allPageData";
+// "use client";
+// import { useState, useEffect } from "react";
+// import "./styles.css";  // Import custom CSS
+
+// interface Match {
+//     match_id: number;
+//     title: string;
+//     date_start: string;
+//     date_end: string;
+//     odds_1: string;
+//     odds_x: string;
+//     odds_2: string;
+//     platform: string; // e.g., "f", "BM"
+// }
+
+// export default function Home() {
+//     const [matches, setMatches] = useState<Match[]>([]);
+//     const [loading, setLoading] = useState(true);
+//     const [error, setError] = useState<string | null>(null);
+
+//     useEffect(() => {
+//         const fetchMatches = async () => {
+//             try {
+//                 const mid = 52428;
+//                 const response = await fetch(`/api/cricket?type=matches&mid=${mid}/scorecard`);
+//                 // const response = await fetch("https://rest.entitysport.com/v2/competitions/127579/matches/?token=ec471071441bb2ac538a0ff901abd249&per_page=50&&paged=1");
+
+//                 console.log(response);
+//                 if (!response.ok) {
+//                     throw new Error("Failed to fetch matches");
+//                 }
+
+//                 const data = await response.json();
+//                 console.log(data);
+
+//                 // Mocking odds and platform values since API might not have them
+//                 const formattedMatches = data.response.items.map((match: any) => ({
+//                     match_id: match.match_id,
+//                     title: match.title,
+//                     date_start: new Date(match.date_start).toLocaleString(),
+//                     date_end: new Date(match.date_end).toLocaleString(),
+//                     odds_1: (Math.random() * (2.0 - 1.5) + 1.5).toFixed(2),
+//                     odds_x: (Math.random() * (3.0 - 2.0) + 2.0).toFixed(2),
+//                     odds_2: (Math.random() * (2.5 - 1.8) + 1.8).toFixed(2),
+//                     scoreCard: match.scoreCard,
+//                 }));
+
+
+//                 setMatches(formattedMatches);
+//                 console.log(formattedMatches);
+//                 setLoading(false);
+//             } catch (err: any) {
+//                 setError(err.message);
+//                 setLoading(false);
+//             }
+//         };
+
+//         fetchMatches();
+//     }, []);
+
+//     if (loading) return <p>Loading matches...</p>;
+//     if (error) return <p>Error: {error}</p>;
+
+//     return (
+//         <div className="container">
+//             <h1 className="title">Current Matches</h1>
+
+//             <div className="table-container">
+//                 <table className="custom-table">
+//                     <thead>
+//                         <tr>
+//                             <th>Game</th>
+//                             <th>Start Time</th>
+//                             <th>End Time</th>
+//                             <th className="odds blue-bg">1</th>
+//                             <th className="odds pink-bg">X</th>
+//                             <th className="odds blue-bg">2</th>
+//                         </tr>
+//                     </thead>
+//                     <tbody>
+//                         {matches.map((match) => (
+//                             <tr key={match.match_id}>
+//                                 <td>{match.title}</td>
+//                                 <td>{match.date_start}</td>
+//                                 <td>{match.date_end}</td>
+//                                 <td className="odds blue-bg">{match.odds_1}</td>
+//                                 <td className="odds pink-bg">{match.odds_x}</td>
+//                                 <td className="odds blue-bg">{match.odds_2}</td>
+//                             </tr>
+//                         ))}
+//                     </tbody>
+//                 </table>
+//             </div>
+//         </div>
+//     );
+// }
+// 222222222222222222222
+"use client";
+import { useState, useEffect } from "react";
+import "./styles.css";  // Import custom CSS
+
+interface Match {
+    match_id: number;
+    title: string;
+    date_start: string;
+    date_end: string;
+    odds_1x: string;
+    odds_xx: string;
+    odds_2x: string;
+    odds_1: string;
+    odds_x: string;
+    odds_2: string;
+}
 
 export default function TopAussieRules() {
-    return (
-        <section className="top_matches pb-7 pb-md-9">
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-12 gx-0 gx-sm-4">
-                        <div className="top_matches__main pt-20">
-                            <div className="row w-100 pt-md-5">
-                                <div className="col-12">
-                                    <div className="top_matches__title d-flex align-items-center gap-2 mb-4 mb-md-5">
-                                        <Image src="/images/icon/australia2.png" width={30}
-                                            height={30} alt="Icon" />
-                                        <h3>Australia</h3>
-                                    </div>
-                                    <div className="top_matches__content">
-                                        {australia.map(
-                                            ({
-                                                id,
-                                                titletwo,
-                                                clubone,
-                                                clubtwo,
-                                                clubNameOne,
-                                                clubNameTwo,
-                                            }) => (
-                                                <div className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4" key={id}>
-                                                    <div className="row gx-0 gy-xl-0 gy-7">
-                                                        <div className="col-xl-5 col-xxl-4">
-                                                            <div className="top_matches__clubname">
-                                                                <div
-                                                                    className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4 ">
-                                                                    <div className="d-flex align-items-center gap-1">
-                                                                        <Image src="/images/icon/aussie-rules.png" width={16} height={16}
-                                                                            alt="Icon" /> <span
-                                                                                className="fs-eight cpoint">{titletwo}</span>
-                                                                    </div>
-                                                                    <div
-                                                                        className="d-flex align-items-center gap-4 pe-xl-15 flex-nowrap flex-xl-wrap">
-                                                                        <span className="fs-eight cpoint me-xl-6">Today,
-                                                                            23:00</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div
-                                                                    className="top_matches__cmncard-left d-flex align-items-center justify-content-between pe-xl-10">
-                                                                    <div>
-                                                                        <div
-                                                                            className="d-flex align-items-center gap-2 mb-4">
-                                                                            <Image className="rounded-5" src={clubone} width={24} height={24}
-                                                                                alt="Icon" /> <span
-                                                                                    className="fs-seven cpoint">{clubNameOne}</span>
-                                                                        </div>
-                                                                        <div className="d-flex align-items-center gap-2">
-                                                                            <Image className="rounded-5" src={clubtwo} width={24} height={24}
-                                                                                alt="Icon" /> <span
-                                                                                    className="fs-seven cpoint">{clubNameTwo}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div
-                                                                        className="d-flex align-items-center gap-4 position-relative pe-xl-15">
-                                                                        <span
-                                                                            className="v-line lg d-none d-xl-block"></span>
-                                                                        <div className="d-flex flex-column gap-5">
-                                                                            <Image className="cpoint"
-                                                                                src="/images/icon/line-chart.png" width={16} height={16}
-                                                                                alt="Icon" />
-                                                                            <Image className="cpoint"
-                                                                                src="/images/icon/star2.png" width={16} height={16}
-                                                                                alt="Icon" />
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-xl-7 col-xxl-8 d-xl-flex">
-                                                            <div className="top_matches__clubdata top_matches__clubdatatwo">
-                                                                <div className="table-responsive">
-                                                                    <table className="table mb-0 pb-0">
-                                                                        <thead>
-                                                                            <tr className="text-start">
-                                                                                <th scope="col"><span
-                                                                                    className="fs-eight ms-15">Winner</span>
-                                                                                </th>
-                                                                            </tr>
-                                                                        </thead>
+    const [matches, setMatches] = useState<Match[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-                                                                        <tbody>
-                                                                            <tr>
-                                                                                <td className="pt-4">
-                                                                                    <div
-                                                                                        className="top_matches__innercount d-flex align-items-center gap-2 ">
-                                                                                        <div
-                                                                                            className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                                                                                            <span
-                                                                                                className="fs-seven text-center d-block mb-2">2</span>
-                                                                                            <span
-                                                                                                className="fw-bold d-block">3.8</span>
-                                                                                        </div>
-                                                                                        <div
-                                                                                            className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                                                                                            <span
-                                                                                                className="fs-seven text-center d-block mb-2">1</span>
-                                                                                            <span
-                                                                                                className="fw-bold d-block">3.45</span>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                            <hr className=" w-100 mt-8 d-none d-xl-block n4-color" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    useEffect(() => {
+        const fetchIplMatches = async () => {
+            try {
+                const response = await fetch("/api/cricket?type=ipl");  // Fetch IPL matches
+                if (!response.ok) {
+                    throw new Error("Failed to fetch IPL matches");
+                }
+
+                const data = await response.json();
+
+                const formattedMatches = data.response.items.map((match: any) => ({
+                    match_id: match.match_id,
+                    title: match.title,
+                    date_start: new Date(match.date_start).toLocaleString(),
+                    date_end: new Date(match.date_end).toLocaleString(),
+                    odds_1x: (Math.random() * (2.0 - 1.5) + 1.5).toFixed(2),
+                    odds_xx: "-",
+                    odds_2x: (Math.random() * (2.5 - 1.8) + 1.8).toFixed(2),
+                    odds_1: (Math.random() * (2.0 - 1.5) + 1.5).toFixed(2),
+                    odds_x: "-",
+                    odds_2: (Math.random() * (2.5 - 1.8) + 1.8).toFixed(2),
+                }));
+
+                setMatches(formattedMatches);
+                setLoading(false);
+            } catch (err: any) {
+                setError(err.message);
+                setLoading(false);
+            }
+        };
+
+        fetchIplMatches();
+    }, []);
+
+    if (loading) return <p>Loading IPL matches...</p>;
+    if (error) return <p>Error: {error}</p>;
+
+    return (
+        <div className="container">
+            <h1 className="title">IPL Matches</h1>
+
+            <div className="table-container">
+                <table className="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Game</th>
+                            <th className="odds" colSpan={2}>1</th>
+                            <th className="odds" colSpan={2}>X</th>
+                            <th className="odds" colSpan={2}>2</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {matches.map((match) => (
+                            <tr key={match.match_id}>
+                                <td>{match.title} / {match.date_start}</td>
+
+                                {/* Grouped under "1" */}
+                                <td className="odds blue-bg">{match.odds_1}</td>
+                                <td className="odds blue-bg">{match.odds_2}</td>
+
+                                {/* Grouped under "X" */}
+                                <td className="odds pink-bg">{match.odds_x}</td>
+                                <td className="odds pink-bg">{match.odds_x}</td>
+
+                                {/* Grouped under "2" */}
+                                <td className="odds blue-bg">{match.odds_2}</td>
+                                <td className="odds blue-bg">{match.odds_2x}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
             </div>
-        </section>
-    )
+        </div>
+    );
 }
+
+
+// // pages/index.js
+// import EntityFixtureWidget from '../../Shared/EntityFixtureWidget';
+
+// const HomePage = () => (
+//     <div>
+//         <h1>Welcome to Our Sports Page</h1>
+//         {/* Other content */}
+//         <EntityFixtureWidget />
+//         {/* More content */}
+//     </div>
+// );
+
+// export default HomePage;

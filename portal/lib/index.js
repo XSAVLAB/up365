@@ -1,4 +1,5 @@
-import { defaults } from "request-promise";
+import request from "request-promise";
+import getAllFunctions from "./get_all_functions.js";
 
 function normalizeError(err) {
   throw {
@@ -6,44 +7,45 @@ function normalizeError(err) {
     error: err.error.error,
   };
 }
+
 class API {
   constructor(options) {
     this.base_url = "https://rest.entitysport.com/v2/";
     this.api_token = options.api_token;
-    this.rq = defaults({
-      json: true,
-    });
+    this.rq = request.defaults({ json: true });
   }
 
-  async get(params, cb) {
+  async get(params) {
     params.data.token = this.api_token;
     try {
-      return await this.rq
-        .get({
-          url: this.base_url + params.url,
-          qs: params.data,
-        });
+      const response = await this.rq({
+        uri: this.base_url + params.url,
+        qs: params.data,
+        json: true,
+      });
+      return response;
     } catch (err) {
-      return normalizeError(err);
+      normalizeError(err);
     }
   }
 
-  async update(params, cb) {
+  async update(params) {
     try {
-      return await this.rq
-        .get({
-          url: this.base_url + params.url,
-          qs: params.data,
-        });
+      const response = await this.rq({
+        uri: this.base_url + params.url,
+        qs: params.data,
+        json: true,
+      });
+      return response;
     } catch (err) {
-      return normalizeError(err);
+      normalizeError(err);
     }
   }
 }
 
-class Entity_cricket {
+class EntityCricket {
   constructor(options) {
-    let { api_token, token_expires } = options;
+    const { api_token, token_expires } = options;
 
     if (!api_token) {
       throw new Error("`api_token` is mandatory");
@@ -58,10 +60,8 @@ class Entity_cricket {
   }
 
   addResources() {
-    Object.assign(this, {
-      cricket: require("./get_all_functions.js")(this.api),
-    });
+    this.cricket = getAllFunctions(this.api);
   }
 }
 
-export default Entity_cricket;
+export default EntityCricket;
