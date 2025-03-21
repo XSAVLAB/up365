@@ -67,7 +67,7 @@ function TripleDigitLottery() {
             try {
                 const response = await submitLotteryBet(user?.uid, number, betAmount, 'Triple Digit Lottery', null, false);
                 if (response.status === "Bet Placed") {
-                    updateUserWallet(user?.uid, Number(walletBalance) - betAmount);
+                    updateUserWallet(user?.uid, (Number(walletBalance) - betAmount).toFixed(2));
                     setWalletBalance(String(Number(walletBalance) - betAmount));
                     alert(`Bet Submitted.\nCheck the Active Bets Table.`);
                 }
@@ -75,7 +75,7 @@ function TripleDigitLottery() {
                 alert('Failed to place bet. Please try again.');
             }
         } else {
-            alert('Please select a number between 100 to 999, a bet amount greater than 99.');
+            alert('Please select a number between 100 to 999');
         }
     }
 

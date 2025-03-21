@@ -209,7 +209,7 @@ export default function Dashboard() {
             if (status === 'approved') {
                 comment = comment || 'Approved without comment'; // Set a default comment if not provided
                 await updateTransactionStatus(transactionId, status, comment);
-                await updateUserWallet(userId, parseFloat(amount));
+                await updateUserWallet(userId, parseFloat(amount).toFixed(2));
             } else if (status === 'rejected') {
                 comment = prompt("Please enter a comment for rejecting this transaction:") ?? 'Reason not provide!';
                 await updateTransactionStatus(transactionId, status, comment);

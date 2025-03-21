@@ -52,6 +52,13 @@ const getAllFunctions = (api) => ({
       data: args,
     });
   },
+  async get_match_odds(mid, args = {}) {
+    const path = `matches/${mid}/odds`;
+    return api.get({
+      url: path,
+      data: args,
+    });
+  },
 });
 
 export default getAllFunctions;

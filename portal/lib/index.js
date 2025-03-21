@@ -10,7 +10,7 @@ function normalizeError(err) {
 
 class API {
   constructor(options) {
-    this.base_url = "https://rest.entitysport.com/v2/";
+    this.base_url = process.env.ENTITYSPORT_API_URL;
     this.api_token = options.api_token;
     this.rq = request.defaults({ json: true });
   }

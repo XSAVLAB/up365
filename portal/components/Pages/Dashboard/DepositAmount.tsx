@@ -233,7 +233,7 @@ export default function DepositAmount() {
             <a onClick={handleGoBack} className="g1-color cursor-pointer"><IconArrowBack /> Back</a>
 
             <div className="pay_method__paymethod-title mb-5 mt-4 mb-md-6">
-                <h5 className="n10-color">Deposit Amount...</h5>
+                <h5 className="n10-color">Deposit Amount</h5>
             </div>
             {!paymentStep ? (
                 <>
@@ -256,21 +256,20 @@ export default function DepositAmount() {
                                     </div>
                                 </div>
                             ))}
-                            <div className="d-flex w-100 p1-bg rounded-8">
-                                <input
-                                    type="text"
-                                    placeholder="Custom amount"
-                                    value={customAmount}
-                                    onChange={handleCustomAmountChange}
-                                />
-                            </div>
+                        </div>
+                        <div className="border p-2 rounded-3 mt-4">
+                            <input
+                                type="text"
+                                placeholder="Custom amount"
+                                value={customAmount}
+                                onChange={handleCustomAmountChange}
+                            />
                         </div>
                     </div>
                     <div className="text-end mb-6 mb-md-8"></div>
-                    <div className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
-                        <span>Total</span>
-                        <span>₹ {formDepositData.amount}</span>
-                    </div>
+                    <div className="d-flex align-items-center mb-7 mb-md-10">
+                        <span>Total ₹ {formDepositData.amount}</span>
+                    </div>k
                     {/* <a onClick={handleWhatsAppClick} className="g1-color cursor-pointer">Need Help?</a> */}
                     <button onClick={handleWhatsAppClick} className="cmn-btn px-xxl-11">Need Help? <BsWhatsapp /></button>
 
@@ -312,8 +311,8 @@ export default function DepositAmount() {
                                 <p>{qrCodeUrl}</p>
                             )}
                             <p>Scan and Pay</p>
-                            <p><small>You can share the screenshot on WhatsApp</small></p>
                             <p>Amount: <b>₹{formDepositData.amount}</b></p>
+                            <p>Please share the Payment Screenshot on Whatsapp</p>
 
                             <button onClick={handleWhatsAppClick} className="cmn-btn px-xxl-11">Share <BsWhatsapp /></button>
 
@@ -330,6 +329,7 @@ export default function DepositAmount() {
                                 </button>
                             </p>
                             <p>Amount: <b>₹{formDepositData.amount}</b></p>
+                            <p>Please share the Payment Screenshot on Whatsapp</p>
                             <button onClick={handleWhatsAppClick} className="cmn-btn px-xxl-11">
                                 Share <BsWhatsapp />
                             </button>
@@ -341,6 +341,7 @@ export default function DepositAmount() {
                             <p>Account No.: <strong>{bankDetails.accountNumber || "N/A"}</strong></p>
                             <p>IFSC Code: <strong>{bankDetails.ifscCode || "N/A"}</strong></p>
                             <p>Amount: <b>₹{formDepositData.amount}</b></p>
+                            <p>Please share the Payment Screenshot on Whatsapp</p>
                             <button onClick={handleWhatsAppClick} className="cmn-btn px-xxl-11">
                                 Share <BsWhatsapp />
                             </button>

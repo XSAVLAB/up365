@@ -73,7 +73,7 @@ function SingleDigitLottery() {
                 alert('Failed to place bet. Please try again.');
             }
         } else {
-            alert('Please select a number between 0 to 9, a bet amount greater than 99.');
+            alert('Please select a number between 0 to 9');
         }
     }
 

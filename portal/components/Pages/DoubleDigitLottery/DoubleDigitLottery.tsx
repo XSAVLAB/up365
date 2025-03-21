@@ -67,7 +67,7 @@ function DoubleDigitLottery() {
             try {
                 const response = await submitLotteryBet(user?.uid, number, betAmount, 'Double Digit Lottery', null, false);
                 if (response.status === "Bet Placed") {
-                    updateUserWallet(user?.uid, Number(walletBalance) - betAmount);
+                    updateUserWallet(user?.uid, (Number(walletBalance) - betAmount).toFixed(2));
                     setWalletBalance(String(Number(walletBalance) - betAmount));
                     alert(`Bet Submitted.\nCheck the Active Bets Table.`);
                 }
@@ -75,7 +75,7 @@ function DoubleDigitLottery() {
                 alert('Failed to place bet. Please try again.');
             }
         } else {
-            alert('Please select a number between 10 to 99, a bet amount greater than 99.');
+            alert('Please select a number between 10 to 99');
         }
     }
 
@@ -186,7 +186,7 @@ function DoubleDigitLottery() {
                     <div onClick={handleShowRules} className='rules-button'>Rules <MdArrowDropDownCircle size={20} className='ml-4' /></div>
                     {showRules && (
                         <div className="rules-content">
-                            <div>1. Select a Number from 0 to 9</div>
+                            <div>1. Select a Number from 10 to 99</div>
                             <div>2. Minimum Bet Amount is 100</div>
                         </div>
                     )}

@@ -156,7 +156,7 @@ export default function Login() {
                 <div className="row justify-content-between align-items-center">
                     <div className="col-6">
                         <div className="login_section__thumb d-none d-lg-block">
-                            <Image className="w-80 h-80" width={620} height={620} src="/images/double-digit-lottery.jpg" alt="Image" />
+                            <Image className="w-80 h-80" width={620} height={620} src="/images/cricket-banner.jpg" alt="Image" />
                         </div>
                     </div>
                     <div className="col-lg-6 col-xl-5">

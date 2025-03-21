@@ -68,7 +68,7 @@ function ColorBallGame() {
             try {
                 const response = await submitLotteryBet(user?.uid, number, betAmount, 'Color Ball Game', selectedColor, false);
                 if (response.status === "Bet Placed") {
-                    updateUserWallet(user?.uid, Number(walletBalance) - betAmount);
+                    updateUserWallet(user?.uid, (Number(walletBalance) - betAmount).toFixed(2));
                     setWalletBalance(String(Number(walletBalance) - betAmount));
                     alert(`Bet Submitted.\nCheck the Active Bets Table.`);
                 }

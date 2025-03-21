@@ -321,8 +321,9 @@ export default function Aviator() {
                         <button className="aviator-bet-btn" onClick={placeBet1} disabled={!isBettingOpen || hasPlacedBet1}>Bet</button>) : null}
 
                     {isBettingOpen && hasPlacedBet1 && !isRunning && (
-                        <button className="aviator-cancel-btn" onClick={cancelBet1}>
-                            Cancel Bet
+                        <button className="aviator-cancel-btn" disabled={true}>
+                            {/* <button className="aviator-cancel-btn" onClick={cancelBet1}> */}
+                            Bet Placed!
                         </button>
                     )}
                     {isBettingOpen && !hasPlacedBet2 ? (
@@ -341,8 +342,9 @@ export default function Aviator() {
                         <button className="aviator-bet-btn" onClick={placeBet2} disabled={!isBettingOpen || hasPlacedBet2}>Bet</button>) : null}
 
                     {isBettingOpen && hasPlacedBet2 && !isRunning && (
-                        <button className="aviator-cancel-btn" onClick={cancelBet2}>
-                            Cancel Bet
+                        <button className="aviator-cancel-btn" disabled={true}>
+                            {/* <button className="aviator-cancel-btn" onClick={cancelBet2}> */}
+                            Bet Placed!
                         </button>
                     )}
                 </div>

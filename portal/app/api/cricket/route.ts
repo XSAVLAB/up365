@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import EntityCricket from "../../../lib/index";
 
-export async function GET(req) {
+export async function GET(req: { url: string | URL; }) {
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type");
   const matchId = searchParams.get("matchId");
@@ -13,6 +13,10 @@ export async function GET(req) {
 
   try {
     let data;
+
+    if (!cricketAPI.cricket) {
+      return NextResponse.json({ error: "Cricket API is not initialized" }, { status: 500 });
+    }
 
     switch (type) {
       case "seasons":
@@ -33,8 +37,14 @@ export async function GET(req) {
         }
         data = await cricketAPI.cricket.get_matches_scorecard(matchId);
         break;
-      case "ipl":
-        data = await cricketAPI.cricket.get_ipl_matches();
+      case "match_odds":
+        if (!matchId) {
+          return NextResponse.json(
+            { error: "matchId is required" },
+            { status: 400 }
+          );
+        }
+        data = await cricketAPI.cricket.get_match_odds(matchId);
         break;
       default:
         return NextResponse.json({ error: "Invalid type" }, { status: 400 });
@@ -43,6 +53,6 @@ export async function GET(req) {
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }

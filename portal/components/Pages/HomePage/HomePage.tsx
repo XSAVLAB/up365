@@ -10,6 +10,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { fetchDepositCredited, fetchOfferData, fetchProfileData, updateSuccessDepositMessage } from '../../../api/firestoreService';
 import { doc, setDoc } from 'firebase/firestore';
 import Confetti from 'react-confetti';
+import SectionCards from './SectionCards';
 
 
 const HomePage: React.FC = () => {
@@ -155,7 +156,8 @@ const HomePage: React.FC = () => {
             }
             <LandingPageImagesMarquee />
             <div ref={gamesRef}>
-                <GamesCards />
+                {/* <GamesCards /> */}
+                <SectionCards />
             </div>
             <AllLotteryBets />
         </section >

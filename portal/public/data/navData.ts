@@ -17,6 +17,12 @@ export const popularData=[
 
 export const gameData=[
   {
+    id: 9058,
+    image: "/images/icon/cricket.png",
+    linkText: "Cricket",
+    href: "/cricket",
+  },
+  {
     id:13377,
     image: "/images/icon/stade.png",
     linkText: "Ludo",
@@ -72,12 +78,12 @@ export const sportsData = [
     linkText: "Cricket",
     href: "/cricket",
   },
-  {
-    id: 57940,
-    image: "/images/icon/football-icon.png",
-    linkText: "Football",
-    href: "/football",
-  },
+  // {
+  //   id: 57940,
+  //   image: "/images/icon/football-icon.png",
+  //   linkText: "Football",
+  //   href: "/football",
+  // },
   // {
   //   id: 13736,
   //   image: "/images/icon/tennis.png",
