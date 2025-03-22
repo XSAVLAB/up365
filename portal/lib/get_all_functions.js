@@ -46,7 +46,7 @@ const getAllFunctions = (api) => ({
     });
   },
   async get_ipl_matches(args = {}) {
-    const path = `competitions/127579/matches`;
+    const path = `competitions/129413/matches`;
     return api.get({
       url: path,
       data: args,

@@ -19,6 +19,9 @@ export async function GET(req: { url: string | URL; }) {
     }
 
     switch (type) {
+      case "ipl_matches":
+        data = await cricketAPI.cricket.get_ipl_matches();
+        break;
       case "seasons":
         data = await cricketAPI.cricket.get_seasons_data();
         break;

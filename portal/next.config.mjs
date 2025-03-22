@@ -31,9 +31,8 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_APP_ID: "1:768633978530:web:8e90112b03efbd666821fb",
     NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: "G-NS1KBRCXX9",
     NEXT_PUBLIC_ADMIN_EMAIL: "xsavtechnology@gmail.com",
-    ENTITYSPORT_API_KEY: "cff6a121d1a9fe8ce92683de0ff82623",
+    ENTITYSPORT_API_KEY: "d4144725637da5dbcaff14174b39b255",
     ENTITYSPORT_API_URL: "https://rest.entitysport.com/exchange/",
-
   },
 };
 

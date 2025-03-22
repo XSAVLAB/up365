@@ -163,13 +163,13 @@ export default function TopAussieRules() {
             //     setLoading(false);
             // }
             try {
-                const response = await fetch("/api/cricket?type=matches");
+                const response = await fetch("/api/cricket?type=ipl_matches");
                 if (!response.ok) {
                     throw new Error("Failed to fetch Matches");
                 }
 
                 const data = await response.json();
-
+                console.log(data);
                 // Fetch odds for each match and combine them
                 const formattedMatches = await Promise.all(
                     data.response.items.map(async (match: any) => {
@@ -253,8 +253,10 @@ export default function TopAussieRules() {
 
         //     </div>
         // </div>
-        <div className="container">
-            <h1 className="title">IPL Matches</h1>
+
+
+        <div className="form-container">
+            <div className='form-game-name'>Matches</div>
 
             <div className="table-container">
                 <table className="custom-table">
@@ -280,22 +282,21 @@ export default function TopAussieRules() {
 
                                 {/* Grouped under "1" - Team A Odds */}
                                 <td className="odds blue-bg">{match.teama.back}</td>
-                                <td className="odds blue-bg">{match.teama.lay}</td>
+                                <td className="odds pink-bg">{match.teama.lay}</td>
 
                                 {/* Grouped under "X" - Placeholder (if no draw odds exist) */}
-                                <td className="odds pink-bg">-</td>
+                                <td className="odds blue-bg">-</td>
                                 <td className="odds pink-bg">-</td>
 
                                 {/* Grouped under "2" - Team B Odds */}
                                 <td className="odds blue-bg">{match.teamb.back}</td>
-                                <td className="odds blue-bg">{match.teamb.lay}</td>
+                                <td className="odds pink-bg">{match.teamb.lay}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
         </div>
-
     );
 }
 

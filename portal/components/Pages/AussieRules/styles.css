@@ -1,9 +1,10 @@
 /* Container and Table Styling */
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 48px;
-    margin-top: 48px;
+    /* padding: 48px; */
+    margin-top: 68px;
+;
     font-family: Arial, sans-serif;
     color: #333;
   }
@@ -62,11 +63,11 @@
   }
   
   .blue-bg {
-    background-color: #4da6ff;  /* Blue background */
+    background-color: #72BBEF;  /* Blue background */
   }
   
   .pink-bg {
-    background-color: #ff7eb9;  /* Pink background */
+    background-color: #FAAABA;  /* Pink background */
   }
   
   /* Hover Effect */
