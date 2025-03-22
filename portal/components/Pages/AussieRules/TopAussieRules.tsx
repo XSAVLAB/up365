@@ -163,7 +163,7 @@ export default function TopAussieRules() {
             //     setLoading(false);
             // }
             try {
-                const response = await fetch("/api/cricket?type=ipl_matches");
+                const response = await fetch("/api/cricket/?type=ipl_matches");
                 if (!response.ok) {
                     throw new Error("Failed to fetch Matches");
                 }
@@ -173,7 +173,7 @@ export default function TopAussieRules() {
                 // Fetch odds for each match and combine them
                 const formattedMatches = await Promise.all(
                     data.response.items.map(async (match: any) => {
-                        const oddsResponse = await fetch(`/api/cricket?type=match_odds&matchId=${match.match_id}`);
+                        const oddsResponse = await fetch(`/api/cricket/?type=match_odds&matchId=${match.match_id}`);
                         const oddsData = await oddsResponse.json();
 
                         const liveOdds = oddsData?.response?.live_odds?.matchodds || {};
