@@ -10,7 +10,7 @@ import GamesCards from './GameCards';
 import { IconBrandWhatsapp } from '@tabler/icons-react';
 import MarqueeText from './MarqueeText';
 import { fetchWhatsappNumber } from '@/api/firestoreService';
-import SectionCards from '../HomePage/SectionCards';
+import SectionCards from './SectionCards';
 
 const Home: React.FC = () => {
     const [showWarning, setShowWarning] = useState(true);
@@ -71,10 +71,7 @@ const Home: React.FC = () => {
             <MarqueeText />
             <LandingPageImagesMarquee />
             {/* <Slider /> */}
-            <div ref={gamesRef}>
-                {/* <GamesCards /> */}
-                <SectionCards />
-            </div>
+            <SectionCards />
             <div ref={gamesRef}>
                 <GamesCards />
             </div>

@@ -67,10 +67,11 @@ export default function WithdrawalAmount() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Set the selected amount before showing KYC screen
         setSelectedAmount(activeItem ? activeItem.amount : customAmount);
-
-        // Show the KYCVerification component when the form is submitted
+        if (activeItem && parseFloat(activeItem.amount) > walletBalance) {
+            setErrorMessage('Insufficient balance');
+            return;
+        }
         setShowKYC(true);
     };
 
@@ -78,9 +79,8 @@ export default function WithdrawalAmount() {
         setShowKYC(false);
     };
 
-    // Display KYCVerification component if KYC is not completed
     if (showKYC) {
-        return <KYCVerification amount={selectedAmount} />; // Pass the selected amount as a prop
+        return <KYCVerification amount={selectedAmount} />;
     }
 
     return (
