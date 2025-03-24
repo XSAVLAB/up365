@@ -123,7 +123,7 @@ interface Match {
     title: string;
     date_start: string;
     date_end: string;
-    teama: TeamOdds;  // Ensure teama and teamb are defined
+    teama: TeamOdds;
     teamb: TeamOdds;
 }
 
@@ -263,6 +263,7 @@ export default function TopAussieRules() {
                     <thead>
                         <tr>
                             <th>Game</th>
+                            <th></th>
                             <th className="odds" colSpan={2}>1</th> {/* Team A */}
                             <th className="odds" colSpan={2}>X</th> {/* Draw (if applicable) */}
                             <th className="odds" colSpan={2}>2</th> {/* Team B */}
