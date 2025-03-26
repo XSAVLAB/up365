@@ -194,8 +194,8 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                 const q = query(collection(db, "sportsBets"), where('userId', '==', user.uid), where('settled', '==', false));
                 const betsSnapshot = await getDocs(q);
                 const userBets = betsSnapshot.docs.map(doc => ({
-                    ...(doc.data() as Bet),
-                    id: doc.id
+                    id: doc.id,
+                    ...(doc.data() as Bet)
                 }));
 
                 setBets(userBets);
@@ -228,7 +228,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                                 {selectedTeam === 'team1' && (
                                     <div className="fixed_footer__card p-3 mb-3 bg-green-200 border rounded-lg">
                                         <div className="row align-items-center justify-content-between">
-                                            {/* <div className="col-auto">
+                                            <div className="col-auto">
                                                 <div className="row align-items-center">
                                                     <div className="col-auto">
                                                         <Image src={match.team1Img} alt="No image" width={30} height={30} />
@@ -237,7 +237,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                                                         <span className="fixed_footer__card-name">{match.team1}</span>
                                                     </div>
                                                 </div>
-                                            </div> */}
+                                            </div>
                                             <div className="col-auto">
                                                 <span className="fixed_footer__card-odds">{selectedOdds}</span>
                                             </div>
@@ -247,7 +247,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                                 {selectedTeam === 'team2' && (
                                     <div className="fixed_footer__card p-3 mb-3 bg-green-200 border rounded-lg">
                                         <div className="row align-items-center justify-content-between">
-                                            {/* <div className="col-auto">
+                                            <div className="col-auto">
                                                 <div className="row align-items-center">
                                                     <div className="col-auto">
                                                         <Image src={match.team2Img} alt="" width={30} height={30} />
@@ -256,7 +256,7 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                                                         <span className="fixed_footer__card-name bold">{match.team2}</span>
                                                     </div>
                                                 </div>
-                                            </div> */}
+                                            </div>
                                             <div className="col-auto">
                                                 <span className="fixed_footer__card-odds">{selectedOdds}</span>
                                             </div>
@@ -268,10 +268,10 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                     </Tab.Group>
                 </div>
                 <div className="fixed_footer__card-btm px-4 py-4">
-                    {/* <div className="d-flex justify-content-between align-items-center mb-3">
+                    <div className="d-flex justify-content-between align-items-center mb-3">
                         <span className="d-block">Bet amount:</span>
                         <span className="d-block">Your balance: <b>Coins {balance}</b></span>
-                    </div> */}
+                    </div>
                     <div className="input-group mb-3">
                         <input type="text" className="form-control" value={betAmount} onChange={handleBetAmountChange} />
                         <button className="btn btn-outline-secondary" type="button" onClick={handleMaxBet}>Max</button>
