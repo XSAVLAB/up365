@@ -594,72 +594,121 @@ async function updateCrashLimitsBasedOnUserCount(userCount) {
   );
 }
 
-
+const API_KEY = "d4144725637da5dbcaff14174b39b255";
+const API_URL = `https://rest.entitysport.com/exchange/matches?token=${API_KEY}`;
+const IPL_API_URL = `https://rest.entitysport.com/exchange/competitions/129413/matches?token=${API_KEY}`;
+const ODDS_API_URL=`https://rest.entitysport.com/exchange/matches`
 /**
- *
- * @return {Promise} - Resolves when the game state is updated.
+ * Fetch cricket data from API and store it in Firestore.
  */
-async function fetchCricketData() {
-  const API_KEY = "2dc77f32-82dc-4048-9b54-50baa8ab8ef8";
-  const url = `https://api.cricapi.com/v1/cricScore?apikey=${API_KEY}`;
+async function fetchAndStoreCricketData() {
   try {
-    const response = await axios.get(url);
-    return response.data.data;
+    const response = await axios.get(API_URL);
+    const matches = response.data.response.items;
+
+    if (!matches || matches.length === 0) {
+      console.log("No match data found.");
+      return;
+    }
+
+    const batch = db.batch();
+
+    matches.forEach((match) => {
+      const matchRef = db.collection("matches").doc(`match_${match.match_id}`);
+      batch.set(matchRef, {
+        title: match.title,
+        short_title: match.short_title,
+        format: match.format_str,
+        status: match.status_str,
+        match_number: match.match_number,
+        result: match.result,
+        date_start: match.date_start,
+        date_end: match.date_end,
+        venue: {
+          name: match.venue.name,
+          location: match.venue.location,
+          country: match.venue.country,
+        },
+        teams: {
+          teama: {
+            name: match.teama.name,
+            short_name: match.teama.short_name,
+            scores: match.teama.scores,
+            overs: match.teama.overs,
+            logo_url: match.teama.logo_url,
+          },
+          teamb: {
+            name: match.teamb.name,
+            short_name: match.teamb.short_name,
+            scores: match.teamb.scores,
+            overs: match.teamb.overs,
+            logo_url: match.teamb.logo_url,
+          },
+        },
+        weather: match.weather,
+        toss: match.toss,
+        win_margin: match.win_margin,
+        winning_team_id: match.winning_team_id,
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+
+
+    await batch.commit();
+    console.log("Match data updated successfully.");
   } catch (error) {
-    console.error("Error fetching cricket data:", error);
-    throw error;
+    console.error("Error fetching/storing cricket data:", error);
   }
 }
 
 /**
- * @param {Array} matches - The cricket matches to group.
- * @return {Object} - The cricket matches grouped by series.
-*/
-function groupMatchesBySeries(matches) {
-  return matches.reduce((acc, match) => {
-    const seriesName = match.series
-        .replace(/[^\w\s]/gi, "")
-        .replace(/\s+/g, "_");
-    if (!seriesName) {
-      console.error("Invalid series name:", match.series);
-      return acc;
+ * Fetch ipl cricket data from API and store it in Firestore.
+ */
+async function fetchAndStoreIplCricketData() {
+  try {
+    const response = await axios.get(IPL_API_URL);
+    const matches = response.data.response.items;
+
+    if (!matches || matches.length === 0) {
+      console.log("No match data found.");
+      return;
     }
-    if (!acc[seriesName]) {
-      acc[seriesName] = [];
-    }
-    acc[seriesName].push(match);
-    return acc;
-  }, {});
+
+    const batch = db.batch();
+
+
+    matches.forEach((match) => {
+
+      const matchRef = db.collection("iplMatches")
+          .doc(`match_${match.match_id}`);
+      batch.set(matchRef, {
+        title: match.title,
+        short_title: match.short_title,
+        format: match.format_str,
+        status: match.status_str,
+        match_number: match.match_number,
+        result: match.result,
+        date_start: match.date_start,
+        date_end: match.date_end,
+      });
+    });
+
+
+    await batch.commit();
+    console.log("Match data updated successfully.");
+  } catch (error) {
+    console.error("Error fetching/storing cricket data:", error);
+  }
 }
 
 /**
- * @param {Object} seriesMatches - The cricket matches grouped by series.
-*/
-async function storeCricketMatchesInFirestore(seriesMatches) {
-  const batch = db.batch();
-  for (const [seriesName, matches] of Object.entries(seriesMatches)) {
-    const seriesDocRef = db.collection("cricketData").doc(seriesName);
-    batch.set(seriesDocRef, {matches}, {merge: true});
-  }
-  await batch.commit();
-  console.log("Cricket matches stored in Firestore successfully");
-}
-
-exports.updateCricketMatches = functions.pubsub
-    .schedule("every 15 minutes")
-    .onRun(async (context) => {
-      try {
-        // Fetch cricket data from the API
-        const cricketMatches = await fetchCricketData();
-
-        // Group matches by series
-        const seriesMatches = groupMatchesBySeries(cricketMatches);
-
-        // Store cricket matches in Firestore
-        await storeCricketMatchesInFirestore(seriesMatches);
-
-        console.log("Cricket data update complete");
-      } catch (error) {
-        console.error("Error updating cricket matches:", error);
-      }
+ * Scheduled function to fetch and store cricket data in Firestore.
+ */
+exports.scheduledDataFetch = functions.pubsub
+    .schedule("every 5 minutes")
+    .onRun(async () => {
+      await fetchAndStoreCricketData();
+      await fetchAndStoreIplCricketData();
+      console.log("Cricket data fetched and stored.");
+      return null;
     });
