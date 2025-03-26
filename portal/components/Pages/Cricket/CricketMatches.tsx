@@ -2,85 +2,53 @@
 import { useState, useEffect } from "react";
 import CricketMatchOdds from "./CricketMatchOdds";
 import "./styles.css";
-
-interface TeamOdds {
-    name: string;
-    logo: string;
-    back: string;
-    lay: string;
-}
+import { fetchIplMatches } from "@/api/firestoreService";
 
 interface Match {
-    match_id: number;
+    match_id: string;
     title: string;
     date_start: string;
-    date_end: string;
-    teama: TeamOdds;
-    teamb: TeamOdds;
+    teama: {
+        name: string;
+        back: string;
+        lay: string;
+    };
+    teamb: {
+        name: string;
+        back: string;
+        lay: string;
+    };
 }
 
-export default function TopAussieRules() {
+export default function CricketMatches() {
     const [matches, setMatches] = useState<Match[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);  // Store selected match ID
-
+    const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
+    const [selectedTeamA, setSelectedTeamA] = useState<string | null>(null);
+    const [selectedTeamB, setSelectedTeamB] = useState<string | null>(null);
     useEffect(() => {
-        const fetchIplMatches = async () => {
+        const loadMatches = async () => {
             try {
-                const response = await fetch("/api/cricket?type=ipl_matches");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch Matches");
-                }
-
-                const data = await response.json();
-
-                const formattedMatches = await Promise.all(
-                    data.response.items.map(async (match: any) => {
-                        const oddsResponse = await fetch(`/api/cricket/?type=match_odds&matchId=${match.match_id}`);
-                        const oddsData = await oddsResponse.json();
-
-                        const liveOdds = oddsData?.response?.live_odds?.matchodds || {};
-                        return {
-                            match_id: match.match_id,
-                            title: match.title,
-                            date_start: new Date(match.date_start).toLocaleString(),
-                            date_end: new Date(match.date_end).toLocaleString(),
-
-                            teama: {
-                                name: match.teama.name,
-                                logo: match.teama.logo_url,
-                                back: liveOdds?.teama?.back || "-",
-                                lay: liveOdds?.teama?.lay || "-",
-                            },
-                            teamb: {
-                                name: match.teamb.name,
-                                logo: match.teamb.logo_url,
-                                back: liveOdds?.teamb?.back || "-",
-                                lay: liveOdds?.teamb?.lay || "-",
-                            }
-                        };
-                    })
-                );
-
-                setMatches(formattedMatches);
+                const data = await fetchIplMatches();
+                setMatches(data);
                 setLoading(false);
-            } catch (err: any) {
-                console.error(err.message);
-                setError(err.message);
+            } catch (error) {
+                setError("Failed to load matches.");
                 setLoading(false);
             }
         };
 
-        fetchIplMatches();
+        loadMatches();
     }, []);
 
     if (loading) return <p>Loading IPL matches...</p>;
     if (error) return <p>Error: {error}</p>;
 
-    // Handle match selection
-    const handleMatchSelect = (matchId: string) => {
+    const handleMatchSelect = (matchId: string, teama: string, teamb: string) => {
         setSelectedMatchId(matchId);
+        setSelectedTeamA(teama);
+        setSelectedTeamB(teamb);
     };
 
     return (
@@ -88,7 +56,7 @@ export default function TopAussieRules() {
             <div className='form-game-name'>Matches</div>
 
             {selectedMatchId ? (
-                <CricketMatchOdds selectedMatchId={selectedMatchId} />
+                <CricketMatchOdds selectedMatchId={selectedMatchId || ""} selectedTeamA={selectedTeamA || ""} selectedTeamB={selectedTeamB || ""} />
             ) : (
                 <div className="table-container">
                     <table className="custom-table">
@@ -103,8 +71,8 @@ export default function TopAussieRules() {
                             {matches.map((match) => (
                                 <tr
                                     key={match.match_id}
-                                    onClick={() => handleMatchSelect(match.match_id.toString())}
-                                    className="clickable-row"  // Add some visual feedback
+                                    onClick={() => handleMatchSelect(match.match_id, match.teama.name, match.teamb.name)}
+                                    className="clickable-row"
                                 >
                                     <td>
                                         <strong>{match.title}</strong>

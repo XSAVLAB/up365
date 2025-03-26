@@ -1,42 +1,37 @@
-'use client';
-import React, { useState, useEffect } from 'react';
+"use client";
+import React, { useState, useEffect } from "react";
 import "./styles.css";
-import FooterCard from '@/components/Shared/FooterCard';
+import FooterCard from "@/components/Shared/FooterCard";
+import { fetchMatchOdds } from "@/api/firestoreService";
 
-const CricketMatchOdds = ({ selectedMatchId }: { selectedMatchId: string }) => {
+const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB }: {
+    selectedMatchId: string, selectedTeamA: string, selectedTeamB: string
+}) => {
     const [isCardExpanded, setIsCardExpanded] = useState(false);
-    const [selectedTeam, setSelectedTeam] = useState('');
-    const [selectedOdds, setSelectedOdds] = useState('');
-    const [betType, setBetType] = useState('');
+    const [selectedTeam, setSelectedTeam] = useState("");
+    const [selectedOdds, setSelectedOdds] = useState("");
+    const [betType, setBetType] = useState("");
     const [blockNumber, setBlockNumber] = useState(0);
-    const [tableType, setTableType] = useState('');
+    const [tableType, setTableType] = useState("");
     const [matchOddsData, setMatchOddsData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Using dummy data for now
-        const dummyOddsData = {
-            id: selectedMatchId,
-            matchName: "Mumbai Indians vs Chennai Super Kings",
-            seriesName: "IPL 2025",
-            dateTime: "2025-03-25T20:00:00Z",
-            team1: "Mumbai Indians",
-            team2: "Chennai Super Kings",
-            team1Img: "/images/mumbai.png",
-            team2Img: "/images/chennai.png",
-            matchType: "T20",
-            odds: {
-                team1: {
-                    back: ["1.7", "1.8", "1.9"],
-                    lay: ["2.0", "2.1", "2.2"]
-                },
-                team2: {
-                    back: ["2.5", "2.6", "2.7"],
-                    lay: ["2.8", "2.9", "3.0"]
-                }
+        const getMatchOdds = async () => {
+            setLoading(true);
+            const oddsData = await fetchMatchOdds(selectedMatchId);
+            console.log("Odd data", oddsData);
+            if ("error" in oddsData) {
+                setError(oddsData.error);
+            } else {
+                setMatchOddsData(oddsData);
             }
+
+            setLoading(false);
         };
 
-        setMatchOddsData(dummyOddsData);
+        getMatchOdds();
     }, [selectedMatchId]);
 
     const handleOddsClick = (team: string, odds: string, type: string) => {
@@ -46,14 +41,15 @@ const CricketMatchOdds = ({ selectedMatchId }: { selectedMatchId: string }) => {
         setIsCardExpanded(true);
     };
 
-    if (!matchOddsData) return <p>Loading odds...</p>;
+    if (loading) return <p>Loading odds...</p>;
+    if (error) return <p>Error: {error}</p>;
+    if (!matchOddsData) return <p>No match data available.</p>;
 
     return (
         <>
             <div className="match-odds-container">
                 <div className="match-header">
-                    <span>{matchOddsData.matchName}</span>
-                    <h5>{selectedMatchId}</h5>
+                    <span>Match_Odds</span>
                 </div>
                 <table className="custom-odds-table">
                     <thead>
@@ -61,53 +57,53 @@ const CricketMatchOdds = ({ selectedMatchId }: { selectedMatchId: string }) => {
                             <th>Team</th>
                             <th></th>
                             <th></th>
-                            <th className="back-header">Back</th>
-                            <th className="lay-header">Lay</th>
+                            <th className="back-odds">Back</th>
+                            <th className="lay-odds">Lay</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td className="team-name">{matchOddsData.team1}</td>
-                            {matchOddsData.odds.team1.back.map((odd: string, index: number) => (
-                                <td
-                                    key={`team1-back-${index}`}
-                                    className="back-odds"
-                                    onClick={() => handleOddsClick(matchOddsData.team1, odd, 'back')}
-                                >
-                                    {odd}
-                                </td>
-                            ))}
-                            {matchOddsData.odds.team1.lay.map((odd: string, index: number) => (
-                                <td
-                                    key={`team1-lay-${index}`}
-                                    className="lay-odds"
-                                    onClick={() => handleOddsClick(matchOddsData.team1, odd, 'lay')}
-                                >
-                                    {odd}
-                                </td>
-                            ))}
+                            <td className="team-name">{selectedTeamA}</td>
+                            <td className="back-odds">-</td>
+                            <td className="back-odds">-</td>
+                            <td
+                                className="back-odds"
+                                onClick={() => handleOddsClick(matchOddsData.team1, matchOddsData.odds.teama.back, "back")}
+                            >
+                                {matchOddsData.odds.teama.back}
+                            </td>
+                            <td
+                                className="lay-odds"
+                                onClick={() => handleOddsClick(matchOddsData.team1, matchOddsData.odds.teama.lay, "lay")}
+                            >
+                                {matchOddsData.odds.teama.lay}
+                            </td>
+                            <td className="lay-odds">-</td>
+                            <td className="lay-odds">-</td>
                         </tr>
 
                         <tr>
-                            <td className="team-name">{matchOddsData.team2}</td>
-                            {matchOddsData.odds.team2.back.map((odd: string, index: number) => (
-                                <td
-                                    key={`team2-back-${index}`}
-                                    className="back-odds"
-                                    onClick={() => handleOddsClick(matchOddsData.team2, odd, 'back')}
-                                >
-                                    {odd}
-                                </td>
-                            ))}
-                            {matchOddsData.odds.team2.lay.map((odd: string, index: number) => (
-                                <td
-                                    key={`team2-lay-${index}`}
-                                    className="lay-odds"
-                                    onClick={() => handleOddsClick(matchOddsData.team2, odd, 'lay')}
-                                >
-                                    {odd}
-                                </td>
-                            ))}
+                            <td className="team-name">{selectedTeamB}</td>
+                            <td className="back-odds">-</td>
+                            <td className="back-odds">-</td>
+                            <td
+
+                                className="back-odds"
+                                onClick={() => handleOddsClick(matchOddsData.team2, matchOddsData.odds.teama.back, "back")}
+                            >
+                                {matchOddsData.odds.teamb.back}
+                            </td>
+
+
+                            <td
+
+                                className="lay-odds"
+                                onClick={() => handleOddsClick(matchOddsData.team2, matchOddsData.odds.teama.lay, "lay")}
+                            >
+                                {matchOddsData.odds.teamb.lay}
+                            </td>
+                            <td className="lay-odds">-</td>
+                            <td className="lay-odds">-</td>
                         </tr>
                     </tbody>
                 </table>

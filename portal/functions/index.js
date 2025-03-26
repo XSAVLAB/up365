@@ -597,7 +597,7 @@ async function updateCrashLimitsBasedOnUserCount(userCount) {
 const API_KEY = "d4144725637da5dbcaff14174b39b255";
 const API_URL = `https://rest.entitysport.com/exchange/matches?token=${API_KEY}`;
 const IPL_API_URL = `https://rest.entitysport.com/exchange/competitions/129413/matches?token=${API_KEY}`;
-const ODDS_API_URL=`https://rest.entitysport.com/exchange/matches`
+const ODDS_API_URL=`https://rest.entitysport.com/exchange/matches`;
 /**
  * Fetch cricket data from API and store it in Firestore.
  */
@@ -662,7 +662,7 @@ async function fetchAndStoreCricketData() {
 }
 
 /**
- * Fetch ipl cricket data from API and store it in Firestore.
+ * Fetch IPL cricket data and store it in Firestore.
  */
 async function fetchAndStoreIplCricketData() {
   try {
@@ -676,14 +676,16 @@ async function fetchAndStoreIplCricketData() {
 
     const batch = db.batch();
 
-
-    matches.forEach((match) => {
-
+    for (const match of matches) {
       const matchRef = db.collection("iplMatches")
           .doc(`match_${match.match_id}`);
+
+      // Store basic match info
       batch.set(matchRef, {
         title: match.title,
         short_title: match.short_title,
+        teama: match.teama.name,
+        teamb: match.teamb.name,
         format: match.format_str,
         status: match.status_str,
         match_number: match.match_number,
@@ -691,13 +693,46 @@ async function fetchAndStoreIplCricketData() {
         date_start: match.date_start,
         date_end: match.date_end,
       });
-    });
 
+      // Fetch and store odds data
+      await fetchAndStoreOdds(match.match_id, batch);
+    }
 
     await batch.commit();
-    console.log("Match data updated successfully.");
+    console.log("Match and odds data updated successfully.");
   } catch (error) {
     console.error("Error fetching/storing cricket data:", error);
+  }
+}
+
+/**
+ * Fetch and store odds data for a specific match ID.
+ * @param {number} matchId - The ID of the cricket match to fetch odds for.
+ */
+async function fetchAndStoreOdds(matchId) {
+  try {
+    const oddsResponse = await axios
+        .get(`${ODDS_API_URL}/${matchId}/odds?token=${API_KEY}`);
+    const oddsData = oddsResponse.data.response;
+
+    if (!oddsData || Object.keys(oddsData).length === 0) {
+      console.log(`No odds data found for match ID: ${matchId}`);
+      return;
+    }
+
+    const oddsRef = db.collection("iplMatches")
+        .doc(`match_${matchId}`).collection("odds").doc("live_odds");
+
+    // Store odds data
+    await oddsRef.set({
+      matchodds: oddsData.live_odds.matchodds,
+      tiedmatch: oddsData.live_odds.tiedmatch,
+      bookmaker: oddsData.live_odds.bookmaker,
+    });
+
+    console.log(`Stored odds data for match ID: ${matchId}`);
+  } catch (error) {
+    console.error(`Error fetching odds for match ID ${matchId}:`, error);
   }
 }
 

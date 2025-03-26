@@ -1260,3 +1260,77 @@ export const fetchAviatorLimitsRealTime = (callback) => {
     console.log("Error fetching real-time aviator limits: ", error);
   }
 };
+
+// Fetching matches of ipl
+export const fetchIplMatches = async () => {
+  try {
+    const matchesSnapshot = await getDocs(collection(db, "iplMatches"));
+    const matchesData = [];
+
+    for (const matchDoc of matchesSnapshot.docs) {
+      const matchId = matchDoc.id.replace("match_", "");
+
+      // Fetch the odds subcollection for the match
+      const oddsRef = doc(db, `iplMatches/${matchDoc.id}/odds/live_odds`);
+      const oddsSnap = await getDoc(oddsRef);
+
+      if (oddsSnap.exists()) {
+        const odds = oddsSnap.data();
+
+        matchesData.push({
+          match_id: matchId,
+          title: matchDoc.data().title,
+          date_start: matchDoc.data().date_start,
+          teama: {
+            name: matchDoc.data().teama || "Team A",
+            back: odds.matchodds?.teama?.back || "-",
+            lay: odds.matchodds?.teama?.lay || "-",
+          },
+          teamb: {
+            name: matchDoc.data().teamb || "Team B",
+            back: odds.matchodds?.teamb?.back || "-",
+            lay: odds.matchodds?.teamb?.lay || "-",
+          },
+        });
+      }
+    }
+
+    return matchesData;
+  } catch (error) {
+    console.error("Error fetching matches:", error);
+    throw new Error("Failed to load matches.");
+  }
+};
+
+// Fetching match odds from match id
+export const fetchMatchOdds = async (matchId) => {
+  try {
+    const matchDocRef = doc(db, `iplMatches/match_${matchId}/odds/live_odds`);
+    const matchSnap = await getDoc(matchDocRef);
+
+    if (!matchSnap.exists()) {
+      console.error(`No match odds found for match ID: ${matchId}`);
+      return { error: "No match odds available" };
+    }
+
+    const data = matchSnap.data();
+
+    const formattedOdds = {
+      odds: {
+        teama: {
+          back: data.matchodds?.teama?.back || "0",
+          lay: data.matchodds?.teama?.lay || "0",
+        },
+        teamb: {
+          back: data.matchodds?.teamb?.back || "0",
+          lay: data.matchodds?.teamb?.lay || "0",
+        },
+      },
+    };
+
+    return formattedOdds;
+  } catch (error) {
+    console.error(`Error fetching match odds: ${error.message}`);
+    return { error: "Failed to load match odds" };
+  }
+};
