@@ -595,71 +595,9 @@ async function updateCrashLimitsBasedOnUserCount(userCount) {
 }
 
 const API_KEY = "d4144725637da5dbcaff14174b39b255";
-const API_URL = `https://rest.entitysport.com/exchange/matches?token=${API_KEY}`;
+// const API_URL = `https://rest.entitysport.com/exchange/matches?token=${API_KEY}`;
 const IPL_API_URL = `https://rest.entitysport.com/exchange/competitions/129413/matches?token=${API_KEY}`;
 const ODDS_API_URL=`https://rest.entitysport.com/exchange/matches`;
-/**
- * Fetch cricket data from API and store it in Firestore.
- */
-async function fetchAndStoreCricketData() {
-  try {
-    const response = await axios.get(API_URL);
-    const matches = response.data.response.items;
-
-    if (!matches || matches.length === 0) {
-      console.log("No match data found.");
-      return;
-    }
-
-    const batch = db.batch();
-
-    matches.forEach((match) => {
-      const matchRef = db.collection("matches").doc(`match_${match.match_id}`);
-      batch.set(matchRef, {
-        title: match.title,
-        short_title: match.short_title,
-        format: match.format_str,
-        status: match.status_str,
-        match_number: match.match_number,
-        result: match.result,
-        date_start: match.date_start,
-        date_end: match.date_end,
-        venue: {
-          name: match.venue.name,
-          location: match.venue.location,
-          country: match.venue.country,
-        },
-        teams: {
-          teama: {
-            name: match.teama.name,
-            short_name: match.teama.short_name,
-            scores: match.teama.scores,
-            overs: match.teama.overs,
-            logo_url: match.teama.logo_url,
-          },
-          teamb: {
-            name: match.teamb.name,
-            short_name: match.teamb.short_name,
-            scores: match.teamb.scores,
-            overs: match.teamb.overs,
-            logo_url: match.teamb.logo_url,
-          },
-        },
-        weather: match.weather,
-        toss: match.toss,
-        win_margin: match.win_margin,
-        winning_team_id: match.winning_team_id,
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      });
-    });
-
-
-    await batch.commit();
-    console.log("Match data updated successfully.");
-  } catch (error) {
-    console.error("Error fetching/storing cricket data:", error);
-  }
-}
 
 /**
  * Fetch IPL cricket data and store it in Firestore.
@@ -690,20 +628,21 @@ async function fetchAndStoreIplCricketData() {
         status: match.status_str,
         match_number: match.match_number,
         result: match.result,
-        date_start: match.date_start,
-        date_end: match.date_end,
+        date_start: match.date_start_ist,
+        date_end: match.date_end_ist,
+        
       });
-
       // Fetch and store odds data
       await fetchAndStoreOdds(match.match_id, batch);
     }
 
     await batch.commit();
-    console.log("Match and odds data updated successfully.");
+    // console.log("Match and odds data updated successfully.");
   } catch (error) {
     console.error("Error fetching/storing cricket data:", error);
   }
 }
+
 
 /**
  * Fetch and store odds data for a specific match ID.
@@ -730,7 +669,7 @@ async function fetchAndStoreOdds(matchId) {
       bookmaker: oddsData.live_odds.bookmaker,
     });
 
-    console.log(`Stored odds data for match ID: ${matchId}`);
+    // console.log(`Stored odds data for match ID: ${matchId}`);
   } catch (error) {
     console.error(`Error fetching odds for match ID ${matchId}:`, error);
   }
@@ -739,11 +678,17 @@ async function fetchAndStoreOdds(matchId) {
 /**
  * Scheduled function to fetch and store cricket data in Firestore.
  */
-exports.scheduledDataFetch = functions.pubsub
-    .schedule("every 5 minutes")
-    .onRun(async () => {
-      await fetchAndStoreCricketData();
-      await fetchAndStoreIplCricketData();
-      console.log("Cricket data fetched and stored.");
+exports.scheduleTesting = functions.pubsub
+    .schedule("every 2 minutes")
+    .onRun((context) => {
+      console.log("Inside cron job");
+      const invervalId=setInterval(async ()=>{
+        console.log("Cricket data fetched and stored.");
+        await fetchAndStoreIplCricketData();
+      }, 10000);
+      setTimeout(()=>{
+        console.log("Clearing interval");
+        clearInterval(invervalId);
+      }, 60000);
       return null;
     });
