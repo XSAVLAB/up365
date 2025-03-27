@@ -8,6 +8,7 @@ interface Match {
     match_id: string;
     title: string;
     date_start: string;
+    status: string;
     teama: {
         name: string;
         back: string;
@@ -27,6 +28,7 @@ export default function CricketMatches() {
     const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
     const [selectedTeamA, setSelectedTeamA] = useState<string | null>(null);
     const [selectedTeamB, setSelectedTeamB] = useState<string | null>(null);
+    const [status, setStatus] = useState<string | null>(null);
     useEffect(() => {
         const loadMatches = async () => {
             try {
@@ -45,10 +47,11 @@ export default function CricketMatches() {
     if (loading) return <p>Loading IPL matches...</p>;
     if (error) return <p>Error: {error}</p>;
 
-    const handleMatchSelect = (matchId: string, teama: string, teamb: string) => {
+    const handleMatchSelect = (matchId: string, teama: string, teamb: string, status: string) => {
         setSelectedMatchId(matchId);
         setSelectedTeamA(teama);
         setSelectedTeamB(teamb);
+        setStatus(status);
     };
 
     return (
@@ -56,7 +59,7 @@ export default function CricketMatches() {
             <div className='form-game-name'>Matches</div>
 
             {selectedMatchId ? (
-                <CricketMatchOdds selectedMatchId={selectedMatchId || ""} selectedTeamA={selectedTeamA || ""} selectedTeamB={selectedTeamB || ""} />
+                <CricketMatchOdds selectedMatchId={selectedMatchId || ""} selectedTeamA={selectedTeamA || ""} selectedTeamB={selectedTeamB || ""} status={status || ""} />
             ) : (
                 <div className="table-container">
                     <table className="custom-table">
@@ -71,7 +74,7 @@ export default function CricketMatches() {
                             {matches.map((match) => (
                                 <tr
                                     key={match.match_id}
-                                    onClick={() => handleMatchSelect(match.match_id, match.teama.name, match.teamb.name)}
+                                    onClick={() => handleMatchSelect(match.match_id, match.teama.name, match.teamb.name, match.status)}
                                     className="clickable-row"
                                 >
                                     <td>

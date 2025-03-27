@@ -1281,6 +1281,7 @@ export const fetchIplMatches = async () => {
           match_id: matchId,
           title: matchDoc.data().title,
           date_start: matchDoc.data().date_start,
+          status: matchDoc.data().status,
           teama: {
             name: matchDoc.data().teama || "Team A",
             back: odds.matchodds?.teama?.back || "-",

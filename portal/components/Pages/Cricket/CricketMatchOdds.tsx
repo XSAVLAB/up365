@@ -4,15 +4,12 @@ import "./styles.css";
 import FooterCard from "@/components/Shared/FooterCard";
 import { fetchMatchOdds } from "@/api/firestoreService";
 
-const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB }: {
-    selectedMatchId: string, selectedTeamA: string, selectedTeamB: string
+const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, status }: {
+    selectedMatchId: string, selectedTeamA: string, selectedTeamB: string, status: string
 }) => {
     const [isCardExpanded, setIsCardExpanded] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState("");
     const [selectedOdds, setSelectedOdds] = useState("");
-    const [betType, setBetType] = useState("");
-    const [blockNumber, setBlockNumber] = useState(0);
-    const [tableType, setTableType] = useState("");
     const [matchOddsData, setMatchOddsData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -37,7 +34,6 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB }: {
     const handleOddsClick = (team: string, odds: string, type: string) => {
         setSelectedTeam(team);
         setSelectedOdds(odds);
-        setBetType(type);
         setIsCardExpanded(true);
     };
 
@@ -68,20 +64,19 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB }: {
                             <td className="back-odds">-</td>
                             <td
                                 className="back-odds"
-                                onClick={() => handleOddsClick(matchOddsData.team1, matchOddsData.odds.teama.back, "back")}
+                                onClick={() => handleOddsClick(selectedTeamA, matchOddsData.odds.teama.back, "back")}
                             >
                                 {matchOddsData.odds.teama.back}
                             </td>
                             <td
                                 className="lay-odds"
-                                onClick={() => handleOddsClick(matchOddsData.team1, matchOddsData.odds.teama.lay, "lay")}
+                                onClick={() => handleOddsClick(selectedTeamA, matchOddsData.odds.teama.lay, "lay")}
                             >
                                 {matchOddsData.odds.teama.lay}
                             </td>
                             <td className="lay-odds">-</td>
                             <td className="lay-odds">-</td>
                         </tr>
-
                         <tr>
                             <td className="team-name">{selectedTeamB}</td>
                             <td className="back-odds">-</td>
@@ -89,16 +84,13 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB }: {
                             <td
 
                                 className="back-odds"
-                                onClick={() => handleOddsClick(matchOddsData.team2, matchOddsData.odds.teama.back, "back")}
+                                onClick={() => handleOddsClick(selectedTeamB, matchOddsData.odds.teama.back, "back")}
                             >
                                 {matchOddsData.odds.teamb.back}
                             </td>
-
-
                             <td
-
                                 className="lay-odds"
-                                onClick={() => handleOddsClick(matchOddsData.team2, matchOddsData.odds.teama.lay, "lay")}
+                                onClick={() => handleOddsClick(selectedTeamB, matchOddsData.odds.teama.lay, "lay")}
                             >
                                 {matchOddsData.odds.teamb.lay}
                             </td>
@@ -110,14 +102,12 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB }: {
             </div>
 
             <FooterCard
-                match={matchOddsData}
-                isCardExpanded={isCardExpanded}
-                setIsCardExpanded={setIsCardExpanded}
                 selectedTeam={selectedTeam}
                 selectedOdds={selectedOdds}
-                betType={betType}
-                blockNumber={blockNumber}
-                tableType={tableType}
+                matchTeams={`${selectedTeamA} vs ${selectedTeamB}`}
+                isCardExpanded={isCardExpanded}
+                setIsCardExpanded={setIsCardExpanded}
+
             />
         </>
     );

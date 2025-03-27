@@ -269,7 +269,7 @@ export default function DepositAmount() {
                     <div className="text-end mb-6 mb-md-8"></div>
                     <div className="d-flex align-items-center mb-7 mb-md-10">
                         <span>Total ₹ {formDepositData.amount}</span>
-                    </div>k
+                    </div>
                     {/* <a onClick={handleWhatsAppClick} className="g1-color cursor-pointer">Need Help?</a> */}
                     <button onClick={handleWhatsAppClick} className="cmn-btn px-xxl-11">Need Help? <BsWhatsapp /></button>
 
