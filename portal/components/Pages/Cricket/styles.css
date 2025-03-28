@@ -6,6 +6,10 @@
     font-family: Arial, sans-serif;
     color: #333;
   }
+  .match-title{
+    font-size: 14px;
+    color: #000;
+  }
   
   .title {
     font-size: 24px;
@@ -74,6 +78,20 @@
     transition: 0.3s;
   }
   
+  @media screen and (max-width: 600px) {
+    .form-container {
+      margin-top: 80px;
+    }
+    .match-title{
+      font-size: 8px;
+      color: #000;
+    }
+    .custom-table td{
+      padding: 2px 2px;
+      font-size: 12px;
+    }
+  }
+
   /* Designs for match odds */
 
   /* Table Container */

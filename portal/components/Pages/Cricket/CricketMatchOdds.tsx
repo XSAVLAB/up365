@@ -84,13 +84,13 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, statu
                             <td
 
                                 className="back-odds"
-                                onClick={() => handleOddsClick(selectedTeamB, matchOddsData.odds.teama.back, "back")}
+                                onClick={() => handleOddsClick(selectedTeamB, matchOddsData.odds.teamb.back, "back")}
                             >
                                 {matchOddsData.odds.teamb.back}
                             </td>
                             <td
                                 className="lay-odds"
-                                onClick={() => handleOddsClick(selectedTeamB, matchOddsData.odds.teama.lay, "lay")}
+                                onClick={() => handleOddsClick(selectedTeamB, matchOddsData.odds.teamb.lay, "lay")}
                             >
                                 {matchOddsData.odds.teamb.lay}
                             </td>

@@ -66,8 +66,9 @@ export default function CricketMatches() {
                         <thead>
                             <tr>
                                 <th>Match</th>
-                                <th colSpan={2} className="odds">Team A</th>
-                                <th colSpan={2} className="odds">Team B</th>
+                                <th colSpan={2} className="odds">1</th>
+                                <th colSpan={2} className="odds">-</th>
+                                <th colSpan={2} className="odds">2</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -75,15 +76,16 @@ export default function CricketMatches() {
                                 <tr
                                     key={match.match_id}
                                     onClick={() => handleMatchSelect(match.match_id, match.teama.name, match.teamb.name, match.status)}
-                                    className="clickable-row"
                                 >
-                                    <td>
+                                    <td className="match-title">
                                         <strong>{match.title}</strong>
                                         <br />
                                         {match.date_start}
                                     </td>
                                     <td className="odds blue-bg">{match.teama.back}</td>
                                     <td className="odds pink-bg">{match.teama.lay}</td>
+                                    <td className="odds blue-bg">-</td>
+                                    <td className="odds pink-bg">-</td>
                                     <td className="odds blue-bg">{match.teamb.back}</td>
                                     <td className="odds pink-bg">{match.teamb.lay}</td>
                                 </tr>

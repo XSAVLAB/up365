@@ -1,6 +1,7 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const axios = require("axios");
+const {format, parse} = require("date-fns");
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -595,7 +596,6 @@ async function updateCrashLimitsBasedOnUserCount(userCount) {
 }
 
 const API_KEY = "d4144725637da5dbcaff14174b39b255";
-// const API_URL = `https://rest.entitysport.com/exchange/matches?token=${API_KEY}`;
 const IPL_API_URL = `https://rest.entitysport.com/exchange/competitions/129413/matches?token=${API_KEY}`;
 const ODDS_API_URL=`https://rest.entitysport.com/exchange/matches`;
 
@@ -613,12 +613,23 @@ async function fetchAndStoreIplCricketData() {
     }
 
     const batch = db.batch();
-
+    const today=format(new Date(), "yyyy-MM-dd");
     for (const match of matches) {
       const matchRef = db.collection("iplMatches")
           .doc(`match_${match.match_id}`);
 
-      // Store basic match info
+      // Parse and format the match date
+      const matchDate = format(
+          parse(
+              match.date_start_ist,
+              "yyyy-MM-dd HH:mm:ss",
+              new Date(),
+          ),
+          "yyyy-MM-dd",
+      );
+      // Set `active_odds` to true if the match is today
+      const isMatchToday = matchDate === today;
+
       batch.set(matchRef, {
         title: match.title,
         short_title: match.short_title,
@@ -630,10 +641,8 @@ async function fetchAndStoreIplCricketData() {
         result: match.result,
         date_start: match.date_start_ist,
         date_end: match.date_end_ist,
-        
+        active_odds: isMatchToday ? "true" : "false",
       });
-      // Fetch and store odds data
-      await fetchAndStoreOdds(match.match_id, batch);
     }
 
     await batch.commit();
@@ -678,17 +687,10 @@ async function fetchAndStoreOdds(matchId) {
 /**
  * Scheduled function to fetch and store cricket data in Firestore.
  */
-exports.scheduleTesting = functions.pubsub
-    .schedule("every 2 minutes")
-    .onRun((context) => {
-      console.log("Inside cron job");
-      const invervalId=setInterval(async ()=>{
-        console.log("Cricket data fetched and stored.");
-        await fetchAndStoreIplCricketData();
-      }, 10000);
-      setTimeout(()=>{
-        console.log("Clearing interval");
-        clearInterval(invervalId);
-      }, 60000);
+exports.scheduleFetchIplMatches = functions.pubsub
+    .schedule("every 5 minutes")
+    .onRun(async () => {
+      await fetchAndStoreIplCricketData();
+      await fetchAndStoreOdds(87707);
       return null;
     });
