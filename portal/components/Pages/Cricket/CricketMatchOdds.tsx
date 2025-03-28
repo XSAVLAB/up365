@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css";
 import FooterCard from "@/components/Shared/FooterCard";
-import { fetchMatchOdds } from "@/api/firestoreService";
+import { fetchMatchOdds, listenForMatchOdds } from "@/api/firestoreService";
 
 const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, status }: {
     selectedMatchId: string, selectedTeamA: string, selectedTeamB: string, status: string
@@ -15,21 +15,26 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, statu
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const getMatchOdds = async () => {
-            setLoading(true);
-            const oddsData = await fetchMatchOdds(selectedMatchId);
-            console.log("Odd data", oddsData);
-            if ("error" in oddsData) {
-                setError(oddsData.error);
-            } else {
-                setMatchOddsData(oddsData);
+        if (!selectedMatchId) return;
+
+        setLoading(true);
+
+        // Call the service function and set up the listener
+        const unsubscribe = listenForMatchOdds(
+            selectedMatchId,
+            (odds: any) => {
+                setMatchOddsData(odds);
+                setLoading(false);
+            },
+            (errorMsg: React.SetStateAction<string | null>) => {
+                setError(errorMsg);
+                setLoading(false);
             }
+        );
 
-            setLoading(false);
-        };
-
-        getMatchOdds();
+        return () => unsubscribe();
     }, [selectedMatchId]);
+
 
     const handleOddsClick = (team: string, odds: string, type: string) => {
         setSelectedTeam(team);

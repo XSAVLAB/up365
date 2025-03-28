@@ -1303,35 +1303,45 @@ export const fetchIplMatches = async () => {
   }
 };
 
-// Fetching match odds from match id
-export const fetchMatchOdds = async (matchId) => {
-  try {
-    const matchDocRef = doc(db, `iplMatches/match_${matchId}/odds/live_odds`);
-    const matchSnap = await getDoc(matchDocRef);
-
-    if (!matchSnap.exists()) {
-      console.error(`No match odds found for match ID: ${matchId}`);
-      return { error: "No match odds available" };
-    }
-
-    const data = matchSnap.data();
-
-    const formattedOdds = {
-      odds: {
-        teama: {
-          back: data.matchodds?.teama?.back || "0",
-          lay: data.matchodds?.teama?.lay || "0",
-        },
-        teamb: {
-          back: data.matchodds?.teamb?.back || "0",
-          lay: data.matchodds?.teamb?.lay || "0",
-        },
-      },
-    };
-
-    return formattedOdds;
-  } catch (error) {
-    console.error(`Error fetching match odds: ${error.message}`);
-    return { error: "Failed to load match odds" };
+export const listenForMatchOdds = (matchId, onUpdate, onError) => {
+  if (!matchId) {
+    console.error("No match ID provided");
+    return () => {};
   }
+
+  const matchDocRef = doc(db, `iplMatches/match_${matchId}/odds/live_odds`);
+
+  const unsubscribe = onSnapshot(
+    matchDocRef,
+    (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+
+        const formattedOdds = {
+          odds: {
+            teama: {
+              back: data.matchodds?.teama?.back || "0",
+              lay: data.matchodds?.teama?.lay || "0",
+            },
+            teamb: {
+              back: data.matchodds?.teamb?.back || "0",
+              lay: data.matchodds?.teamb?.lay || "0",
+            },
+          },
+        };
+
+        console.log("Real-time odds update:", formattedOdds);
+        onUpdate(formattedOdds);
+      } else {
+        console.log(`No match odds found for match ID: ${matchId}`);
+        onError("No match odds available");
+      }
+    },
+    (error) => {
+      console.error("Firestore listener error:", error);
+      onError("Failed to load match odds");
+    }
+  );
+
+  return unsubscribe;
 };

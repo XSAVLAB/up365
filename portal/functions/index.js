@@ -599,6 +599,9 @@ const API_KEY = "d4144725637da5dbcaff14174b39b255";
 const IPL_API_URL = `https://rest.entitysport.com/exchange/competitions/129413/matches?token=${API_KEY}`;
 const ODDS_API_URL=`https://rest.entitysport.com/exchange/matches`;
 
+const activeMatchIds = new Set();
+let intervalId = null;
+
 /**
  * Fetch IPL cricket data and store it in Firestore.
  */
@@ -613,21 +616,18 @@ async function fetchAndStoreIplCricketData() {
     }
 
     const batch = db.batch();
-    const today=format(new Date(), "yyyy-MM-dd");
+    const today = format(new Date(), "yyyy-MM-dd");
+    activeMatchIds.clear();
+
     for (const match of matches) {
       const matchRef = db.collection("iplMatches")
           .doc(`match_${match.match_id}`);
 
-      // Parse and format the match date
       const matchDate = format(
-          parse(
-              match.date_start_ist,
-              "yyyy-MM-dd HH:mm:ss",
-              new Date(),
-          ),
+          parse(match.date_start_ist, "yyyy-MM-dd HH:mm:ss", new Date()),
           "yyyy-MM-dd",
       );
-      // Set `active_odds` to true if the match is today
+
       const isMatchToday = matchDate === today;
 
       batch.set(matchRef, {
@@ -643,54 +643,83 @@ async function fetchAndStoreIplCricketData() {
         date_end: match.date_end_ist,
         active_odds: isMatchToday ? "true" : "false",
       });
+
+      if (isMatchToday) {
+        activeMatchIds.add(match.match_id);
+      }
     }
 
     await batch.commit();
-    // console.log("Match and odds data updated successfully.");
+    console.log(`Updated match data. Active matches: ${[...activeMatchIds]}`);
   } catch (error) {
     console.error("Error fetching/storing cricket data:", error);
   }
 }
 
-
 /**
- * Fetch and store odds data for a specific match ID.
- * @param {number} matchId - The ID of the cricket match to fetch odds for.
+ * Fetch and store odds data for active matches every 5 seconds.
  */
-async function fetchAndStoreOdds(matchId) {
+async function fetchAndStoreActiveMatchOdds() {
   try {
-    const oddsResponse = await axios
-        .get(`${ODDS_API_URL}/${matchId}/odds?token=${API_KEY}`);
-    const oddsData = oddsResponse.data.response;
-
-    if (!oddsData || Object.keys(oddsData).length === 0) {
-      console.log(`No odds data found for match ID: ${matchId}`);
+    if (activeMatchIds.size === 0) {
+      console.log("No active matches with odds.");
       return;
     }
 
-    const oddsRef = db.collection("iplMatches")
-        .doc(`match_${matchId}`).collection("odds").doc("live_odds");
+    for (const matchId of activeMatchIds) {
+      try {
+        const oddsResponse = await axios
+            .get(`${ODDS_API_URL}/${matchId}/odds?token=${API_KEY}`);
+        const oddsData = oddsResponse.data.response;
 
-    // Store odds data
-    await oddsRef.set({
-      matchodds: oddsData.live_odds.matchodds,
-      tiedmatch: oddsData.live_odds.tiedmatch,
-      bookmaker: oddsData.live_odds.bookmaker,
-    });
+        if (!oddsData || Object.keys(oddsData).length === 0) {
+          console.log(`No odds data found for match ID: ${matchId}`);
+          continue;
+        }
 
-    // console.log(`Stored odds data for match ID: ${matchId}`);
+        const oddsRef = db.collection("iplMatches")
+            .doc(`match_${matchId}`)
+            .collection("odds")
+            .doc("live_odds");
+
+        await oddsRef.set({
+          matchodds: oddsData.live_odds.matchodds,
+          tiedmatch: oddsData.live_odds.tiedmatch,
+          bookmaker: oddsData.live_odds.bookmaker,
+        });
+
+        console.log(`Updated odds for match ID: ${matchId}`);
+      } catch (error) {
+        console.error(`Error fetching odds for match ID ${matchId}:`, error);
+      }
+    }
   } catch (error) {
-    console.error(`Error fetching odds for match ID ${matchId}:`, error);
+    console.error("Error fetching/storing odds data:", error);
   }
 }
 
 /**
- * Scheduled function to fetch and store cricket data in Firestore.
+ * Function to start continuous odds fetching every 5 seconds.
+ */
+function startOddsFetching() {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+
+  intervalId = setInterval(async () => {
+    console.log("Fetching odds for active matches...");
+    await fetchAndStoreActiveMatchOdds();
+  }, 5000); // Fetch odds every 5 seconds
+}
+
+/**
+ * Firebase scheduled function to update match data and start odds fetching.
  */
 exports.scheduleFetchIplMatches = functions.pubsub
     .schedule("every 5 minutes")
     .onRun(async () => {
+      console.log("Running scheduled IPL data fetch...");
       await fetchAndStoreIplCricketData();
-      await fetchAndStoreOdds(87707);
+      startOddsFetching();
       return null;
     });
