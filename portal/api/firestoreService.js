@@ -767,7 +767,7 @@ export const fetchUserStatement = async (userId) => {
   try {
     const transactionsCollectionRef = collection(db, "transactions");
     const withdrawalsCollectionRef = collection(db, "withdrawals");
-    const betsCollectionRef = collection(db, "sportsBets");
+    const betsCollectionRef = collection(db, "cricketBets");
     const gameBetsCollectionRef = collection(db, "gameBets");
     const aviatorBetsCollectionRef = collection(db, "aviatorUserBets");
 
@@ -817,7 +817,7 @@ export const fetchUserStatement = async (userId) => {
       id: doc.id,
       type: "Bet",
       amount: parseFloat(doc.data().betAmount),
-      rewardAmount: parseFloat(doc.data().possibleWin) || 0,
+      // rewardAmount: parseFloat(doc.data().possibleWin) || 0,
       status: doc.data().settled ? "settled" : "unsettled",
       timestamp: doc.data().timestamp,
       userId: doc.data().userId,
