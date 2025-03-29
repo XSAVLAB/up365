@@ -15,6 +15,7 @@ interface Bet {
     status: string;
     settled: boolean;
     match: string;
+    oddType: string;
 }
 
 interface User {
@@ -26,10 +27,11 @@ interface FooterCardProps {
     setIsCardExpanded: (expanded: boolean) => void;
     selectedTeam: string;
     selectedOdds: string;
+    oddType: string;
     matchTeams: string;
 }
 
-export default function FooterCard({ selectedTeam, selectedOdds, matchTeams, isCardExpanded, setIsCardExpanded }: FooterCardProps) {
+export default function FooterCard({ selectedTeam, selectedOdds, oddType, matchTeams, isCardExpanded, setIsCardExpanded }: FooterCardProps) {
     const [betAmount, setBetAmount] = useState('');
     const [possibleWin, setPossibleWin] = useState('0');
     const [balance, setBalance] = useState('0');
@@ -123,6 +125,7 @@ export default function FooterCard({ selectedTeam, selectedOdds, matchTeams, isC
                         userId: user.uid,
                         betAmount: betAmount,
                         odds: selectedOdds,
+                        oddType: oddType,
                         possibleWin: possibleWin,
                         timestamp: new Date().toLocaleString(),
                         status: 'pending',

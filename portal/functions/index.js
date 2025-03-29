@@ -633,8 +633,8 @@ async function fetchAndStoreIplCricketData() {
       batch.set(matchRef, {
         title: match.title,
         short_title: match.short_title,
-        teama: match.teama.name,
-        teamb: match.teamb.name,
+        teama: match.teama.short_name,
+        teamb: match.teamb.short_name,
         format: match.format_str,
         status: match.status_str,
         match_number: match.match_number,
@@ -721,5 +721,115 @@ exports.scheduleFetchIplMatches = functions.pubsub
       console.log("Running scheduled IPL data fetch...");
       await fetchAndStoreIplCricketData();
       startOddsFetching();
+      return null;
+    });
+
+/**
+ * Firebase Cloud Function to settle bets after the match ends.
+ */
+exports.settleBets = functions.pubsub
+    .schedule("every 5 minutes")
+    .onRun(async () => {
+      console.log("Running bet settlement function...");
+
+      const now = new Date();
+      const matchesSnapshot = await db.collection("iplMatches")
+          .where("status", "==", "Completed")
+          .get();
+
+      if (matchesSnapshot.empty) {
+        console.log("No completed matches found.");
+        return null;
+      }
+
+      for (const matchDoc of matchesSnapshot.docs) {
+        const matchData = matchDoc.data();
+        const matchId = matchDoc.id;
+
+        const matchEndDate = new Date(matchData.date_end);
+        if (now < matchEndDate) {
+          console.log(`Skipping match ${matchId}, not yet ended.`);
+          continue;
+        }
+
+        const result = matchData.result.toLowerCase();
+        const winningTeam = result.includes("won") ?
+            result.split(" won")[0].toLowerCase() :
+            null;
+
+        console.log(`Settling bets for match: ${matchId} (${result})`);
+
+        const betsSnapshot = await db.collection("cricketBets")
+            .where("match", "==", matchData.short_title)
+            .where("settled", "==", false)
+            .get();
+
+        if (betsSnapshot.empty) {
+          console.log(`No unsettled bets found for match: ${matchId}`);
+          continue;
+        }
+
+        const batch = db.batch();
+
+        for (const betDoc of betsSnapshot.docs) {
+          const betData = betDoc.data();
+          const betId = betDoc.id;
+          const userId = betData.userId;
+          const selectedTeam = betData.selectedTeam.toLowerCase();
+          const betAmount = parseFloat(betData.betAmount);
+          const possibleWin = parseFloat(betData.possibleWin);
+          const oddType = betData.oddType || "back";
+
+          console.log(`Processing bet: ${betId} for user: ${userId}`);
+
+          let betStatus = "lost";
+          let winAmount = 0;
+
+          // Determine win/loss based on oddType
+          if (oddType === "back") {
+            // Back: User wins if the selected team wins
+            if (winningTeam && winningTeam === selectedTeam) {
+              betStatus = "won";
+              winAmount = betAmount + possibleWin;
+            }
+          } else if (oddType === "lay") {
+            // Lay: User wins if the selected team loses
+            if (winningTeam && winningTeam !== selectedTeam) {
+              betStatus = "won";
+              winAmount = betAmount + possibleWin;
+            }
+          }
+
+          // Update the bet status
+          batch.update(betDoc.ref, {
+            status: betStatus,
+            settled: true,
+            winningAmount: winAmount,
+          });
+
+          // Update user wallet if the user won
+          if (betStatus === "won") {
+            const userRef = db.collection("users").doc(userId);
+            const userDoc = await userRef.get();
+
+            if (userDoc.exists) {
+              const userData = userDoc.data();
+              const currentWallet = parseFloat(userData.wallet) || 0;
+
+              const updatedWallet = currentWallet + winAmount;
+              batch.update(userRef, {wallet: updatedWallet.toString()});
+
+              console.log(
+                  `User ${userId} won ₹${winAmount}.`,
+              );
+            }
+          }
+        }
+
+        await batch.commit();
+        console.log(`Bets settled for match: ${matchId}`);
+      }
+
+      console.log("Bet settlement function completed.");
       return null;
     });

@@ -817,7 +817,7 @@ export const fetchUserStatement = async (userId) => {
       id: doc.id,
       type: "Bet",
       amount: parseFloat(doc.data().betAmount),
-      // rewardAmount: parseFloat(doc.data().possibleWin) || 0,
+      rewardAmount: parseFloat(doc.data().winningAmount) || 0,
       status: doc.data().settled ? "settled" : "unsettled",
       timestamp: doc.data().timestamp,
       userId: doc.data().userId,
@@ -1280,6 +1280,7 @@ export const fetchIplMatches = async () => {
         matchesData.push({
           match_id: matchId,
           title: matchDoc.data().title,
+          match: matchDoc.data().short_title,
           date_start: matchDoc.data().date_start,
           status: matchDoc.data().status,
           teama: {

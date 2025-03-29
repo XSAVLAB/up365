@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css";
 import FooterCard from "@/components/Shared/FooterCard";
-import { fetchMatchOdds, listenForMatchOdds } from "@/api/firestoreService";
+import { listenForMatchOdds } from "@/api/firestoreService";
 
 const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, status }: {
     selectedMatchId: string, selectedTeamA: string, selectedTeamB: string, status: string
@@ -10,6 +10,7 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, statu
     const [isCardExpanded, setIsCardExpanded] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState("");
     const [selectedOdds, setSelectedOdds] = useState("");
+    const [oddType, setOddType] = useState("");
     const [matchOddsData, setMatchOddsData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -39,6 +40,7 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, statu
     const handleOddsClick = (team: string, odds: string, type: string) => {
         setSelectedTeam(team);
         setSelectedOdds(odds);
+        setOddType(type);
         setIsCardExpanded(true);
     };
 
@@ -109,6 +111,7 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, statu
             <FooterCard
                 selectedTeam={selectedTeam}
                 selectedOdds={selectedOdds}
+                oddType={oddType}
                 matchTeams={`${selectedTeamA} vs ${selectedTeamB}`}
                 isCardExpanded={isCardExpanded}
                 setIsCardExpanded={setIsCardExpanded}
