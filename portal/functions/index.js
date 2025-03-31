@@ -596,7 +596,7 @@ async function updateCrashLimitsBasedOnUserCount(userCount) {
 }
 
 const API_KEY = "d4144725637da5dbcaff14174b39b255";
-const IPL_API_URL = `https://rest.entitysport.com/exchange/competitions/129413/matches?token=${API_KEY}`;
+const IPL_API_URL = `https://rest.entitysport.com/exchange/competitions/129413/matches?token=${API_KEY}&per_page=10&&paged=2`;
 const ODDS_API_URL=`https://rest.entitysport.com/exchange/matches`;
 
 const activeMatchIds = new Set();

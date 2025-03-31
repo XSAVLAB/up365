@@ -1,0 +1,13 @@
+cricket section on admin panel
+- Total number of active users
+- Total amount on lay for each team
+- Total amount on back for each team
+
+User Bet -- Lay -- Team win -- user lose
+         -- Back -- Team win -- user won
+         -- Lay -- Team lose -- user won
+         -- Back -- Team lose -- user lose
+
+eg.
+GT won user lay on {odd} for {amt} stake -- lose {amt}
+GT won user back on {odd} for {amt} stake -- {amt}*{odd} = win-{amt} won
