@@ -16,7 +16,7 @@ import {
 } from "firebase/firestore";
 import { auth } from "@/firebaseConfig";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
-import { parse } from "date-fns";
+import { parse, format } from "date-fns";
 
 export const handleChange = (profileData, setProfileData) => (e) => {
   const { name, value } = e.target;
@@ -1264,7 +1264,16 @@ export const fetchAviatorLimitsRealTime = (callback) => {
 // Fetching matches of ipl
 export const fetchIplMatches = async () => {
   try {
-    const matchesSnapshot = await getDocs(collection(db, "iplMatches"));
+    const today = format(new Date(), "yyyy-MM-dd");
+
+    // Query matches starting from today
+    const matchesQuery = query(
+      collection(db, "iplMatches"),
+      where("date_start", ">=", `${today} 00:00:00`)
+    );
+
+    const matchesSnapshot = await getDocs(matchesQuery);
+
     const matchesData = [];
 
     for (const matchDoc of matchesSnapshot.docs) {
@@ -1274,30 +1283,43 @@ export const fetchIplMatches = async () => {
       const oddsRef = doc(db, `iplMatches/${matchDoc.id}/odds/live_odds`);
       const oddsSnap = await getDoc(oddsRef);
 
-      if (oddsSnap.exists()) {
-        const odds = oddsSnap.data();
+      // Include the match even if no odds are available
+      const odds = oddsSnap.exists()
+        ? oddsSnap.data()
+        : {
+            matchodds: {
+              teama: { back: "-", lay: "-" },
+              teamb: { back: "-", lay: "-" },
+            },
+          };
 
-        matchesData.push({
-          match_id: matchId,
-          title: matchDoc.data().title,
-          match: matchDoc.data().short_title,
-          date_start: matchDoc.data().date_start,
-          status: matchDoc.data().status,
-          teama: {
-            name: matchDoc.data().teama || "Team A",
-            back: odds.matchodds?.teama?.back || "-",
-            lay: odds.matchodds?.teama?.lay || "-",
-          },
-          teamb: {
-            name: matchDoc.data().teamb || "Team B",
-            back: odds.matchodds?.teamb?.back || "-",
-            lay: odds.matchodds?.teamb?.lay || "-",
-          },
-        });
-      }
+      matchesData.push({
+        match_id: matchId,
+        title: matchDoc.data().title,
+        date_start: matchDoc.data().date_start,
+        status: matchDoc.data().status,
+        teama: {
+          name: matchDoc.data().teama || "Team A",
+          back: odds.matchodds?.teama?.back || "-",
+          lay: odds.matchodds?.teama?.lay || "-",
+        },
+        teamb: {
+          name: matchDoc.data().teamb || "Team B",
+          back: odds.matchodds?.teamb?.back || "-",
+          lay: odds.matchodds?.teamb?.lay || "-",
+        },
+      });
     }
 
-    return matchesData;
+    // Sort matches by date and limit to 5
+    const sortedMatches = matchesData
+      .sort(
+        (a, b) =>
+          new Date(a.date_start).getTime() - new Date(b.date_start).getTime()
+      )
+      .slice(0, 5);
+
+    return sortedMatches;
   } catch (error) {
     console.error("Error fetching matches:", error);
     throw new Error("Failed to load matches.");

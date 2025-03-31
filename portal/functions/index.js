@@ -596,7 +596,7 @@ async function updateCrashLimitsBasedOnUserCount(userCount) {
 }
 
 const API_KEY = "d4144725637da5dbcaff14174b39b255";
-const IPL_API_URL = `https://rest.entitysport.com/exchange/competitions/129413/matches?token=${API_KEY}&per_page=10&&paged=2`;
+const IPL_API_URL = `https://rest.entitysport.com/exchange/competitions/129413/matches?token=${API_KEY}&per_page=70`;
 const ODDS_API_URL=`https://rest.entitysport.com/exchange/matches`;
 
 const activeMatchIds = new Set();
@@ -709,7 +709,7 @@ function startOddsFetching() {
   intervalId = setInterval(async () => {
     console.log("Fetching odds for active matches...");
     await fetchAndStoreActiveMatchOdds();
-  }, 5000); // Fetch odds every 5 seconds
+  }, 5000);
 }
 
 /**
