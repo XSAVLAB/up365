@@ -56,12 +56,18 @@ export const dashboardTabs = [
   },
   {
     id: 10,
+    tabname: "Cricket",
+    icon: <IconCricket
+      className="ti ti-settings fs-five n5-color" />,
+  },
+  {
+    id: 11,
     tabname: "Settings",
     icon: <IconSettings
       className="ti ti-settings fs-five n5-color" />,
   },
   {
-    id: 11,
+    id: 12,
     tabname: "Aviator",
     icon: <IconPlane
       className="ti ti-settings fs-five n5-color" />,

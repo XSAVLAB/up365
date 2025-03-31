@@ -655,3 +655,24 @@ export const crashAviatorPlane = async () => {
     throw error;
   }
 };
+
+/**
+ * Fetches all unsettled cricket bets from Firestore.
+ */
+export const fetchUnsettledCricketBets = async () => {
+  try {
+    const cricketBetsRef = collection(db, "cricketBets");
+    const q = query(cricketBetsRef, where("settled", "==", false));
+    const querySnapshot = await getDocs(q);
+
+    const bets = [];
+    querySnapshot.forEach((doc) => {
+      bets.push({ id: doc.id, ...doc.data() });
+    });
+
+    return bets;
+  } catch (error) {
+    console.error("Error fetching unsettled cricket bets:", error);
+    return [];
+  }
+};

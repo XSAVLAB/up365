@@ -16,6 +16,7 @@ import { IconBellFilled } from '@tabler/icons-react';
 import { onSnapshot, doc } from 'firebase/firestore';
 import AviatorAdmin from '../Aviator/AviatorAdmin';
 import UploadScrollerImages from './UploadScrollerImages';
+import CricketBets from './CricketBets';
 
 interface User {
     id: string;
@@ -790,6 +791,9 @@ export default function Dashboard() {
                                                 </Tab.Panel>
                                                 <Tab.Panel>
                                                     <Status />
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    <CricketBets />
                                                 </Tab.Panel>
                                                 <Tab.Panel >
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
