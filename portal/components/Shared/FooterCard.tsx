@@ -3,6 +3,7 @@ import { IconArrowBadgeUpFilled } from "@tabler/icons-react";
 import { Tab } from '@headlessui/react';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, addDoc, getDoc, doc, updateDoc, getDocs, query, where } from 'firebase/firestore';
+import { formatTimestamp } from '@/api/firestoreService';
 
 interface Bet {
     id: string;
@@ -127,7 +128,7 @@ export default function FooterCard({ selectedTeam, selectedOdds, oddType, matchT
                         odds: selectedOdds,
                         oddType: oddType,
                         possibleWin: possibleWin,
-                        timestamp: new Date().toLocaleString(),
+                        timestamp: formatTimestamp(),
                         status: 'pending',
                         settled: false,
                         selectedTeam: selectedTeam,

@@ -27,7 +27,7 @@ export const handleChange = (profileData, setProfileData) => (e) => {
 };
 // Format timestamp
 
-const formatTimestamp = () => {
+export const formatTimestamp = () => {
   const now = new Date();
   const hours = now.getHours();
   const formattedHours = hours % 12 || 12;
@@ -1349,6 +1349,49 @@ export const listenForMatchOdds = (matchId, onUpdate, onError) => {
             teamb: {
               back: data.matchodds?.teamb?.back || "0",
               lay: data.matchodds?.teamb?.lay || "0",
+            },
+          },
+        };
+
+        console.log("Real-time odds update:", formattedOdds);
+        onUpdate(formattedOdds);
+      } else {
+        console.log(`No match odds found for match ID: ${matchId}`);
+        onError("No match odds available");
+      }
+    },
+    (error) => {
+      console.error("Firestore listener error:", error);
+      onError("Failed to load match odds");
+    }
+  );
+
+  return unsubscribe;
+};
+
+export const listenForBookMakerOdds = (matchId, onUpdate, onError) => {
+  if (!matchId) {
+    console.error("No match ID provided");
+    return () => {};
+  }
+
+  const matchDocRef = doc(db, `iplMatches/match_${matchId}/odds/live_odds`);
+
+  const unsubscribe = onSnapshot(
+    matchDocRef,
+    (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+
+        const formattedOdds = {
+          odds: {
+            teama: {
+              back: data.bookmaker?.teama?.back || "0",
+              lay: data.bookmaker?.teama?.lay || "0",
+            },
+            teamb: {
+              back: data.bookmaker?.teamb?.back || "0",
+              lay: data.bookmaker?.teamb?.lay || "0",
             },
           },
         };

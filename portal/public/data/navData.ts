@@ -60,12 +60,12 @@ export const gameData=[
     linkText: "Triple Digit Lottery",
     href: "/triple-digit-lottery",
   },
-  {
-    id:13257,
-    image: "/images/icon/stade.png",
-    linkText: "Teen Patti",
-    href: "/teen-patti",
-  },
+  // {
+  //   id:13257,
+  //   image: "/images/icon/stade.png",
+  //   linkText: "Teen Patti",
+  //   href: "/teen-patti",
+  // },
 
 
   
@@ -269,11 +269,11 @@ export const naviTemData = [
     linkText: "Cricket",
     href: "/cricket",
   },
-  {
-    id: 151272,
-    linkText: "Football",
-    href: "/football",
-  },
+  // {
+  //   id: 151272,
+  //   linkText: "Football",
+  //   href: "/football",
+  // },
   // {
   //   id: 155534,
   //   linkText: "eSports",

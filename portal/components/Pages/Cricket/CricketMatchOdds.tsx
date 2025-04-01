@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css";
 import FooterCard from "@/components/Shared/FooterCard";
-import { listenForMatchOdds } from "@/api/firestoreService";
+import { listenForBookMakerOdds, listenForMatchOdds } from "@/api/firestoreService";
 
 const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, status }: {
     selectedMatchId: string, selectedTeamA: string, selectedTeamB: string, status: string
@@ -12,6 +12,7 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, statu
     const [selectedOdds, setSelectedOdds] = useState("");
     const [oddType, setOddType] = useState("");
     const [matchOddsData, setMatchOddsData] = useState<any>(null);
+    const [bookmakerOddsData, setBookmakerOddsData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -20,7 +21,6 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, statu
 
         setLoading(true);
 
-        // Call the service function and set up the listener
         const unsubscribe = listenForMatchOdds(
             selectedMatchId,
             (odds: any) => {
@@ -36,6 +36,22 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, statu
         return () => unsubscribe();
     }, [selectedMatchId]);
 
+    useEffect(() => {
+        if (!selectedMatchId) return;
+        setLoading(true);
+        const unsubscribe = listenForBookMakerOdds(
+            selectedMatchId,
+            (odds: any) => {
+                setBookmakerOddsData(odds);
+                setLoading(false);
+            },
+            (errorMsg: React.SetStateAction<string | null>) => {
+                setError(errorMsg);
+                setLoading(false);
+            }
+        );
+        return () => unsubscribe();
+    }, [selectedMatchId]);
 
     const handleOddsClick = (team: string, odds: string, type: string) => {
         setSelectedTeam(team);
@@ -100,6 +116,62 @@ const CricketMatchOdds = ({ selectedMatchId, selectedTeamA, selectedTeamB, statu
                                 onClick={() => handleOddsClick(selectedTeamB, matchOddsData.odds.teamb.lay, "lay")}
                             >
                                 {matchOddsData.odds.teamb.lay}
+                            </td>
+                            <td className="lay-odds">-</td>
+                            <td className="lay-odds">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div className="mt-8" />
+                <div className="match-header">
+                    <span>Bookmaker_Odds</span>
+                </div>
+                <table className="custom-odds-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th></th>
+                            <th></th>
+                            <th className="back-odds">Back</th>
+                            <th className="lay-odds">Lay</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td className="team-name">{selectedTeamA}</td>
+                            <td className="back-odds">-</td>
+                            <td className="back-odds">-</td>
+                            <td
+                                className="back-odds"
+                                onClick={() => handleOddsClick(selectedTeamA, bookmakerOddsData.odds.teama.back, "back")}
+                            >
+                                {bookmakerOddsData.odds.teama.back}
+                            </td>
+                            <td
+                                className="lay-odds"
+                                onClick={() => handleOddsClick(selectedTeamA, bookmakerOddsData.odds.teama.lay, "lay")}
+                            >
+                                {bookmakerOddsData.odds.teama.lay}
+                            </td>
+                            <td className="lay-odds">-</td>
+                            <td className="lay-odds">-</td>
+                        </tr>
+                        <tr>
+                            <td className="team-name">{selectedTeamB}</td>
+                            <td className="back-odds">-</td>
+                            <td className="back-odds">-</td>
+                            <td
+
+                                className="back-odds"
+                                onClick={() => handleOddsClick(selectedTeamB, bookmakerOddsData.odds.teamb.back, "back")}
+                            >
+                                {bookmakerOddsData.odds.teamb.back}
+                            </td>
+                            <td
+                                className="lay-odds"
+                                onClick={() => handleOddsClick(selectedTeamB, bookmakerOddsData.odds.teamb.lay, "lay")}
+                            >
+                                {bookmakerOddsData.odds.teamb.lay}
                             </td>
                             <td className="lay-odds">-</td>
                             <td className="lay-odds">-</td>
