@@ -13,7 +13,7 @@ export default function SideNav() {
     return (
         <>
             <ul className="secend-actives bg1-color rounded-5 d-flex flex-column gap-5 mb-5">
-                <li className="active">
+                <li >
                     <Link href="/" className="d-flex align-items-center gap-2 mt-8">
                         <i className="ti ti-brand-google-home n5-color fs-five"></i> Home
                     </Link>
@@ -23,16 +23,21 @@ export default function SideNav() {
                         <i className="ti ti-garden-cart n5-color fs-five">Marketplace</i>
                     </Link>
                 </li> */}
-                <li className="active" onClick={() => setActiveCategory("Games")}>
+                <li>
+                    <Link href="/cricket" className="d-flex align-items-center gap-2">
+                        <i className="ti ti-football n5-color fs-five"></i> Cricket
+                    </Link>
+                </li>
+                <li onClick={() => setActiveCategory("Games")}>
                     <button className="d-flex align-items-center gap-2">
                         <i className="ti ti-game n5-color fs-five"></i> Games
                     </button>
                 </li>
-                <li className="active" onClick={() => setActiveCategory('Sports')}>
+                {/* <li className="active" onClick={() => setActiveCategory('Sports')}>
                     <button className="d-flex align-items-center gap-2">
                         <i className="ti ti-football n5-color fs-five"></i> Sports
                     </button>
-                </li>
+                </li> */}
             </ul>
             <hr className="py-0 my-0" />
             {activeCategory && (

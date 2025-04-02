@@ -17,12 +17,6 @@ export const popularData=[
 
 export const gameData=[
   {
-    id: 9058,
-    image: "/images/icon/cricket.png",
-    linkText: "Cricket",
-    href: "/cricket",
-  },
-  {
     id:13377,
     image: "/images/icon/stade.png",
     linkText: "Ludo",
@@ -60,12 +54,12 @@ export const gameData=[
     linkText: "Triple Digit Lottery",
     href: "/triple-digit-lottery",
   },
-  {
-    id:13257,
-    image: "/images/icon/stade.png",
-    linkText: "Teen Patti",
-    href: "/teen-patti",
-  },
+  // {
+  //   id:13257,
+  //   image: "/images/icon/stade.png",
+  //   linkText: "Teen Patti",
+  //   href: "/teen-patti",
+  // },
 
 
   

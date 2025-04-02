@@ -144,7 +144,13 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ firstName, lastName, currentPage 
             type="text"
             placeholder="Enter OTP"
             value={otp}
-            onChange={(e) => setOtp(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, ""); 
+              if (value.length <= 6) {
+                setOtp(value);
+              }
+            }}
+            maxLength={6}
             className="n11-bg"
           />
           <button onClick={verifyOTP} disabled={verifying} className="cmn-btn px-5 py-3 mb-6 w-100">

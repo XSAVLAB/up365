@@ -113,8 +113,8 @@ const HomePage: React.FC = () => {
             {showConfetti && <Confetti numberOfPieces={1000} recycle={false} />}
 
             {showDepositSuccess && (
-                <div className="success-overlay">
-                    <Link href="/" onClick={handleSuccessMessage}>
+                <Link href="/dashboard" onClick={handleSuccessMessage}>
+                    <div className="success-overlay">
                         <div className="success-popup">
                             <div className="success-1">
                                 Hurray!
@@ -129,8 +129,8 @@ const HomePage: React.FC = () => {
                                 Play and Win Exciting Prizes!
                             </div>
                         </div>
-                    </Link>
-                </div>
+                    </div>
+                </Link>
             )
             }
             {showBonus && (
