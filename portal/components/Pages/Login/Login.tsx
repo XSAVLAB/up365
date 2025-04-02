@@ -39,7 +39,7 @@ export default function Login() {
 
             })
             .catch((error) => {
-                const errorCode = error.code;
+                setMessage('Invalid email or password!');
             });
     };
 

@@ -134,8 +134,8 @@ const HomePage: React.FC = () => {
             )
             }
             {showBonus && (
-                <div className="bonus-overlay">
-                    <Link href="/dashboard" onClick={handleDeposit}>
+                <Link href="/dashboard" onClick={handleDeposit}>
+                    <div className="bonus-overlay">
                         <div className="bonus-popup">
                             <div className="bonus-offer1">
                                 Hii! <b>{userName}</b>
@@ -150,8 +150,8 @@ const HomePage: React.FC = () => {
                                 on your first deposit
                             </div>
                         </div>
-                    </Link>
-                </div>
+                    </div>
+                </Link>
             )
             }
             <LandingPageImagesMarquee />

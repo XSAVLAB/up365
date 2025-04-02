@@ -264,10 +264,15 @@ export const naviTemData = [
     href: "/cricket",
   },
   {
-    id: 151272,
-    linkText: "Football",
-    href: "/football",
+    id: 110341,
+    linkText: "Matka",
+    href: "/matka",
   },
+  // {
+  //   id: 151272,
+  //   linkText: "Football",
+  //   href: "/football",
+  // },
   // {
   //   id: 155534,
   //   linkText: "eSports",

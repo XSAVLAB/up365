@@ -4025,3 +4025,40 @@ $transition-time: 0.4s; // Transition duration
 	}
   }
   
+//   Matka Section Starts
+.matka-pools {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 600px;
+	margin: 0 auto;
+}
+  
+.pool {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #161b22;
+	color: #ffffff;
+	border: 1px solid #30363d;
+	border-radius: 8px;
+	padding: 10px 20px;
+	margin: 10px 0;
+	cursor: pointer;
+	transition: background-color 0.3s;
+  
+	&:hover {
+		background-color: #1f2329;
+	}
+  
+	.prize-pool, .entry-fee {
+		font-size: 18px;
+	}
+  
+	.entry-fee {
+		background-color: #238636;
+		border-radius: 5px;
+		padding: 5px 10px;
+	}
+  }
+  

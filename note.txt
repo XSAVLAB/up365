@@ -29,3 +29,19 @@ Cricket odds on admin panel
 6. Total bet on lay
 -Team A
 -Team B
+
+Matka
+
+Pool-100,500,1000
+0-9 select number to place bet
+Total user participated in that Pool
+
+Amount received-20% Platform cost
+
+100rs-100user
+
+admin
+number of users
+0-9: number of users on each number 
+reward number to declare result
+stop bidding 1/2 hour before result declaration
