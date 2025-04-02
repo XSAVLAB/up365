@@ -1,0 +1,89 @@
+.form-container {
+    text-align: center;
+font-family: Arial, sans-serif;
+}
+
+.form-game-name {
+    font-size: 2rem;
+font-weight: bold;
+margin-bottom: 1rem;
+}
+
+.form-header {
+    font-size: 1.5rem;
+margin: 1rem 0;
+}
+
+.matka-pools {
+    display: flex;
+justify-content: center;
+gap: 10px;
+margin-bottom: 1rem;
+}
+
+.pool {
+    display: flex;
+gap: 10px;
+}
+
+.entry-fee {
+    background-color: #ff9800;
+border: none;
+padding: 10px 20px;
+font-size: 1rem;
+cursor: pointer;
+color: white;
+border-radius: 5px;
+}
+
+.entry-fee:hover {
+    background-color: #e68900;
+}
+
+.pool-container {
+    margin-top: 20px;
+}
+
+.number-selection {
+    display: flex;
+justify-content: center;
+gap: 10px;
+margin: 10px 0;
+}
+
+.number-button {
+    background-color: #4caf50;
+border: none;
+padding: 10px;
+font-size: 1rem;
+cursor: pointer;
+color: white;
+border-radius: 50%;
+width: 40px;
+height: 40px;
+}
+
+.number-button.selected {
+    background-color: #4068fb;
+}
+
+.submit-bet {
+    background-color: #2196f3;
+border: none;
+padding: 10px 20px;
+font-size: 1rem;
+cursor: pointer;
+color: white;
+border-radius: 5px;
+margin-top: 10px;
+}
+
+.submit-bet:hover {
+    background-color: #1976d2;
+}
+
+.message {
+    font-size: 1rem;
+margin-top: 10px;
+color: #d32f2f;
+}
