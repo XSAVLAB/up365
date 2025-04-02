@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { updateUserDetails } from '../../../../api/firestoreAdminService';
+import { updateUserDetails, addDepositRequest } from '../../../../api/firestoreAdminService';
 
 interface User {
     id: string;
@@ -25,7 +25,7 @@ interface EditUserFormProps {
 
 const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSave, onCancel }) => {
     const [formData, setFormData] = useState<User>({ ...user });
-
+    const [addBalance, setAddBalance] = useState("");
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -38,6 +38,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSave, onCancel }) =
         e.preventDefault();
         try {
             await updateUserDetails(user.id, formData);
+            await addDepositRequest(user.id, addBalance);
             onSave(formData);
         } catch (error) {
             console.error("Error updating user details: ", error);
@@ -69,48 +70,66 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSave, onCancel }) =
             </div>
             <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
                 <div className="w-100">
-                    <label className="mb-3">Date Of Birth</label>
-                    <div className="d-flex align-items-center gap-6 w-100">
-                        <div className="d-flex n11-bg rounded-8 w-50">
-                            <input
-                                type="text"
-                                name="day"
-                                value={formData.day} onChange={handleChange}
-                            />
-                        </div>
-                        <div className="d-flex n11-bg rounded-8 w-50">
-                            <input
-                                type="text"
-                                name="month"
-                                value={formData.month} onChange={handleChange}
-                            />
-                        </div>
-                        <div className="d-flex n11-bg rounded-8 w-50">
-                            <input
-                                type="text"
-                                name="year"
-                                value={formData.year} onChange={handleChange}
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div className="w-100">
                     <label className="mb-3">Phone Number</label>
                     <div className="d-flex gap-2">
-                        <input
-                            className="w-25 n11-bg rounded-8"
-                            type="text"
-                            name="phoneCode"
-                            value={formData.phoneCode} onChange={handleChange}
-                        />
+
                         <input
                             className="n11-bg rounded-8"
-                            type="text"
+                            type="number"
                             name="phoneNumber"
                             value={formData.phoneNumber} onChange={handleChange}
                         />
                     </div>
                 </div>
+                <div className="w-100">
+                    <label className="mb-3">Add Balance</label>
+                    <input
+                        className="n11-bg rounded-8"
+                        type="number"
+                        name="wallet"
+                        // placeholder='+1000'
+
+                        value={addBalance} onChange={(e) => setAddBalance(e.target.value)}
+                    />
+                </div>
+            </div>
+            <button type="submit" className="btn btn-primary">Update</button>
+            <button type="button" onClick={onCancel} className="btn btn-danger">Cancel</button>
+        </form>
+
+
+
+    );
+};
+
+export default EditUserForm;
+
+
+{/* <div className="w-100">
+                            <label className="mb-3">Date Of Birth</label>
+                            <div className="d-flex align-items-center gap-6 w-100">
+                                <div className="d-flex n11-bg rounded-8 w-50">
+                                    <input
+                                        type="text"
+                                        name="day"
+                                        value={formData.day} onChange={handleChange}
+                                    />
+                                </div>
+                                <div className="d-flex n11-bg rounded-8 w-50">
+                                    <input
+                                        type="text"
+                                        name="month"
+                                        value={formData.month} onChange={handleChange}
+                                    />
+                                </div>
+                                <div className="d-flex n11-bg rounded-8 w-50">
+                                    <input
+                                        type="text"
+                                        name="year"
+                                        value={formData.year} onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
             </div>
             <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                 <div className="w-100">
@@ -122,8 +141,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSave, onCancel }) =
                         value={formData.address} onChange={handleChange}
                     />
                 </div>
-            </div>
-            <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+            </div> */}
+{/* <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                 <div className="w-100">
                     <label className="mb-3">City / Region</label>
                     <input
@@ -142,25 +161,5 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSave, onCancel }) =
                         value={formData.country} onChange={handleChange}
                     />
                 </div>
-
-                <div className="w-100">
-                    <label className="mb-3">Wallet</label>
-                    <input
-                        className="n11-bg rounded-8"
-                        type="text"
-                        name="wallet"
-                        value={formData.wallet} onChange={handleChange}
-                    />
-                </div>
-            </div>
-            <button type="submit" className="btn btn-primary">Save</button>
-            <button type="button" onClick={onCancel} className="btn btn-danger">Cancel</button>
-        </form>
-    );
-};
-
-export default EditUserForm;
-
-
-
+            </div> */}
 

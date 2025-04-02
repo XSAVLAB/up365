@@ -1,26 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { IconArrowBadgeUpFilled } from "@tabler/icons-react";
 import { Tab } from '@headlessui/react';
 import { getAuth } from 'firebase/auth';
-import { fetchUserWallet, placeBet, fetchUserBets } from '../../api/firestoreService';
-import { stat } from 'fs';
-
-interface Match {
-    seriesName: string;
-    dateTime: string;
-    team1: string;
-    team2: string;
-    team1Img: string;
-    team2Img: string;
-    matchType: string;
-}
+import { getFirestore, collection, addDoc, getDoc, doc, updateDoc, getDocs, query, where } from 'firebase/firestore';
+import { formatTimestamp } from '@/api/firestoreService';
 
 interface Bet {
     id: string;
     userId: string;
-    team1: string;
-    team2: string;
     betAmount: string;
     odds: string;
     possibleWin: string;
@@ -28,11 +15,8 @@ interface Bet {
     timestamp: string;
     status: string;
     settled: boolean;
-    betType: string;
-    blockNumber: number;
-    tableType: string;
-    seriesName: string;
-    matchType: string;
+    match: string;
+    oddType: string;
 }
 
 interface User {
@@ -40,17 +24,15 @@ interface User {
 }
 
 interface FooterCardProps {
-    match: Match;
     isCardExpanded: boolean;
     setIsCardExpanded: (expanded: boolean) => void;
     selectedTeam: string;
     selectedOdds: string;
-    betType: string;
-    blockNumber: number;
-    tableType: string;
+    oddType: string;
+    matchTeams: string;
 }
 
-export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, selectedTeam, selectedOdds, betType, blockNumber, tableType }: FooterCardProps) {
+export default function FooterCard({ selectedTeam, selectedOdds, oddType, matchTeams, isCardExpanded, setIsCardExpanded }: FooterCardProps) {
     const [betAmount, setBetAmount] = useState('');
     const [possibleWin, setPossibleWin] = useState('0');
     const [balance, setBalance] = useState('0');
@@ -60,7 +42,6 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
     const toggleCard = () => {
         setIsCardExpanded(!isCardExpanded);
     };
-
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (isCardExpanded && !(event.target as HTMLElement).closest(".fixed_footer")) {
@@ -74,13 +55,23 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
     }, [isCardExpanded, setIsCardExpanded]);
 
     useEffect(() => {
+        console.log('Selected team: ', selectedTeam);
+        console.log('Selected odds: ', selectedOdds);
+        console.log('Match teams: ', matchTeams);
         const fetchBalance = async () => {
             try {
                 const auth = getAuth();
                 const user = auth.currentUser;
                 if (user) {
-                    const wallet = await fetchUserWallet(user.uid);
-                    setBalance(wallet);
+                    const db = getFirestore();
+                    const docRef = doc(db, 'users', user.uid);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data() as User;
+                        setBalance(userData.wallet);
+                    } else {
+                        console.error('No wallet found for user');
+                    }
                 } else {
                     console.error('User not authenticated');
                 }
@@ -129,28 +120,33 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                 setMessage('Insufficient balance! Please add funds.');
             } else {
                 try {
-                    const betData = {
+                    const db = getFirestore();
+                    const betData: Bet = {
                         id: '',
                         userId: user.uid,
-                        betAmount,
-                        possibleWin,
-                        selectedTeam,
-                        team1: match.team1,
-                        team2: match.team2,
+                        betAmount: betAmount,
+                        odds: selectedOdds,
+                        oddType: oddType,
+                        possibleWin: possibleWin,
+                        timestamp: formatTimestamp(),
                         status: 'pending',
-                        selectedOdds,
-                        matchId: match.seriesName,
-                        currentBalance,
-                        betType,
-                        blockNumber,
-                        tableType,
-                        seriesName: match.seriesName,
-                        matchType: match.matchType
+                        settled: false,
+                        selectedTeam: selectedTeam,
+                        match: matchTeams
                     };
 
-                    const betMessage = await placeBet(betData);
+                    const betRef = await addDoc(collection(db, "cricketBets"), betData);
+                    await updateDoc(betRef, {
+                        id: betRef.id
+                    });
+
+                    const userWalletRef = doc(db, 'users', user.uid);
+                    await updateDoc(userWalletRef, {
+                        wallet: (currentBalance - bet).toString()
+                    });
+
                     setBalance((currentBalance - bet).toString());
-                    setMessage(betMessage);
+                    setMessage(`Bet of ₹${betAmount} placed on ${selectedTeam}`);
                 } catch (error) {
                     console.error('Error placing bet: ', error);
                 }
@@ -174,8 +170,15 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                     return;
                 }
 
-                const userBets = await fetchUserBets(user.uid);
-                setBets(userBets as Bet[]);
+                const db = getFirestore();
+                const q = query(collection(db, "cricketBets"), where('userId', '==', user.uid), where('settled', '==', false));
+                const betsSnapshot = await getDocs(q);
+                const userBets = betsSnapshot.docs.map(doc => ({
+                    ...(doc.data() as Bet),
+                    id: doc.id
+                }));
+
+                setBets(userBets);
             } catch (error) {
                 console.error('Error fetching bets: ', error);
             }
@@ -199,56 +202,22 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                     </div>
                 </div>
                 <div className="fixed_footer__card-body px-4">
-                    <Tab.Group>
-                        <Tab.Panels>
-                            <Tab.Panel>
-                                {selectedTeam === 'team1' && (
-                                    <div className="fixed_footer__card p-3 mb-3 bg-green-200 border rounded-lg">
-                                        <div className="row align-items-center justify-content-between">
-                                            <div className="col-auto">
-                                                <div className="row align-items-center">
-                                                    <div className="col-auto">
-                                                        <Image src={match.team1Img} alt="" width={30} height={30} />
-                                                    </div>
-                                                    <div className="col">
-                                                        <span className="fixed_footer__card-name">{match.team1}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-auto">
-                                                <span className="fixed_footer__card-odds">{selectedOdds}</span>
-                                            </div>
-                                        </div>
+                    <div className="fixed_footer__card p-3 mb-3 bg-green-200 border rounded-lg">
+                        <div className="row align-items-center justify-content-between">
+                            <div className="col-auto">
+                                <div className="row align-items-center">
+                                    <div className="col">
+                                        <span className="fixed_footer__card-name">{selectedTeam}</span>
                                     </div>
-                                )}
-                                {selectedTeam === 'team2' && (
-                                    <div className="fixed_footer__card p-3 mb-3 bg-green-200 border rounded-lg">
-                                        <div className="row align-items-center justify-content-between">
-                                            <div className="col-auto">
-                                                <div className="row align-items-center">
-                                                    <div className="col-auto">
-                                                        <Image src={match.team2Img} alt="" width={30} height={30} />
-                                                    </div>
-                                                    <div className="col">
-                                                        <span className="fixed_footer__card-name bold">{match.team2}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-auto">
-                                                <span className="fixed_footer__card-odds">{selectedOdds}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </Tab.Panel>
-                        </Tab.Panels>
-                    </Tab.Group>
+                                </div>
+                            </div>
+                            <div className="col-auto">
+                                <span className="fixed_footer__card-odds">{selectedOdds}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div className="fixed_footer__card-btm px-4 py-4">
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                        <span className="d-block">Bet amount:</span>
-                        <span className="d-block">Your balance: <b>${balance}</b></span>
-                    </div>
                     <div className="input-group mb-3">
                         <input type="text" className="form-control" value={betAmount} onChange={handleBetAmountChange} />
                         <button className="btn btn-outline-secondary" type="button" onClick={handleMaxBet}>Max</button>
@@ -260,13 +229,13 @@ export default function FooterCard({ match, isCardExpanded, setIsCardExpanded, s
                                 className="btn btn-outline-secondary w-full"
                                 onClick={() => handleBetAmountButtonClick(amount)}
                             >
-                                ${amount}
+                                ₹{amount}
                             </button>
                         ))}
                     </div>
                     <div className="d-flex justify-content-between align-items-center mb-3">
                         <span className="d-block">Possible win:</span>
-                        <span className="d-block"><b>${possibleWin}</b></span>
+                        <span className="d-block"><b>₹{possibleWin}</b></span>
                     </div>
                     <button className="btn btn-primary w-100" onClick={handleBet}>Place Bet</button>
                     {message && <div className="alert alert-info mt-3">{message}</div>}

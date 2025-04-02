@@ -7,6 +7,13 @@
             padding-top: 120px;
         }
     }
+    &__main1 {
+        margin: 137px 20px 0 30px;
+        @include maxQuery(991) {
+            margin: 0;
+            padding-top: 120px;
+        }
+    }
 
     .live-playing .swiper-wrapper {
         -webkit-transition-timing-function: linear !important;
@@ -69,7 +76,13 @@
 }
 .top_matches {
     &__main {
-        margin: 30px 0 0 303px;
+        margin: 30px 0 0 250px;
+        // background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5)), url("/images/bg_main.jpeg");
+        
+        background-repeat: repeat;
+        background-position: center;
+        background-size: cover;
+        background-attachment: fixed;
         @include maxQuery(991) {
             margin: 0 -10px 0 12px;
         }
@@ -325,7 +338,12 @@ th, td {
     display: flex;
     flex-direction: column;
     padding: 20px;
-    background-color: #000616;
+    // background-color: --p1; 
+    // background: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.6)), url("/images/bg_main.jpeg");
+    background-repeat: repeat;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
     color: #fff;
     border-radius: 10px;
     margin: 20px;
@@ -353,12 +371,12 @@ th, td {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 4px;
   
     .info-box {
       display: flex;
       align-items: center;
-      background-color: #0b1b485a;
+      background-color: #202a45;
       padding: 10px;
       border-radius: 10px;
       margin-bottom: 50px;
@@ -521,7 +539,7 @@ th, td {
 
 .bets-table-container {
     padding: 20px;
-    background-color: #000616;
+    background-color: --p1;
     color: #fff;
     border-radius: 10px;
     margin: 20px;
@@ -642,3 +660,82 @@ th, td {
   
 
 /* History Section Ends (Lottery) */
+
+/* All Bets table on Homepage starts*/
+
+.bets-table-container-home {
+  padding: 20px;
+  background-color: --p1;
+  color: #fff;
+  border-radius: 10px;
+  margin: 20px;
+  margin-left: 0px; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    th, td {
+        border: 1px #000;
+      padding: 12px 15px;
+      text-align: center;
+    }
+
+    thead {
+      background-color: #35c31e;
+      height: fit-content;   
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #ffffff77;
+    }
+
+    tbody tr:nth-child(odd) {
+      background-color: #6b6b6bbc;
+    }
+
+  }
+}
+
+@media (max-width: 1024px) {
+  .bets-table-container-home {
+
+    table {
+      th, td {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .bets-table-container-home {
+
+    table {
+      th, td {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .bets-table-container-home {
+    margin: 10px;
+    padding: 10px;
+
+    table {
+      th, td {
+        padding: 6px 8px;
+        font-size: 10px;
+      }
+    }
+  }
+}
+
+/* All Bets table on Homepage ends*/

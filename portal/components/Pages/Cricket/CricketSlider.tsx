@@ -50,19 +50,36 @@ export default function CricketSlider() {
         });
     };
 
-    const handleMatchClick = (seriesName: any, dateTime: any, team1: any, team2: any, team1Img: any, team2Img: any) => {
-        const match = {
+
+    const handleMatchClick = (match: any) => {
+        // Extract the first four bookmakers
+        const selectedBookmakers = match.bookmakers.slice(0, 4);
+
+        // Extract only the prices and names from each of the first four bookmakers' outcomes
+        const bookmakersOutcomes = selectedBookmakers.map((bookmaker: any) => ({
+            title: bookmaker.title,
+            outcomes: bookmaker.outcomes.map((outcome: any) => ({
+                price: outcome.price,
+                name: outcome.name,
+            })),
+        }));
+
+        // Include bookmakers' outcomes along with the match details
+        const selectedMatchData = {
             matchType: "cricket",
-            seriesName,
-            dateTime,
-            team1,
-            team2,
-            team1Img,
-            team2Img
+            seriesName: match.series,
+            dateTime: match.dateTimeGMT,
+            team1: match.t1,
+            team2: match.t2,
+            team1Img: match.t1img,
+            team2Img: match.t2img,
+            bookmakers: bookmakersOutcomes, // Pass the selected bookmakers' outcomes (price and name only)
         };
-        setSelectedMatch(match);
+
+        setSelectedMatch(selectedMatchData);
         setIsModalOpen(true);
     };
+
 
     return (
         <>
@@ -114,7 +131,7 @@ export default function CricketSlider() {
                                                     }}>
                                                     {matches && matches.map((match: any) => (
                                                         <SwiperSlide key={match.id}>
-                                                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6" onClick={() => handleMatchClick(match.series, match.dateTimeGMT, match.t1, match.t2, match.t1img, match.t2img)}>
+                                                            <div className="hero_area__topslider-card swiper-slide p-4 p-md-6" onClick={() => handleMatchClick(match)}>
                                                                 <div className="hero_area__topslider-cardtop d-flex align-items-center justify-content-between mb-4 mb-md-6">
                                                                     <div className="d-flex align-items-center gap-2">
                                                                         <IconCricket className="n5-color" />

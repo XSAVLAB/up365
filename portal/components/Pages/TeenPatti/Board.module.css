@@ -1,0 +1,68 @@
+.board {
+  display: flex;
+  justify-content: center;
+  margin-left: 303px;
+  margin-top: 30px;
+  align-items: center;
+  background-color: rgb(32, 78, 29);
+  width: 80%;
+  height: 100vh;
+}
+
+.table {
+  position: relative;
+  width: 75%;
+  height: 75%;
+  background: url('/images/table.png') no-repeat center center;
+  background-size:contain;
+  /* border-radius: 50%; */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+.dealButton{
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: large;
+  padding: 10px 20px;
+  background-color: #fe2b39;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+}
+/* Positions for 5 players around the table */
+.player {
+  position: absolute;
+}
+
+.player1 {
+  bottom: -30px;
+  left: 80%;
+  transform: translateX(-50%);
+} 
+
+.player2 {
+  bottom: -30px;
+  left: 20%;
+  transform: translateX(-50%);
+}
+
+.player3 {
+  top: 50%;
+  left: -40px;
+  transform: translateY(-50%);
+}
+
+.player4 {
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+}
+
+.player5 {
+  top: 50%;
+  right: -40px;
+  transform: translateY(-50%);
+}

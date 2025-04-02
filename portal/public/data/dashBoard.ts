@@ -79,18 +79,22 @@ export const amountData = [
       // bonus: "Bonus + 10%" 
     },
     { id: 2, 
-      amount: "500", 
-      // bonus: "Bonus + 12%" 
+      amount: "100", 
+      // bonus: "Bonus + 15%" 
     },
     { id: 3, 
-      amount: "1000", 
+      amount: "200", 
       // bonus: "Bonus + 15%" 
     },
     { id: 4, 
-      amount: "2500", 
-      // bonus: "Bonus + 15%" 
+      amount: "500", 
+      // bonus: "Bonus + 12%" 
     },
     { id: 5, 
+      amount: "1000", 
+      // bonus: "Bonus + 15%" 
+    },
+    { id: 6, 
       amount: "5000", 
       // bonus: "Bonus + 5%" 
     },
@@ -98,11 +102,10 @@ export const amountData = [
 
 export const dashboardAmmount = [
   { id: 1, 
-    amount: "250", 
-
+    amount: "100", 
   },
   { id: 2, 
-    amount: "100", 
+    amount: "200", 
 
   },
   { id: 3, 
@@ -111,6 +114,14 @@ export const dashboardAmmount = [
   },
   { id: 4, 
     amount: "1000", 
+
+  },
+  { id: 5, 
+    amount: "5000", 
+
+  },
+  { id: 6, 
+    amount: "10000", 
 
   },
 ];

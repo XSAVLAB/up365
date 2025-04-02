@@ -9,7 +9,7 @@ export const popularData=[
   },
   {
     id: 12299,
-    image: "/images/icon/soccer-icon.png",
+    image: "/images/icon/football-icon.png",
     linkText: "Sports",
     
   },
@@ -17,31 +17,58 @@ export const popularData=[
 
 export const gameData=[
   {
-    id: 13388,
+    id: 9058,
     image: "/images/icon/cricket.png",
+    linkText: "Cricket",
+    href: "/cricket",
+  },
+  {
+    id:13377,
+    image: "/images/icon/stade.png",
+    linkText: "Ludo",
+    href: "/ludo",
+ },
+  {
+    id:13378,
+    image: "/images/icon/stade.png",
+    linkText: "Aviator",
+    href: "/aviator",
+ },
+ {
+  id:13366,
+  image: "/images/icon/stade.png",
+  linkText: "Color Ball Game",
+  href: "/colorball-game",
+},
+  {
+    id: 13388,
+    image: "/images/icon/stade.png",
     linkText: "Single Digit Lottery",
     href: "/single-digit-lottery",
     
   },
   {
     id: 13399,
-    image: "/images/icon/soccer-icon.png",
+    image: "/images/icon/stade.png",
     linkText: "Double Digit Lottery",
     href: "/double-digit-lottery",
   
   },
   {
-    id:13377,
-    image: "/images/icon/soccer-icon.png",
+    id:13357,
+    image: "/images/icon/stade.png",
     linkText: "Triple Digit Lottery",
     href: "/triple-digit-lottery",
   },
   {
-    id:13366,
-    image: "/images/icon/soccer-icon.png",
-    linkText: "Color Ball Lottery",
-    href: "/colorball-game",
-  }
+    id:13257,
+    image: "/images/icon/stade.png",
+    linkText: "Teen Patti",
+    href: "/teen-patti",
+  },
+
+
+  
 ]
 
 export const sportsData = [
@@ -51,12 +78,12 @@ export const sportsData = [
     linkText: "Cricket",
     href: "/cricket",
   },
-  {
-    id: 57940,
-    image: "/images/icon/soccer-icon.png",
-    linkText: "Soccer",
-    href: "/soccer",
-  },
+  // {
+  //   id: 57940,
+  //   image: "/images/icon/football-icon.png",
+  //   linkText: "Football",
+  //   href: "/football",
+  // },
   // {
   //   id: 13736,
   //   image: "/images/icon/tennis.png",
@@ -77,9 +104,9 @@ export const sportsData = [
   // },
   // {
   //   id: 57911,
-  //   image: "/images/icon/america-football.png",
-  //   linkText: "American Football",
-  //   href: "/american-football",
+  //   image: "/images/icon/america-football1.png",
+  //   linkText: "American Football1",
+  //   href: "/american-football1",
   // },
   // {
   //   id: 33764,
@@ -244,8 +271,8 @@ export const naviTemData = [
   },
   {
     id: 151272,
-    linkText: "Soccer",
-    href: "/soccer",
+    linkText: "Football",
+    href: "/football",
   },
   // {
   //   id: 155534,

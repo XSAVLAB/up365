@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { amricanFootballUpCE } from "@/public/data/tabThree";
+import { amricanFootball1UpCE } from "@/public/data/tabThree";
 
-export default function UpCmingAmericanFootball() {
+export default function UpCmingAmericanFootball1() {
   return (
     <section className="top_matches mb-10">
       <div className="container-fluid">
@@ -16,7 +16,7 @@ export default function UpCmingAmericanFootball() {
                     <h3>Upcoming Events</h3>
                   </div>
                   <div className="top_matches__content">
-                    {amricanFootballUpCE.map(
+                    {amricanFootball1UpCE.map(
                       ({
                         id,
                         titletwo,
@@ -40,7 +40,7 @@ export default function UpCmingAmericanFootball() {
                                 <div
                                   className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4 ">
                                   <div className="d-flex align-items-center gap-1">
-                                    <Image src="/images/icon/america-football.png" width={16} height={16}
+                                    <Image src="/images/icon/america-football1.png" width={16} height={16}
                                       alt="Icon" /> <span
                                         className="fs-eight cpoint">USA Regular
                                       Season</span>

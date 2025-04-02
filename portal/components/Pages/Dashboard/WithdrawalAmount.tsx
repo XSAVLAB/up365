@@ -2,14 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { dashboardAmmount } from '@/public/data/dashBoard';
 import { auth } from '@/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { addWithdrawalRequest, fetchUserWallet } from '@/api/firestoreService';
+import { fetchUserWallet } from '@/api/firestoreService';
+import KYCVerification from './KYCVerification'; // Import the KYCVerification component
+import { IconArrowBack } from '@tabler/icons-react';
 
 export default function WithdrawalAmount() {
-    const [activeItem, setActiveItem] = useState(dashboardAmmount[0]);
+    const [activeItem, setActiveItem] = useState<{ id: number; amount: string } | null>(dashboardAmmount[0]);
     const [user, setUser] = useState<any>(null);
     const [walletBalance, setWalletBalance] = useState(0);
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [customAmount, setCustomAmount] = useState('');
+    const [showKYC, setShowKYC] = useState(false);
+    const [selectedAmount, setSelectedAmount] = useState(''); // State to store the selected amount
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -41,67 +46,108 @@ export default function WithdrawalAmount() {
         }
     }, [successMessage, errorMessage]);
 
-    const handleClick = (itemName: any) => {
+    const handleClick = (itemName: { id: number; amount: string }) => {
         setActiveItem(itemName);
+        setCustomAmount('');
     };
 
-    const getItemStyle = (itemName: any) => {
+    const getItemStyle = (itemName: { id: number; amount: string }) => {
         return {
             border: `1px solid ${activeItem === itemName ? '#35C31E' : '#2C3655'}`,
         };
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('Submitting with active item:', activeItem);
-
-        if (user) {
-            const withdrawalAmount = parseFloat(activeItem.amount);
-            if (walletBalance >= withdrawalAmount) {
-                try {
-                    await addWithdrawalRequest(user.uid, activeItem.amount);
-                    setSuccessMessage(`Withdrawal request for $${activeItem.amount} submitted successfully.`);
-                    setErrorMessage('');
-                } catch (error) {
-                    setErrorMessage('Error storing withdrawal request!');
-                    setSuccessMessage('');
-                }
-            } else {
-                setErrorMessage('Insufficient funds');
-                setSuccessMessage('');
-            }
-        } else {
-            setErrorMessage('No user is logged in');
-            setSuccessMessage('');
-        }
+    const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const numericValue = value.replace(/\D/g, '');
+        setCustomAmount(numericValue);
+        setActiveItem(null);
     };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        setSelectedAmount(activeItem ? activeItem.amount : customAmount);
+        if (activeItem && parseFloat(activeItem.amount) > walletBalance) {
+            setErrorMessage('Insufficient balance');
+            return;
+        }
+        setShowKYC(true);
+    };
+
+    const handleGoBack = () => {
+        setShowKYC(false);
+    };
+
+    if (showKYC) {
+        return <KYCVerification amount={selectedAmount} />;
+    }
 
     return (
         <div className="pay_method__paymethod-alitem mb-5 mb-md-6">
-            {successMessage && <div className="alert alert-success">{successMessage}</div>}
-            {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-            <form onSubmit={handleSubmit}>
-                <div className="pay_method__paymethod-items d-flex align-items-center gap-4 gap-sm-5 gap-md-6 mb-6">
-                    {dashboardAmmount.map((singleAmmount) => (
-                        <div
-                            className="pay_method__paymethod-item p-2 rounded-3 cpoint"
-                            key={singleAmmount.id}
-                            onClick={() => handleClick(singleAmmount)}
-                            style={getItemStyle(singleAmmount)}
-                        >
-                            <div className="py-3 px-5 px-md-6 n11-bg rounded-3">
-                                <span className="fs-ten fw-bold">${singleAmmount.amount}</span>
+            <a onClick={handleGoBack} className="g1-color cursor-pointer"><IconArrowBack /> Back</a>
+
+            {showKYC && <KYCVerification amount={selectedAmount} />}
+            {!showKYC && (
+                <>
+                    <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                        <h5 className="n10-color">Choose or enter your withdrawal amount</h5>
+                    </div>
+                    <div
+                        className="pay_method__amount d-flex align-content-center justify-content-between py-3 px-5 px-md-6 mb-6 mb-md-8 flex-wrap gap-3">
+                        <div className="pay_method__amount-actual">
+                            <span className="fs-seven mb-3">Available to Withdraw</span>
+                            <div className="d-flex align-items-center gap-3">
+                                <span className="fw-bol">₹ {walletBalance}</span>
+                                <i className="ti ti-refresh fs-seven cpoint"></i>
                             </div>
                         </div>
-                    ))}
+                        {/* <span className="v-line lgx d-none d-sm-block"></span>
+                <div className="pay_method__amount-sports">
+                    <span className="fs-seven mb-3">Bonus No Sports</span>
+                    <span className="fw-bol d-block">₹ 0.00</span>
                 </div>
-                <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">
-                    Withdraw ${activeItem.amount}
-                </button>
-            </form>
-            <div className="text-center mt-4">
-                <span>Your withdrawal limit for the month: $50,000</span>
-            </div>
+                <span className="v-line lgx d-none d-sm-block"></span>
+                <div className="pay_method__amount-sports">
+                    <span className="fs-seven mb-3">Bonus in casino</span>
+                    <span className="fw-bol d-block">₹ 0.00</span>
+                </div> */}
+                    </div>
+                    {successMessage && <div className="alert alert-success">{successMessage}</div>}
+                    {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+                    <form onSubmit={handleSubmit}>
+                        <div className="pay_method__paymethod-items d-flex align-items-center gap-4 gap-sm-5 gap-md-6 mb-6">
+                            {dashboardAmmount.map((singleAmmount) => (
+                                <div
+                                    className="pay_method__paymethod-item p-2 rounded-3 cpoint"
+                                    key={singleAmmount.id}
+                                    onClick={() => handleClick(singleAmmount)}
+                                    style={getItemStyle(singleAmmount)}
+                                >
+                                    <div className="py-3 px-5 px-md-6 n11-bg rounded-3">
+                                        <span className="fs-ten fw-bold">₹{singleAmmount.amount}</span>
+                                    </div>
+                                </div>
+                            ))}
+                            <div className="d-flex w-100 p1-bg rounded-8">
+                                <input
+                                    type="text"
+                                    placeholder="Custom amount"
+                                    value={customAmount}
+                                    onChange={handleCustomAmountChange}
+                                />
+                            </div>
+                        </div>
+                        <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100 cmn-btn">
+                            Withdraw ₹{activeItem ? activeItem.amount : customAmount}
+                        </button>
+                    </form>
+                    <div className="text-center mt-4">
+                        <span>24/7 Easy Withdrawal</span>
+                    </div>
+                </>
+
+            )}
         </div>
     );
 }

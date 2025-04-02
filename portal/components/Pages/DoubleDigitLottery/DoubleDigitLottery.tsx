@@ -6,32 +6,26 @@ import { MdArrowDropDownCircle } from 'react-icons/md';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 import { fetchUserBalance, submitLotteryBet, updateUserWallet, settleLotteryBets, fetchProfileData } from '../../../api/firestoreService';
+import Confetti from 'react-confetti';
+import ActiveLotterBets from '@/components/Pages/DoubleDigitLottery/ActiveLotteryBets';
+import AllLotteryBets from '@/components/Pages/DoubleDigitLottery/AllLotteryBets';
+import LotterResult from '@/components/Pages/DoubleDigitLottery/LotteryResult';
 
-const gameTimer = 300;
+const gameTimer = 180;
 
 function formatTimer(seconds: number) {
-    const hours = Math.floor((seconds % (3600 * 24)) / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
+    const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    const hoursStr = String(hours).padStart(2, '0');
     const minutesStr = String(minutes).padStart(2, '0');
     const secondsStr = String(remainingSeconds).padStart(2, '0');
-    return `${hoursStr}:${minutesStr}:${secondsStr}`;
+    return `${minutesStr}:${secondsStr}`;
 }
 
 function calculateTimeToNextInterval() {
     const now = new Date();
-    const nextInterval = new Date(now);
-    nextInterval.setSeconds(0);
-    nextInterval.setMilliseconds(0);
-
-    if (now.getMinutes() % 5 === 0 && now.getSeconds() === 0) {
-        return gameTimer;
-    } else {
-        const minutes = now.getMinutes() + (5 - (now.getMinutes() % 5));
-        nextInterval.setMinutes(minutes);
-        return Math.floor((nextInterval.getTime() - now.getTime()) / 1000);
-    }
+    const currentTimeInSeconds = Math.floor(now.getTime() / 1000);
+    const timeSinceLastInterval = currentTimeInSeconds % 180;
+    return 180 - timeSinceLastInterval;
 }
 
 function DoubleDigitLottery() {
@@ -43,9 +37,11 @@ function DoubleDigitLottery() {
     const [showRules, setShowRules] = useState(false);
     const [counter, setCounter] = useState(1);
     let [betCount, setBetCount] = useState(0);
-    const [number, setNumber] = useState(0);
+    const [number, setNumber] = useState(10);
     const [betAmount, setBetAmount] = useState(0);
     const [rewardAmount] = useState(0);
+    const [showConfetti, setShowConfetti] = useState(false);
+
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -71,7 +67,7 @@ function DoubleDigitLottery() {
             try {
                 const response = await submitLotteryBet(user?.uid, number, betAmount, 'Double Digit Lottery', null, false);
                 if (response.status === "Bet Placed") {
-                    updateUserWallet(user?.uid, Number(walletBalance) - betAmount);
+                    updateUserWallet(user?.uid, (Number(walletBalance) - betAmount).toFixed(2));
                     setWalletBalance(String(Number(walletBalance) - betAmount));
                     alert(`Bet Submitted.\nCheck the Active Bets Table.`);
                 }
@@ -79,7 +75,7 @@ function DoubleDigitLottery() {
                 alert('Failed to place bet. Please try again.');
             }
         } else {
-            alert('Please select a number between 10 to 99, a bet amount greater than 99.');
+            alert('Please select a number between 10 to 99');
         }
     }
 
@@ -93,26 +89,45 @@ function DoubleDigitLottery() {
     }
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (countdownTimer === 0) {
-                settleLotteryBets('Double Digit Lottery');
-                setCounter((prevCounter) => prevCounter + 1);
-                setBetCount(0);
-                setCountdownTimer(calculateTimeToNextInterval());
-                setCooldown(10);
-            } else if (cooldown !== 0) {
-                setCooldown((prevCooldown) => prevCooldown - 1);
-            } else {
-                setCountdownTimer((prevCountdown) => prevCountdown - 1);
-            }
-        }, 1000);
-        return () => {
-            clearInterval(interval);
+        const storedTimer = localStorage.getItem('countdownTimer');
+        const playSound = () => {
+
+            const audio = new Audio('/celebrate-sound.wav');
+            audio.play();
         };
-    }, [countdownTimer, cooldown, user?.uid, number, betAmount, counter]);
+        const initialTimer = storedTimer !== null ? parseInt(storedTimer) : calculateTimeToNextInterval();
+        setCountdownTimer(initialTimer);
+
+        let worker = new Worker(new URL('../../../public/worker.js', import.meta.url));
+
+        worker.postMessage({
+            command: 'start',
+            timer: initialTimer,
+        });
+
+        worker.onmessage = function (e) {
+            const { command, timer } = e.data;
+
+            if (command === 'update') {
+                setCountdownTimer(timer);
+                localStorage.setItem('countdownTimer', timer);
+
+                if (timer === 0) {
+                    setShowConfetti(true);
+                    playSound();
+                    setTimeout(() => setShowConfetti(false), 10000);
+                }
+            }
+        };
+
+        return () => {
+            worker.terminate();
+        };
+    }, []);
 
     return (
         <div className="form-container">
+            {showConfetti && <Confetti numberOfPieces={1000} recycle={false} />} {/* Confetti animation */}
             <div className="form-info">
                 <div className={`info-box ${countdownTimer === 0 ? 'text-white' : 'text-green-500'}`}>
                     <div className='info-timer'><IoMdClock size={30} className='mr-2' />{formatTimer(countdownTimer)}</div>
@@ -153,14 +168,14 @@ function DoubleDigitLottery() {
                             <option value="1000">1000</option>
                         </select>
                     </div>
-                    <div className="form-bet-option">
+                    {/* <div className="form-bet-option">
                         <div>Custom Bet</div>
                         <div>
                             <input type='number' onChange={(e) => setBetAmount(parseInt(e.target.value, 10))}
                                 value={betAmount} placeholder='100, 200, etc.'
                                 className='bet-input' />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="form-actions">
                     <div onClick={handleSubmitBet} className="bet-button">
@@ -171,12 +186,15 @@ function DoubleDigitLottery() {
                     <div onClick={handleShowRules} className='rules-button'>Rules <MdArrowDropDownCircle size={20} className='ml-4' /></div>
                     {showRules && (
                         <div className="rules-content">
-                            <div>1. Select a Number from 0 to 9</div>
+                            <div>1. Select a Number from 10 to 99</div>
                             <div>2. Minimum Bet Amount is 100</div>
                         </div>
                     )}
                 </div>
             </div>
+            <LotterResult />
+            <ActiveLotterBets />
+            <AllLotteryBets />
         </div>
     );
 }

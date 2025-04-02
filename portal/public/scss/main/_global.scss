@@ -418,7 +418,9 @@ select {
 .r1-color {
 	color: rgba(var(--r1), 1);
 }
-
+.y1-color {
+	color: yellow;
+}
 .r1-bg {
 	background: rgba(var(--r1), 1);
 }
@@ -670,135 +672,13 @@ select {
 			color: rgba(var(--n8), 1);
 		}
 	}
+
 }
+.cmn-btn.btn-disabled {
+	opacity: 0.6; /* Fades the button */
+	cursor: not-allowed;
+  }
 
-// .cmn-btn2 {
-// 	display: inline-block;
-// 	text-align: center;
-// 	font-weight: bold;
-// 	border-radius: 12px;
-// 	position: relative;
-// 	background-color: rgba(var(--p3), 1);
-// 	color: rgba(var(--p2), 1);
-// 	text-decoration: none;
-// 	transition: 0.3s ease all;
-// 	z-index: 1;
-
-// 	&::before {
-// 		transition: 0.5s all ease;
-// 		position: absolute;
-// 		border-radius: 12px;
-// 		top: 0;
-// 		left: 50%;
-// 		right: 50%;
-// 		bottom: 0;
-// 		opacity: 0;
-// 		content: '';
-// 		background-color: rgb(var(--db));
-// 		z-index: -1;
-// 	}
-
-// 	&:hover::before, &:focus::before {
-// 		transition: 0.5s all ease;
-// 		left: 0;
-// 		right: 0;
-// 		opacity: 1;
-// 	}
-// 	&:active{
-// 		transform: scale(0.9);
-// 	}
-
-// 	&.second-alt {
-// 		background-color: rgb(var(--s1));
-
-// 		&::before,
-// 		&::after {
-// 			background-color: rgb(var(--p1));
-// 		}
-// 	}
-
-// 	&.third-alt {
-// 		background-color: transparent;
-// 		color: rgb(var(--p1));
-// 		border: 1px solid rgb(var(--p1));
-
-// 		i {
-// 			color: rgb(var(--p1));
-// 		}
-
-// 		&::before,
-// 		&::after {
-// 			background-color: rgb(var(--p1));
-// 		}
-
-// 		&:hover,
-// 		&:focus,
-// 		&.active {
-// 			color: rgb(var(--p2-fixed));
-
-// 			i {
-// 				color: rgb(var(--p2-fixed));
-// 			}
-// 		}
-// 	}
-
-// 	&.fourth-alt {
-// 		background-color: transparent;
-// 		color: rgb(var(--n2));
-// 		border: 1px solid rgb(var(--n4));
-
-// 		&::before,
-// 		&::after {
-// 			background-color: rgb(var(--p1));
-// 		}
-
-// 		&:hover,
-// 		&.active {
-// 			color: rgb(var(--p2-fixed));
-
-// 			i {
-// 				color: rgb(var(--p2-fixed));
-// 			}
-// 		}
-// 	}
-
-// 	&.fifth-alt {
-// 		background-color: transparent;
-// 		color: rgb(var(--n2));
-// 		border: 1px solid rgba(var(--n4), 0.3);
-
-// 		i {
-// 			color: rgb(var(--p1));
-// 		}
-
-// 		&::before,
-// 		&::after {
-// 			background-color: rgb(var(--p1));
-// 		}
-
-// 		&:hover,
-// 		&:focus,
-// 		&.active {
-// 			color: rgb(var(--p2-fixed));
-
-// 			i {
-// 				color: rgb(var(--p2-fixed));
-// 			}
-// 		}
-// 	}
-// }
-
-// border-gradient
-
-// .border-gradient{
-// 	background: linear-gradient(rgb(var(--p1)), rgb(var(--p1))) padding-box,var(--gradient-p1);
-// 	border-radius: 15px;
-// 	border: 1px solid rgb(var(--db));
-// 	transition: var(--transition);
-// 	&:hover{
-// 		border: 1px solid transparent;
-// 	}
-// }
 // Cursor Pointer
 .cpoint {
 	cursor: pointer;
@@ -2075,13 +1955,13 @@ input[type=radio] {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	gap: 20px;
-	padding: 20px;
+	gap: 50px;
+	padding: 50px;
   
 	.game-card {
 	  position: relative;
-	  width: calc(33.333% - 40px);
-	  height: 300px;
+	  width: 300px;
+	  height: 350px;
 	  background-size: cover;
 	  background-position: center;
 	  display: flex;
@@ -2090,9 +1970,16 @@ input[type=radio] {
 	  color: white;
 	  text-align: center;
 	  border-radius: 10px;
+	  border: 1px solid white;
 	  overflow: hidden;
-	  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	  
+	  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+	  cursor: pointer;
+
+	  &:hover{
+		transform: scale(1.1);
+		border: 2px solid white;
+		transition: 0.3s;
+	}
 	  @media (max-width: 1024px) {
 		width: calc(50% - 40px);
 	  }
@@ -2102,31 +1989,32 @@ input[type=radio] {
 	  }
   
 	  .game-card-content {
-		background: rgba(0, 0, 0, 0.5);
+		background: rgba(0, 0, 0, 0.250);
 		padding: 20px;
 		border-radius: 10px;
-		width: 80%;
+		width: 100%;
+		height: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		justify-content: space-between;
 		gap: 10px;
-  
+		
 		h3 {
 		  margin: 0;
+		//   margin-bottom:100px;
 		}
   
 		button {
-		  background: #ff4500;
+		  background: rgba(56, 56, 56, 0.39);
 		  color: white;
 		  border: none;
-		  padding: 10px 20px;
-		  border-radius: 5px;
+		//   padding: 10px 20px;
+		//   border-radius: 5px;
 		  cursor: pointer;
+		  font-size: 20px;
+		  text-decoration: underline;
 		  transition: background 0.3s;
-  
-		  &:hover {
-			background: #e63900;
-		  }
   
 		  &:focus {
 			outline: none;
@@ -2135,6 +2023,72 @@ input[type=radio] {
 	  }
 	}
   
+//Section card css
+.section-card {
+	position: relative;
+	width: 640px;
+	height: 350px;
+	background-size: cover;
+	background-position: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	text-align: center;
+	border-radius: 10px;
+	border: 1px solid white;
+	overflow: hidden;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+	cursor: pointer;
+
+	&:hover{
+	  transform: scale(1.05);
+	  border: 2px solid white;
+	  transition: 0.3s;
+  }
+	@media (max-width: 1024px) {
+	  width: calc(50% - 40px);
+	}
+	
+	@media (max-width: 768px) {
+	  width: calc(100% - 40px);
+	}
+
+	.section-card-content {
+	  background: rgba(0, 0, 0, 0.250);
+	  padding: 20px;
+	  border-radius: 10px;
+	  width: 100%;
+	  height: 100%;
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  justify-content: space-between;
+	  gap: 10px;
+	  
+	  h3 {
+		margin: 0;
+	  //   margin-bottom:100px;
+	  }
+
+	  button {
+		background: rgba(56, 56, 56, 0.39);
+		color: white;
+		border: none;
+	  //   padding: 10px 20px;
+	  //   border-radius: 5px;
+		cursor: pointer;
+		font-size: 20px;
+		text-decoration: underline;
+		transition: background 0.3s;
+
+		&:focus {
+		  outline: none;
+		}
+	  }
+	}
+  }
+
 	.modal-backdrop {
 	  position: fixed;
 	  top: 0;
@@ -2174,3 +2128,1900 @@ input[type=radio] {
   
 
 // Game Cards SCSS ends
+
+// Floating Whatsapp logo starts
+
+.whatsapp_float {
+	position: fixed;
+	width: 60px;
+	height: 60px;
+	bottom: 40px;
+	right: 40px;
+	background-color: #25d366;
+	color: #fff;
+	border-radius: 50px;
+	text-align: center;
+	// font-size: 30px;
+	// box-shadow: 2px 2px 3px #999;
+	z-index: 1000;
+}
+
+.whatsapp_float:hover {
+	background-color: #6ff0e1;
+}
+
+.whatsapp_float svg {
+	margin-top: 10px;
+	margin-bottom: 15px;
+}
+
+// Floating Whatsapp logo ends
+/* Disable scrolling when no-scroll class is active */
+.no-scroll {
+    overflow: hidden;
+}
+
+/* Warning Popup Landing Page starts */
+.warning-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.warning-popup {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+}
+
+.warning-message p {
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #333;
+}
+
+.agree-button {
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.agree-button:hover {
+    background-color: darkgreen;
+}
+// @media (min-width: 360px) and (max-width: 411px) and (min-height: 640px) and (max-height: 823px) {
+//     .warning-popup {
+//         height: 20%;
+//         padding: 30px;
+//     }
+// }
+/* Warning Popup Landing Page ends */
+
+// Bonus offer starts
+.bonus-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.bonus-popup {
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	text-align: center;
+	height: 440px;
+	width: 440px;
+	background-image: url("/images/offer-background.png");
+	background-size: cover; /* Changed to cover for better image scaling */
+	background-position: center;
+	background-repeat: no-repeat;
+  }
+  
+  .bonus-offer1 {
+	margin-top: 112px;
+	margin-right: 165px;
+	font-size: 25px;
+	color: #fff;
+	text-align: center;
+  }
+  
+  .bonus-offer2 {
+	margin-top: 6px;
+	font-size: 56px;
+	color: #FFD700;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	text-align: center;
+  }
+  
+  .bonus-offer3 {
+	margin-top: 45px;
+	margin-left: 74px;
+	font-size: 20px;
+	color: #ffffff;
+	text-align: center;
+  }
+  
+  .bonus-offer4 {
+	margin-top: 24px;
+	margin-right: 229px;
+	font-size: 33px;
+	color: #FFD700;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	text-align: center;
+  }
+  @media (max-width:991px){
+	.bonus-offer3 {
+		margin-top: 52px;
+		margin-left: 74px;
+		font-size: 20px;
+	  }
+  }
+  @media (max-width: 480px) {
+	.bonus-popup {
+	  width: 380px;
+	  height: 380px;
+	  padding: 15px;
+	}
+	.bonus-offer1 {
+	  margin-top: 98px;
+	  margin-right: 147px;
+	  font-size: 20px;
+	}
+	.bonus-offer2 {
+	  margin-top: 6px;
+	  margin-left: 15px;
+	  font-size: 50px;
+	}
+	.bonus-offer3 {
+	  margin-top: 40px;
+	  margin-left: 66px;
+	  font-size: 18px;
+	}
+	.bonus-offer4 {
+	  margin-top: 15px;
+	  margin-left: 45px;
+	  font-size: 30px;
+	}
+  }
+
+
+// Bonus offer ends
+// Success message starts
+.success-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0);
+	z-index: 1000;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  }
+  
+  .success-popup {
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	text-align: center;
+	height: 300px;
+	width: 300px;
+	background-image: url("/images/success-message-background.png");
+	background-size: cover; /* Changed to cover for better image scaling */
+	background-position: center;
+	background-repeat: no-repeat;
+  }
+  
+  .success-1 {
+	margin-top: 32px;
+	margin-right: 65px;
+	font-size: 28px;
+	color: #fff;
+	text-align: center;
+  }
+  
+  .success-2 {
+	margin-top: 14px;
+	margin-right:70px;
+	font-size: 36px;
+	color: #FFD700;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	text-align: center;
+  }
+  
+  .success-3 {
+	margin-top: 12px;
+	margin-right: 20px;
+	font-size: 25px;
+	color: #FFD700;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	text-align: center;
+  }
+  
+  .success-4 {
+	margin-top: 10px;
+	margin-left: 35px;
+	margin-right:50px;
+	font-size: 15px;
+	color: #000000;
+	text-align: center;
+  }
+  
+  @media (max-width: 991px) {
+	.success-popup {
+	  width: 280px;
+	  height: 280px;
+	  padding: 15px;
+	}
+	.success-1 {
+	  margin-top: 34px;
+	  margin-right: 77px;
+	  font-size: 26px;
+	}
+	.success-2 {
+	  margin-top: 12px;
+	  margin-right:80px;
+	  font-size: 30px;
+	}
+	.success-3 {
+	  margin-top: 5px;
+	  margin-left: 5px;
+	  font-size: 26px;
+	}
+	.success-4 {
+	  margin-top: 17px;
+	  margin-left: 40px;
+	  font-size: 14px;
+	}
+  }
+  @media (max-width: 480px) {
+	.success-popup {
+	  width: 280px;
+	  height: 280px;
+	  padding: 15px;
+	}
+	.success-1 {
+	  margin-top: 34px;
+	  margin-right: 77px;
+	  font-size: 26px;
+	}
+	.success-2 {
+	  margin-top: 12px;
+	  margin-right:80px;
+	  font-size: 30px;
+	}
+	.success-3 {
+	  margin-top: 5px;
+	  margin-left: 5px;
+	  font-size: 26px;
+	}
+	.success-4 {
+	  margin-top: 17px;
+	  margin-left: 40px;
+	  font-size: 14px;
+	}
+  }
+
+
+// Success Message ends
+
+// User Complaints Form Starts
+.complaint-form-container {
+	background-color: #080f25;
+	padding: 20px;
+	border-radius: 10px;
+	max-width: 500px;
+	margin: 0 auto;
+	width: 90%;
+	box-sizing: border-box;
+  
+	h2 {
+	  color: #fff;
+	  margin-bottom: 20px;
+	  text-align: center;
+	}
+  
+	.form-group {
+	  margin-bottom: 15px;
+  
+	  label {
+		display: block;
+		color: #fff;
+		margin-bottom: 5px;
+	  }
+  
+	  select,
+	  textarea {
+		width: 100%;
+		padding: 10px;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		background-color: #0f1b42;
+		color: #fff;
+		box-sizing: border-box;
+	  }
+  
+	  textarea {
+		height: 100px;
+		resize: none;
+	  }
+	}
+  
+	button {
+	  width: 100%;
+	  padding: 10px;
+	  border: none;
+	  border-radius: 5px;
+	  background-color: #28a745;
+	  color: #fff;
+	  cursor: pointer;
+	  font-size: 16px;
+	  box-sizing: border-box;
+	}
+  
+	button:hover {
+	  background-color: #218838;
+	}
+  
+	@media (max-width: 768px) {
+	  padding: 15px;
+	  
+	  h2 {
+		font-size: 1.5rem;
+	  }
+  
+	  .form-group {
+		margin-bottom: 10px;
+  
+		label {
+		  font-size: 0.9rem;
+		}
+  
+		select,
+		textarea {
+		  padding: 8px;
+		  font-size: 0.9rem;
+		}
+	  }
+  
+	  button {
+		padding: 8px;
+		font-size: 0.9rem;
+	  }
+	}
+  
+	@media (max-width: 480px) {
+	  padding: 10px;
+  
+	  h2 {
+		font-size: 1.2rem;
+	  }
+  
+	  .form-group {
+		margin-bottom: 8px;
+  
+		label {
+		  font-size: 0.8rem;
+		}
+  
+		select,
+		textarea {
+		  padding: 6px;
+		  font-size: 0.8rem;
+		}
+	  }
+  
+	  button {
+		padding: 6px;
+		font-size: 0.8rem;
+	  }
+	}
+  }
+  
+// User Complaints Form Ends
+
+
+// Ludo Game Section Starts
+.form-container1 {
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	background-color: --p1;
+	color: #fff;
+	border-radius: 10px;
+	margin: 20px;
+	margin-left: 288px; 
+	margin-top: 90px; 
+  
+	@include maxQuery(1024px) {
+		margin-left: 0;
+	}
+  
+	@include maxQuery(768px) {
+		margin-left: 180px;
+	}
+  
+	@include maxQuery(480px) {
+		margin-left: 0;
+		margin: 10px;
+	}
+  }
+  
+  .form-game-name, .form-header {
+	text-align: center;
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 20px;
+  
+	@include maxQuery(480px) {
+		font-size: 20px;
+	}
+  }
+  
+  .rooms {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 600px;
+	margin: 0 auto;
+  }
+  
+  .room {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #161b22;
+	color: #ffffff;
+	border: 1px solid #30363d;
+	border-radius: 8px;
+	padding: 10px 20px;
+	margin: 10px 0;
+	cursor: pointer;
+	transition: background-color 0.3s;
+  
+	&:hover {
+		background-color: #1f2329;
+	}
+  
+	.prize-pool, .entry-fee {
+		font-size: 18px;
+	}
+  
+	.entry-fee {
+		background-color: #238636;
+		border-radius: 5px;
+		padding: 5px 10px;
+	}
+  }
+  
+  @media (max-width: 1024px) {
+	.form-container1 {
+		margin-left: 0px;
+	}
+  
+	.rooms {
+		margin-top: 80px;
+	}
+  }
+  
+  @media (max-width: 768px) {
+	.form-container1 {
+		margin-left: 180px;
+	}
+  }
+  
+  @media (max-width: 480px) {
+	.form-container1 {
+		margin-left: 0;
+		margin: 10px;
+	}
+  
+	.room .prize-pool, .room .entry-fee {
+		font-size: 14px;
+	}
+  }
+
+.ludo-board-layout{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	
+}
+  
+  
+//   // Ludo Waiting Room Section Starts
+  
+//   .waiting-room-container {
+// 	display: flex;
+// 	flex-direction: column;
+// 	justify-content: center;
+// 	align-items: center;
+// 	height: 100vh;
+// 	background-color: --p1;
+// 	color: #fff;
+//   }
+  
+//   .spinner {
+// 	border: 8px solid #f3f3f3;
+// 	border-top: 8px solid #3498db;
+// 	border-radius: 50%;
+// 	width: 60px;
+// 	height: 60px;
+// 	animation: spin 2s linear infinite;
+// 	margin-bottom: 20px;
+//   }
+  
+//   .waiting-text {
+// 	font-size: 24px;
+// 	text-align: center;
+//   }
+  
+//   @keyframes spin {
+// 	0% { transform: rotate(0deg); }
+// 	100% { transform: rotate(360deg); }
+//   }
+  
+  
+//   // Ludo Waiting Room Section Ends
+  
+
+// /* Ludo Section Starts */
+// .ludoContainer {
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     justify-content: center;
+//     width: 100%;
+//     height: 100vh;
+//     background-image: url("/images/ludo-background.jpg");
+// }
+
+// .controls {
+//     position: absolute;
+//     width: 100px;
+//     height: 100px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+// }
+
+// .controls.top-left {
+// 	bottom: 250px;
+// 	left: 55px;
+// 	border: 5px #fb0b0b4a solid;
+// 	border-bottom:0px;
+// 	border-radius:5px;
+// 	transform: translate(-50%, -50%);
+//   }
+  
+//   .controls.top-right {
+// 	bottom: 250px;
+// 	left: 150px;
+// 	border: 5px #15872f4a solid;
+// 	border-bottom:0px;
+// 	transform: translate(50%, -50%);
+//   }
+  
+//   .controls.bottom-left {
+// 	top: 255px;
+// 	left: 55px;
+// 	border: 5px #47b8d14a solid;
+// 	border-top:0px;
+// 	transform: translate(-50%, 50%);
+//   }
+  
+//   .controls.bottom-right {
+// 	top: 255px;
+// 	right: 55px;
+// 	border: 5px #f1e7144a solid;
+// 	border-top:0px;
+// 	transform: translate(50%, 50%);
+//   }
+// /* Ludo Board */
+// .ludoBoard {
+//     width: 315px;
+//     height: 100%;
+//     max-width: 600px;
+//     position: relative;
+//     background-image: url("/images/ludo-background2.jpg");
+//     background-size: cover;
+//     background-position: center;
+// }
+
+// .boardImage {
+//     width: 305px;
+//     height: 305px;
+//     display: block;
+//     margin: 0 auto;
+//     position: absolute;
+//     top: 50%;
+//     left: 50%;
+//     transform: translate(-50%, -50%);
+// }
+
+// /* Ludo Dice */
+// .dice {
+//     cursor: pointer;
+//     transition: transform 0.3s;
+//     &:hover {
+//         transform: scale(1.1);
+//     }
+// }
+
+// .diceImage {
+//     width: 50px;
+//     height: 50px;
+// }
+
+// // Ludo Player Styles
+// .ludo-player {
+// 	width: 12px;
+// 	height: 12px;
+// 	border-radius: 50%;
+// 	border: 1px solid black;
+// 	box-sizing: border-box;
+// 	z-index: 1;
+// 	position: absolute;
+//   }
+  
+//   .red {
+// 	background-color: red;
+//   }
+  
+//   .green {
+// 	background-color: green;
+//   }
+  
+//   .blue {
+// 	background-color: #45b8d3;
+//   }
+  
+//   .yellow {
+// 	background-color: yellow;
+//   }
+  
+// //   .top-red {
+// // 	top: 78px;
+// // 	left: 37.5px;
+// //   }
+  
+// //   .top-green {
+// // 	top: 78px;
+// // 	left: 76px;
+// //   }
+  
+// //   .bottom-blue {
+// // 	top: 36px;
+// // 	left: 37.5px;
+// //   }
+  
+// //   .bottom-yellow {
+// // 	top: 36px;
+// // 	left: 76px;
+// //   }
+
+
+// // Player Pieces 
+//   .P1.piece1 {
+// 	bottom: 26%;
+// 	left: 12.5%;
+//   }
+  
+//   .P1.piece2 {
+// 	bottom: 26%;
+// 	left: 25%;
+//   }
+  
+//   .P1.piece3 {
+// 	bottom: 12%;
+// 	left: 12.5%;
+//   }
+  
+//   .P1.piece4 {
+// 	bottom: 12%;
+// 	left: 25%;
+//   }
+
+//   .P2.piece1 {
+// 	top: 12%;
+// 	left: 12.5%;
+//   }
+  
+//   .P2.piece2 {
+// 	top: 12%;
+// 	left: 25%;
+//   }
+  
+//   .P2.piece3 {
+// 	top: 25.5%;
+// 	left: 12.5%;
+//   }
+  
+//   .P2.piece4 {
+// 	top: 25.5%;
+// 	left: 25%;
+//   }
+  
+//   .P3.piece1 {
+// 	top: 12%;
+// 	right: 25%;
+//   }
+  
+//   .P3.piece2 {
+// 	top: 12%;
+// 	right: 12.5%;
+//   }
+  
+//   .P3.piece3 {
+// 	top: 25.5%;
+// 	right: 25%;
+//   }
+  
+//   .P3.piece4 {
+// 	top: 25.5%;
+// 	right: 12.5%;
+//   }
+  
+//   .P4.piece1 {
+// 	bottom: 26%;
+// 	right: 25%;
+//   }
+  
+//   .P4.piece2 {
+// 	bottom: 26%;
+// 	right: 12.5%;
+//   }
+  
+//   .P4.piece3 {
+// 	bottom: 12%;
+// 	right: 25%;
+//   }
+  
+//   .P4.piece4 {
+// 	bottom: 12%;
+// 	right: 12.5%;
+//   }
+
+
+//   .home {
+// 	position: absolute;
+// 	width: 40%;
+// 	height: 40%;
+//   }
+  
+//   .red-home {
+// 	top: 0;
+// 	left: 0;
+//   }
+  
+//   .green-home {
+// 	top: 0;
+// 	right: 0;
+//   }
+  
+//   .yellow-home {
+// 	bottom: 0;
+// 	right: 0;
+//   }
+  
+//   .blue-home {
+// 	bottom: 0;
+// 	left: 0;
+//   }
+
+
+// // Ludo Section Ends
+
+// Coming Soon Section Starts
+.coming-soon {
+	margin-left: 150px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	background: linear-gradient(135deg, #080f25, rgb(43, 102, 82));
+	color: #fff;
+	font-family: 'Arial', sans-serif;
+	text-align: center;
+  
+	.content {
+	  background-color: rgba(255, 255, 255, 0.1);
+	  padding: 2rem 3rem;
+	  border-radius: 15px;
+	  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  
+	  h1 {
+		font-size: 3rem;
+		margin-bottom: 1rem;
+		animation: fadeInDown 2s ease-in-out;
+	  }
+  
+	  p {
+		font-size: 1.2rem;
+		margin-bottom: 2rem;
+		animation: fadeInUp 2s ease-in-out;
+	  }
+  
+	  .timer {
+		display: flex;
+		justify-content: center;
+		gap: 1.5rem;
+  
+		.timer-item {
+		  background-color: rgba(255, 255, 255, 0.2);
+		  padding: 1rem;
+		  border-radius: 10px;
+		  min-width: 80px;
+		  animation: fadeIn 1.5s ease-in-out;
+  
+		  span {
+			display: block;
+			font-size: 2rem;
+			font-weight: bold;
+		  }
+  
+		  &:nth-child(2n) {
+			background-color: rgba(0, 0, 0, 0.2);
+		  }
+  
+		  span:last-child {
+			font-size: 1rem;
+			margin-top: 0.5rem;
+		  }
+		}
+	  }
+	}
+  }
+  
+  /* Media Queries for Responsiveness */
+  
+  /* Large Screens */
+  @media (max-width: 1200px) {
+	.coming-soon {
+	  margin-left: 50px;
+	}
+  
+	.content h1 {
+	  font-size: 2.5rem;
+	}
+  
+	.content p {
+	  font-size: 1.1rem;
+	}
+  
+	.timer .timer-item {
+	  min-width: 70px;
+  
+	  span {
+		font-size: 1.8rem;
+	  }
+  
+	  span:last-child {
+		font-size: 0.9rem;
+	  }
+	}
+  }
+  
+  /* Medium Screens */
+  @media (max-width: 768px) {
+	.coming-soon {
+	  margin-left: 0;
+	  height: auto;
+	  padding: 2rem;
+	  margin-top: 20px; /* Adds top margin for medium screens */
+	}
+  
+	.content {
+	  padding: 1.5rem 2rem;
+	}
+  
+	.content h1 {
+	  font-size: 2rem;
+	}
+  
+	.content p {
+	  font-size: 1rem;
+	}
+  
+	.timer {
+	  gap: 1rem;
+  
+	  .timer-item {
+		min-width: 60px;
+		
+		span {
+		  font-size: 1.5rem;
+		}
+  
+		span:last-child {
+		  font-size: 0.8rem;
+		}
+	  }
+	}
+  }
+  
+  /* Small Screens */
+  @media (max-width: 480px) {
+	.coming-soon {
+	  padding: 1rem;
+	  margin-top: 30px; /* Adds top margin for small screens */
+	}
+  
+	.content {
+	  padding: 1rem 1.5rem;
+	}
+  
+	.content h1 {
+	  font-size: 1.5rem;
+	}
+  
+	.content p {
+	  font-size: 0.9rem;
+	}
+  
+	.timer {
+	  flex-direction: column;
+	  gap: 0.5rem;
+  
+	  .timer-item {
+		min-width: 50px;
+  
+		span {
+		  font-size: 1.3rem;
+		}
+  
+		span:last-child {
+		  font-size: 0.7rem;
+		}
+	  }
+	}
+  }
+  
+  /* Animations */
+  @keyframes fadeInDown {
+	from {
+	  opacity: 0;
+	  transform: translateY(-20px);
+	}
+	to {
+	  opacity: 1;
+	  transform: translateY(0);
+	}
+  }
+  
+  @keyframes fadeInUp {
+	from {
+	  opacity: 0;
+	  transform: translateY(20px);
+	}
+	to {
+	  opacity: 1;
+	  transform: translateY(0);
+	}
+  }
+  
+  @keyframes fadeIn {
+	from {
+	  opacity: 0;
+	}
+	to {
+	  opacity: 1;
+	}
+  }
+// Coming Soon Section Ends
+// Admin Status Section Starts
+.status__container {
+    background-color: #1c1f2e; /* Dark background */
+    border: none;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+}
+
+.status__title {
+    margin-bottom: 24px;
+
+    &-text {
+        font-size: 1.75rem;
+        color: #ffffff;
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        border-bottom: 2px solid #2b80ff; /* Add subtle underline */
+        padding-bottom: 8px;
+    }
+}
+
+.status__content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Increased gap for better spacing */
+}
+
+.status__item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #353b48; 
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &-title {
+        font-weight: 500;
+        color: #bdc3c7; 
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+		
+    }
+
+    &-value {
+        font-weight: 700;
+        padding: 10px 15px;
+        border-radius: 8px;
+        color: #ffffff;
+        background-color: hsla(112, 100%, 86%, 0.71);
+        box-shadow: 0 3px 10px rgba(107, 253, 163, 0.5); 
+        transition: background-color 0.3s ease, transform 0.2s ease; 
+    }
+
+    &-value:hover {
+        background-color: #3c8eff;
+        transform: scale(1.05);
+    }
+}
+
+// Admin Status Section Ends
+
+// ================Ludo Testing================== //
+
+.ludoContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100vh;
+	background-image: url("/images/ludo-background.jpg");
+}
+
+.ludoBoardContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 350px;
+	height: 100vh;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url("/images/ludo-background2.jpg");
+	// opacity: 0.7;
+
+}
+
+.ludoBoard {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+    width: 350px;
+    height: 350px;
+    border: 2px solid black;
+    background-color: white;
+}
+
+// Cells with different colors and styles based on their index
+
+.cell {
+	position: relative; 
+	overflow: visible;
+  }
+
+// Red Home Area
+.cell-0, .cell-1, .cell-2, .cell-3, .cell-4, .cell-5, .cell-15, .cell-20, .cell-30, .cell-35, .cell-45, .cell-50, .cell-60, .cell-65, .cell-75, .cell-76, .cell-77, .cell-78, .cell-79, .cell-80 , .cell-91, .cell-106, .cell-107, .cell-108, .cell-109, .cell-110{
+	background-color: #fb0b0c;
+  }
+// Green Home Area
+  
+  .cell-9, .cell-10, .cell-11, .cell-12, .cell-13, .cell-14, .cell-24,.cell-29,  .cell-39, .cell-44, .cell-54, .cell-59, .cell-69, .cell-74, .cell-84, .cell-85, .cell-86, .cell-87, .cell-88, .cell-89 , .cell-23, .cell-22, .cell-37, .cell-52, .cell-67, .cell-82{
+	background-color: #15872f;
+  }
+  
+// Blue Home Area
+  
+  .cell-144, .cell-145, .cell-146, .cell-147, .cell-148, .cell-149, .cell-159, .cell-164, .cell-174,  .cell-179, .cell-189,  .cell-194, .cell-204,  .cell-209, .cell-219, .cell-220, .cell-221, .cell-222, .cell-223, .cell-224, .cell-133, .cell-118, .cell-117, .cell-116, .cell-115, .cell-114 {
+	background-color: #45b8d3;
+  }
+// Yellow Home Area
+  
+  .cell-135, .cell-136, .cell-137, .cell-138, .cell-139, .cell-140, .cell-150,  .cell-155, .cell-165,  .cell-170, .cell-180,  .cell-185, .cell-195, .cell-200, .cell-210, .cell-211, .cell-212, .cell-213, .cell-214, .cell-215, .cell-201, .cell-202, .cell-187, .cell-172, .cell-157, .cell-142 {
+	background-color: #f1e714;
+  }
+
+//   Borders for the cells except home and center
+  .cell-6,.cell-7,.cell-8,.cell-21,.cell-22,.cell-23,.cell-36,.cell-37,.cell-38,.cell-51,.cell-52,.cell-53,.cell-66,.cell-67,.cell-68,.cell-81,.cell-82,.cell-83,.cell-90,.cell-91,.cell-92,.cell-93,.cell-94,.cell-95,.cell-99,.cell-100,.cell-101,.cell-102,.cell-103,.cell-104,.cell-105,.cell-106,.cell-107,.cell-108,.cell-109,.cell-110,.cell-114,.cell-115,.cell-116,.cell-117,.cell-118,.cell-119,.cell-120,.cell-121,.cell-122,.cell-123,.cell-124,.cell-125,.cell-129,.cell-130,.cell-131,.cell-132,.cell-133,.cell-134,.cell-141,.cell-142,.cell-143,.cell-156,.cell-157,.cell-158,.cell-171,.cell-172,.cell-173,.cell-186,.cell-187,.cell-188,.cell-201,.cell-202,.cell-203,.cell-216,.cell-217,.cell-218{
+	border: 1px solid black;
+  }
+
+
+
+// Player pieces placement
+.cell-32,.cell-33,.cell-47,.cell-48{
+	background-color: #fb0b0c;
+  }
+  .cell-41,.cell-42,.cell-56,.cell-57{
+	background-color: #15872f;
+  }
+  .cell-167,.cell-168,.cell-182,.cell-183{
+	background-color: #f1e714;
+  }
+  .cell-176,.cell-177,.cell-191,.cell-192{
+	background-color: #45b8d3;
+  }
+
+.cell-32, .cell-33, .cell-47, .cell-48,
+.cell-41, .cell-42, .cell-56, .cell-57,
+.cell-167, .cell-168, .cell-182, .cell-183,
+.cell-176, .cell-177, .cell-191, .cell-192 {
+  border: 1px solid black;
+  border-radius: 50%;
+  margin: 3px;
+}
+
+
+// Arrows
+.cell-105 {
+    background-color: white;
+    &:after {
+        content: "→";
+        font-size: 1rem;
+        color: #fb0b0c;
+    }
+}
+.cell-7 {
+    background-color: white;
+    &:after {
+        content: "↓";
+        font-size: 1rem;
+        color: #15872f;
+    }
+}
+.cell-217 {
+    background-color: white;
+    &:after {
+        content: "↑";
+        font-size: 1rem;
+        color: #f1e714;
+    }
+}
+.cell-119 {
+    background-color: white;
+    &:after {
+        content: "←";
+        font-size: 1rem;
+        color: #45b8d3;
+    }
+}
+
+// Stars
+.cell-102, .cell-122, .cell-36, .cell-188 {
+	background-color: white;
+	display: flex;
+	justify-content: center; 
+	align-items: center; 
+	position: relative;
+  }
+  
+  .cell-102:before, .cell-122:before, .cell-36:before, .cell-188:before {
+	content: "★";
+	font-size: 1.2rem;
+	color: #000000;
+  }
+
+// Player Pile
+.player-pile {
+	position: absolute;
+	width: 100px;  
+	height: auto;
+	bottom: 30%;
+	left: 50%;  
+	transform: translateX(-50%);
+  }
+
+  .controls {
+	position: absolute;
+	width: 120px;
+	height: 80px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	border-radius: 10px;
+	
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+	border: 1px solid #ddd;
+  }
+  
+  .controls.top-left {
+	bottom: 180px;
+	right: 50px;
+	background: linear-gradient(to bottom, #ae434d, #b78f8f);
+	border: 2px rgba(251, 11, 11, 0.2901960784) solid;
+	transform: translate(-50%, -50%);
+  }
+  
+  .controls.top-right {
+	bottom: 180px;
+	left: 50px;
+	background: linear-gradient(to bottom, #77ff67, #a8f2bb);
+	border: 2px rgba(21, 135, 47, 0.2901960784) solid;
+	transform: translate(50%, -50%);
+  }
+  
+  .controls.bottom-left {
+	top: 180px;
+	right: 50px;
+	background: linear-gradient(to bottom, #feff4d, #fff9b4);
+	border: 2px rgba(71, 184, 209, 0.2901960784) solid;
+  
+	transform: translate(-50%, 50%);
+  }
+  
+  .controls.bottom-right {
+	top: 180px;
+	left: 50px;
+	background: linear-gradient(to bottom, #3f8efc, #a8dbfb);
+	border: 2px rgba(241, 231, 20, 0.2901960784) solid;
+	
+	transform: translate(50%, 50%);
+  }
+  
+
+/* Ludo Dice */
+.dice {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.dice:hover {
+    transform: scale(1.1);
+}
+.dice.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+.diceImage {
+    width: 50px;
+    height: 50px;
+}
+
+$bg-color: #374151; // Slate color
+$bg-hover-color: #4b5563; // Slate hover color
+$text-color: #ffffff; // Text color
+$border-color: #1f2937; // Border color
+$shadow-color: #334155; // Shadow color
+$pass-btn-bg: #f59e0b; // Amber for Pass Turn button
+$pass-btn-text-color: #1e293b; // Text color for Pass Turn button
+$border-radius: 1rem; // Border radius
+$transition-time: 0.4s; // Transition duration
+
+// Mixin for reusable shadow style
+@mixin box-shadow($color) {
+  box-shadow: 0 10px 15px -3px $color, 0 4px 6px -2px $color;
+}
+
+// Breathing animation
+@keyframes breathingAnim {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Common button styles
+.common-btn {
+  border: 2px solid $border-color;
+  border-radius: $border-radius;
+  @include box-shadow($shadow-color);
+  transition: all $transition-time ease-in-out;
+  &:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Dice button styles
+.dice-btn {
+  background-color: $bg-color;
+  color: $text-color;
+  width: 4rem;
+  height: 4rem;
+  &:hover {
+    background-color: $bg-hover-color;
+  }
+  &.disabled {
+    cursor: not-allowed;
+  }
+}
+
+// Pass Turn button styles
+.pass-turn-btn {
+  background-color: $pass-btn-bg;
+  color: $pass-btn-text-color;
+  width: 9rem;
+  height: 5rem;
+  font-size: 1.25rem;
+  padding: 0.5rem 1rem;
+  &:hover {
+    background-color: darken($pass-btn-bg, 10%);
+  }
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+// Breathing animation when it's the player's turn
+.breathing {
+  animation: breathingAnim 1.5s infinite;
+}
+
+
+.ludo-controls{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin:10px;
+}
+// ================Ludo Testing================== //
+
+// Ludo Redux Starts
+
+.highlight {
+	stroke-width: 0.8;
+	stroke: black;
+	stroke-dasharray: 1.1;
+	stroke-dashoffset: 5.5;
+	animation: dashes 1s linear infinite;
+  }
+  
+  @keyframes dashes {
+	to {
+	  stroke-dashoffset: 1.1;
+	}
+  }
+  
+  .highlight:hover {
+	cursor: pointer;
+	stroke: limegreen;
+  }
+  
+  .ludoBoardHome {
+	animation: rotateBoard 30s linear infinite;
+  }
+  
+  @keyframes rotateBoard {
+	0% {
+	  transform: rotate(45deg);
+	}
+  
+	100% {
+	  transform: rotate(405deg);
+	}
+  }
+  
+  .breathingAnim {
+	animation: breathing 1s infinite;
+  }
+  
+  @keyframes breathing {
+	0% {
+	  transform: scale(1);
+	  opacity: 0.75;
+	}
+  
+	50% {
+	  transform: scale(1.1);
+	  opacity: 1;
+	}
+  
+	100% {
+	  transform: scale(1);
+	  opacity: 0.75;
+	}
+  }
+// Ludo Redux Ends
+
+// Payment Admin side starts
+.dropzone {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 20px;
+	margin: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.dropzone.active {
+    border-color: #007bff;
+}
+
+.dropzone p {
+    margin: 0;
+    color: #666;
+}
+.cursor-pointer{
+	cursor: pointer;
+}
+.uploaded-images-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.uploaded-images-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; // Space between each image
+}
+
+.uploaded-image-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 120px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.uploaded-image-thumbnail {
+    width: 100%;
+    padding-bottom: 100%; // Makes the thumbnail square
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.thumbnail-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+
+.uploaded-image-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.uploaded-image-name {
+    font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+    margin-bottom: 8px;
+    text-align: center;
+    word-wrap: break-word; // Handle long file names
+    transition: color 0.3s;
+    
+    &:hover {
+        color: #0056b3;
+    }
+}
+
+.delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: #d43737;
+    }
+
+    i {
+        margin-right: 5px;
+    }
+}
+
+// Payment Admin side ends
+
+// Loading screen spinner start
+.loading-body {
+	margin: 0;
+	padding: 0;
+	background: #000000;
+	position: fixed; 
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1000; 
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  }
+  .loading-plane{
+	height: 164px;
+	width: 164px;
+  }
+  .ring {
+	width: 150px;
+	height: 150px;
+	background: transparent;
+	border: 3px solid #3c3c3c;
+	border-radius: 50%;
+	text-align: center;
+	line-height: 150px;
+	font-family: sans-serif;
+	font-size: 20px;
+	color: #fff000;
+	letter-spacing: 4px;
+	text-transform: uppercase;
+	text-shadow: 0 0 10px #fff000;
+	box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+	position: relative; /* Position relative to manage pseudo-elements correctly */
+  }
+  
+  .ring:before {
+	content: '';
+	position: absolute;
+	top: -3px;
+	left: -3px;
+	width: 100%;
+	height: 100%;
+	border: 3px solid transparent;
+	border-top: 3px solid #fff000;
+	border-right: 3px solid #fff000;
+	border-radius: 50%;
+	animation: animateC 2s linear infinite;
+  }
+  
+  .loading-span {
+	display: block;
+	position: absolute;
+	top: calc(50% - 2px);
+	left: 50%;
+	width: 50%;
+	height: 4px;
+	background: transparent;
+	transform-origin: left;
+	animation: animate 2s linear infinite;
+  }
+  
+  .loading-span:before {
+	content: '';
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #fff000;
+	top: -6px;
+	right: -8px;
+	box-shadow: 0 0 20px #fff000;
+  }
+  
+  @keyframes animateC {
+	0% {
+	  transform: rotate(0deg);
+	}
+	100% {
+	  transform: rotate(360deg);
+	}
+  }
+  
+  @keyframes animate {
+	0% {
+	  transform: rotate(45deg);
+	}
+	100% {
+	  transform: rotate(405deg);
+	}
+  }
+  
+// Loading screen spinner ends
+
+// Aviator Game Section Starts
+
+.aviator-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 20px;
+}
+
+
+.aviator-bet-btn,
+.aviator-cashout-btn,
+.aviator-cancel-btn {
+    padding: 12px 40px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%; 
+    text-align: center;
+}
+
+.aviator-bet-btn {
+    background-color: #04ff00;
+    color: white;
+}
+
+.aviator-cashout-btn {
+    background-color: #ffb700;
+    color: white;
+}
+
+.aviator-cancel-btn {
+    background-color: #ffc456;
+    color: white;
+}
+
+.aviator-multiplier-text {
+    font-size: 4rem;
+    color: #04ff00;
+    font-weight: 700;
+	z-index: 2;
+}
+.crash-result{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+.aviator-countdown{
+	display:flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+.aviator-countdown-text{
+	font-size: 2rem;
+	color: white;
+}
+.btn-admin-aviator{
+	display: flex;
+	align-items: center;
+	gap: 200px;
+}
+@media (max-width:480px){
+	.aviator-countdown-text{
+		font-size: 1.2rem;
+	}
+}
+.crash-result-text{
+	font-size: 2.5rem;
+	color: white;
+	padding: 20px;
+	margin: 20px;
+	z-index: 2;
+}
+.aviator-message-box{
+	height: 40px;
+	width: 100%;
+}
+.cashout-message{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.5rem;
+	padding: 4px;
+	border-radius: 20px;
+	background-color: #1eff00bb;
+}
+.crash-text {
+	color: red;
+	font-weight: bold;
+}
+  
+.aviator-bets{
+	background-color: #2f3854;
+    padding: 20px;
+    border-radius: 10px;
+}
+.aviator-bets-content{
+	display: flex;
+    flex-wrap: wrap;
+	flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.aviator-plane {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 300px;
+	background-color: black;
+	margin-bottom: 10px;
+	border-radius: 20px;
+	position: relative; // Add this to position elements inside it
+	cursor: pointer;
+	transition: background-color 0.3s;
+
+	.aviator-video {
+		width: 100%;
+		height: 100%;
+		object-fit: fit;
+		border-radius: 20px;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 1; 
+	}
+
+	
+
+	
+}
+
+.aviator-inputs{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	gap: 20px;
+}
+.aviator-inputbox{
+	width: 100%;
+	height: 50px;
+	border-radius: 10px;
+	border: 1px solid #ccc;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+.aviator-buttons{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	gap: 20px;
+}
+.crash-effect-container {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+	width: 400px;
+	height: 400px;
+	z-index: 1000;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  }
+  
+  .fire-blast {
+	position: absolute;
+	width: 120px;
+	height: 120px;
+	background: radial-gradient(circle, rgb(255, 60, 0) 0%, rgba(255,140,0,1) 50%, rgba(255, 193, 7, 0.491) 70%);
+	border-radius: 50%;
+	transform: scale(0);
+	opacity: 0;
+	animation: fire-explosion 1s ease-out forwards;
+  }
+  
+  .shockwave {
+	position: absolute;
+	width: 100px;
+	height: 100px;
+	background: radial-gradient(circle, rgba(255,255,255,0.8) 20%, rgba(255,87,34,0) 100%);
+	border-radius: 50%;
+	transform: scale(0);
+	opacity: 0;
+	animation: shockwave 0.8s ease-out forwards;
+  }
+  
+  .particle {
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	background: radial-gradient(circle, rgba(255,140,0,1) 30%, rgba(255,193,7,0) 60%, rgba(0,0,0,0) 100%);
+	border-radius: 50%;
+	opacity: 0;
+	animation: particle-explosion 1.2s ease-out forwards;
+  }
+  
+  @keyframes fire-explosion {
+	0% {
+	  transform: scale(0.5);
+	  opacity: 1;
+	}
+	50% {
+	  transform: scale(1.5);
+	  opacity: 1;
+	}
+	100% {
+	  transform: scale(2.5);
+	  opacity: 0;
+	}
+  }
+  
+  @keyframes shockwave {
+	0% {
+	  transform: scale(0);
+	  opacity: 1;
+	}
+	100% {
+	  transform: scale(4);
+	  opacity: 0;
+	}
+  }
+  
+  @keyframes particle-explosion {
+	0% {
+	  transform: translate(0, 0) scale(0.3);
+	  opacity: 1;
+	}
+	100% {
+	  transform: translate(calc(200px * (random() - 0.5)), calc(200px * (random() - 0.5))) scale(1);
+	  opacity: 0;
+	}
+  }
+  

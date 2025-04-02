@@ -1,7 +1,7 @@
 "use client";
 import { Tab } from "@headlessui/react";
 import Image from "next/image";
-import { tabTwo, liveSoccerMatch, liveIceHockeyMatch, liveIceFifaVoltaMatch } from "@/public/data/tabTwo";
+import { tabTwo, liveFootballMatch, liveIceHockeyMatch, liveIceFifaVoltaMatch } from "@/public/data/tabTwo";
 import { useState } from 'react';
 
 export default function LiveMatches() {
@@ -55,10 +55,10 @@ export default function LiveMatches() {
                           </Tab.List>
                           <Tab.Panels>
                             <Tab.Panel className="tabitem active">
-                              {liveSoccerMatch.map(
+                              {liveFootballMatch.map(
                                 ({
                                   id,
-                                  football,
+                                  football1,
                                   titletwo,
                                   times,
                                   updown,
@@ -551,10 +551,10 @@ export default function LiveMatches() {
                                   </div>
                                 </div>
                               </div>
-                              {liveSoccerMatch.map(
+                              {liveFootballMatch.map(
                                 ({
                                   id,
-                                  football,
+                                  football1,
                                   titletwo,
                                   times,
                                   updown,

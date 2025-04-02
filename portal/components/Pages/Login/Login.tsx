@@ -4,11 +4,14 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation';
 import { IconBrandGoogle, IconBrandTwitterFilled, IconBrandFacebookFilled } from "@tabler/icons-react";
-import { auth, db } from '../../../firebaseConfig';
-import { signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, signInWithPopup } from "firebase/auth";
+import { FcGoogle } from 'react-icons/fc';
+import { auth, db, isAdmin } from '../../../firebaseConfig';
+import { signInWithEmailAndPassword, FacebookAuthProvider, TwitterAuthProvider, signInWithPopup } from "firebase/auth";
 import { doPasswordReset, doSignInWithGoogle } from '@/firebase/auth';
 import { getDoc, doc } from 'firebase/firestore';
 import { createProfile } from '@/api/firestoreService';
+import PhoneAuth from '../PhoneAuth/PhoneAuth';
+import { MdThumbsUpDown } from 'react-icons/md';
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -23,21 +26,20 @@ export default function Login() {
                 const user = userCredential.user;
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 const userData = userDoc.data();
-                if (userData?.isBlocked === false) {
-                    if (userData?.role === 'admin') {
-                        router.push('/admin');
-                    } else {
-                        router.push('/');
-                    }
+
+                if (isAdmin(user.email)) {
+                    router.push('/admin');
                 } else {
-                    setMessage('You are suspended from the system');
+                    if (userData?.isBlocked === false) {
+                        router.push('/');
+                    } else {
+                        setMessage('You are suspended from the system' + user.email);
+                    }
                 }
+
             })
             .catch((error) => {
                 const errorCode = error.code;
-                const errorMessage = error.message;
-                console.error(errorCode, errorMessage);
-                setMessage('Error signing in. Please check your credentials.');
             });
     };
 
@@ -49,45 +51,76 @@ export default function Login() {
             const userCredential = await doSignInWithGoogle();
             const user = userCredential.user;
 
+            // Check if the user document exists
             const userDoc = await getDoc(doc(db, "users", user.uid));
-            const userData = userDoc.data();
-            if (userData?.isBlocked === false) {
-                if (userData) {
+
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+
+                // Check if the user is blocked
+                if (userData?.isBlocked === false) {
                     if (userData.role === 'admin') {
                         router.push('/admin');
                     } else {
                         router.push('/');
                     }
                 } else {
-                    const profileData = {
-                        firstName: user.displayName?.split(' ')[0] || '',
-                        lastName: user.displayName?.split(' ')[1] || '',
-                        phoneNumber: '',
-                        email: user.email,
-                        wallet: '1000',
-                        role: "user"
-                    };
-                    await createProfile(user.uid, profileData);
-                    router.push('/');
+                    setMessage('You are suspended from the system');
                 }
             } else {
-                setMessage('You are suspended from the system');
+                const profileData = {
+                    firstName: user.displayName?.split(' ')[0] || '',
+                    lastName: user.displayName?.split(' ')[1] || '',
+                    phoneNumber: '',
+                    email: user.email,
+                };
+                await createProfile(user.uid, profileData);
+                router.push('/');
             }
         } catch (e) {
             console.log(e);
         }
-    }
+    };
 
-    const handleFacebookLogin = () => {
-        const provider = new FacebookAuthProvider();
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                const user = result.user;
-                console.log(user);
+
+    const handleFacebookLogin = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        e.preventDefault();
+
+        try {
+            const provider = new FacebookAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            // Check if the user document exists
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+
+                // Check if the user is blocked
+                if (userData?.isBlocked === false) {
+                    if (userData.role === 'admin') {
+                        router.push('/admin');
+                    } else {
+                        router.push('/');
+                    }
+                } else {
+                    setMessage('You are suspended from the system');
+                }
+            } else {
+                // If user does not exist, create a new profile
+                const profileData = {
+                    firstName: user.displayName?.split(' ')[0] || '',
+                    lastName: user.displayName?.split(' ')[1] || '',
+                    phoneNumber: '',
+                    email: user.email,
+                };
+                await createProfile(user.uid, profileData);
                 router.push('/');
-            }).catch((error) => {
-                console.error(error);
-            });
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const handleTwitterLogin = () => {
@@ -123,7 +156,7 @@ export default function Login() {
                 <div className="row justify-content-between align-items-center">
                     <div className="col-6">
                         <div className="login_section__thumb d-none d-lg-block">
-                            <Image className="w-80 h-80" width={620} height={620} src="/images/icct20.png" alt="Image" />
+                            <Image className="w-80 h-80" width={620} height={620} src="/images/gameofgem.png" alt="Image" />
                         </div>
                     </div>
                     <div className="col-lg-6 col-xl-5">
@@ -134,6 +167,8 @@ export default function Login() {
                                         <h3 className="mb-6 mb-md-8">Login</h3>
                                         <div className="login_section__form">
                                             {message && <p className="message">{message}</p>}
+                                            <PhoneAuth currentPage='login' />
+                                            <span className="mb-6">Or continue with Email</span>
                                             <form onSubmit={handleLogin}>
                                                 <div className="mb-5 mb-md-6">
                                                     <input
@@ -165,21 +200,22 @@ export default function Login() {
                                         <div className="login_section__socialmedia text-center mb-6">
                                             <span className="mb-6">Or continue with</span>
                                             <div className="login_section__social d-center gap-3">
-                                                <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleFacebookLogin}>
+                                                {/* <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleFacebookLogin}>
                                                     <IconBrandFacebookFilled className="ti ti-brand-facebook-filled fs-four" />
-                                                </Link>
-                                                <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleTwitterLogin}>
+                                                </Link> */}
+                                                {/* <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={handleTwitterLogin}>
                                                     <IconBrandTwitterFilled className="ti ti-brand-twitter-filled fs-four" />
-                                                </Link>
-                                                <Link href="#" className="n11-bg px-3 py-2 rounded-5" onClick={onGoogleSignIn}>
-                                                    <IconBrandGoogle className="ti ti-brand-google fs-four fw-bold" />
+                                                </Link> */}
+                                                <Link href="#" className="bg-white rounded-5 px-2 py-2" onClick={onGoogleSignIn}>
+                                                    <FcGoogle className="ti ti-brand-google fs-four fw-bold" />
                                                 </Link>
                                             </div>
-                                            <span className="d-center gap-1">
+                                            <span className="d-center gap-1 mt-4">
                                                 <button className="g1-color" onClick={handleForgotPassword}>Forgot Password?</button>
                                             </span>
                                         </div>
                                         <span className="d-center gap-1">Create your account? <Link className="g1-color" href="/create-acount">Sign Up Now</Link></span>
+                                        <span className="d-center gap-1 mt-4">Powered by <strong><MdThumbsUpDown /> BetFair</strong></span>
                                     </div>
                                 </div>
                             </div>

@@ -8,6 +8,8 @@ import { auth, db } from '@/firebaseConfig';
 import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
+import SingleDigitLottery from '@/components/Pages/SingleDigitLottery/SingleDigitLottery';
+import HomePage from '@/components/Pages/HomePage/HomePage';
 
 export default function Page() {
   const [user, setUser] = useState<User | null>(null);
@@ -45,17 +47,22 @@ export default function Page() {
     return () => unsubscribe();
   }, [router]);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <>
-      {user ? (
+      {isLoading ? (
+        <div className="loading-body">
+          <div className="loading-plane">
+            <div className="ring">
+              <img src="/images/loading.png" alt="Loading" />
+              <span className="loading-span"></span>
+            </div>
+          </div>
+        </div>
+      ) : user ? (
         <>
           <HeaderMain />
-          <TopSlider />
-          <TopCricket />
+          <HomePage />
         </>
       ) : (
         <Home />

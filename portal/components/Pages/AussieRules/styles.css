@@ -1,0 +1,78 @@
+/* Container and Table Styling */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    /* padding: 48px; */
+    margin-top: 68px;
+;
+    font-family: Arial, sans-serif;
+    color: #333;
+  }
+  
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #000;  /* Title color to black */
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;  /* Ensure table background is white */
+  }
+  
+  .custom-table th, .custom-table td {
+    padding: 12px 15px;
+    text-align: center;
+    border: 1px solid #ccc;
+    color: #000;  /* Text color black for all cells */
+  }
+  
+  /* Header Styling */
+  .custom-table thead {
+    background-color: #f1f1f1;
+    color: #333;  /* Dark gray header text color */
+    font-weight: bold;
+  }
+  
+  /* Alternating row colors */
+  .custom-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+    color: #000;  /* Text color black */
+  }
+  
+  .custom-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+    color: #000;  /* Text color black */
+  }
+  
+  /* Odds Styling */
+  .odds {
+    font-weight: bold;
+    padding: 10px 15px;
+    color: #fff;  /* Ensure odds text color is white */
+  }
+  
+  .blue-bg {
+    background-color: #72BBEF;  /* Blue background */
+  }
+  
+  .pink-bg {
+    background-color: #FAAABA;  /* Pink background */
+  }
+  
+  /* Hover Effect */
+  .custom-table tbody tr:hover {
+    background-color: #f1f1f1;
+    transition: 0.3s;
+  }
+  

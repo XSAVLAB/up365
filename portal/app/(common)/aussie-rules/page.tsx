@@ -4,7 +4,7 @@ import TopAussieRules from '@/components/Pages/AussieRules/TopAussieRules';
 export default function page() {
     return (
         <>
-            <HeaderMain />
+            {/* <HeaderMain /> */}
             <TopAussieRules />
         </>
     )

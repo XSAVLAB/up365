@@ -1,6 +1,6 @@
 /* styles.css */
 .navbar {
-    background-color: #000616;
+    background-color: #000000;
     color: white;
     padding: 16px;
     position: sticky;
@@ -67,35 +67,25 @@
     display: none;
 }
 
-.menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #000616;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 50;
-}
-
-.menu img {
-    height: 4rem;
-    width: 10rem;
-    cursor: pointer;
-    margin-left: 16px;
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 16px;
+    background-color: #000000;
+    border: 1px solid #35c31e;
     border-radius: 0.5rem;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .menu-content {
-    width: 100%;
-    height: 65vh;
-    margin: auto;
-    border-radius: 0.5rem;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .menu-buttons {
@@ -106,8 +96,8 @@
 
 .menu-close-button {
     position: absolute;
-    top: 16px;
-    right: 16px;
+    top: 8px;
+    right: 8px;
     background-color: white;
     border-radius: 0.25rem;
     cursor: pointer;
@@ -119,10 +109,45 @@
     height: 1.5rem;
 }
 
+@media (max-width: 768px) {
+    /* .navbar-buttons {
+        display: none;
+    }
+    .menu-button {
+        display: block;
+    } */
+
+    .navbar-login-button {
+        width: 5rem;
+        height: 2rem;
+        margin-left: 190px;
+        padding: 0px;
+        border: 2px solid #35c31e;
+        font-weight: 600;
+        font-size: 1rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        background: transparent;
+        color: white;
+    }
+    .navbar-signup-button {
+        width: 5rem;
+        height: 2rem;
+        padding: 0px;
+        border: 2px solid #35c31e;
+        font-weight: 600;
+        font-size: 1rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        background: #35c31e;
+        color: white;
+    }
+}
+
 .main-body-scroller {
-    background-color: #000616;
+    background-color: #000000;
     color: white;
-    padding: 16px;
+    padding: 24px;
     position: sticky;
     top: 6rem;
     z-index: 10;
@@ -152,15 +177,6 @@
     border-bottom: 2px solid white;
 }
 
-@media (max-width: 768px) {
-    .navbar-buttons {
-        display: none;
-    }
-
-    .menu-button {
-        display: block;
-    }
-}
 
 
 .slider-container {
@@ -171,7 +187,7 @@
     margin: auto;
     padding: 16px 4px;
     position: relative;
-    background-color: #000616;
+    background-color: #000000;
     overflow: hidden;
 }
 
@@ -295,8 +311,10 @@
 
 /* Custom styles for ResultGamesColorComponent */
 .custom-table-auto {
-    width: 100%;
-    min-width: 100%;
+    width: 80%;
+    min-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
     border-collapse: collapse;
 }
 
@@ -334,6 +352,8 @@
 
 .custom-text-black {
     color: #000000;
+    font-weight: bold;
+    
 }
 
 .custom-text-white {

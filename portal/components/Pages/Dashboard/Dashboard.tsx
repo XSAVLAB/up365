@@ -9,7 +9,11 @@ import { dashboardTabs } from '@/public/data/dashTabs';
 import { doSignOut } from '../../../firebase/auth';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchBalanceHistory, fetchProfileData, fetchUserBets, fetchUserWallet, handleChange, updateProfile, updateSettings } from '../../../api/firestoreService';
+import { fetchBalanceHistory, fetchProfileData, fetchUserBets, fetchUserComplaints, fetchUserWallet, handleChange, updatePasswordInFirebase, updateProfile, updateSettings } from '../../../api/firestoreService';
+import UserStatement from './UserStatement';
+import ComplaintForm from './Complaints';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
 
 export default function Dashboard() {
     const [activeItem, setActiveItem] = useState(dashboardTabs[0]);
@@ -19,6 +23,10 @@ export default function Dashboard() {
     const [walletBalance, setWalletBalance] = useState('0');
     const [errorMessage, setErrorMessage] = useState('');
     const [userBets, setUserBets] = useState<any[]>([]);
+    const [complaintsHistory, setComplaintsHistory] = useState<any[]>([]);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
@@ -39,6 +47,7 @@ export default function Dashboard() {
                     .then(data => setWalletBalance(data))
                     .catch(error => console.error('Error fetching wallet balance: ', error));
                 fetchBets(currentUser.uid);
+                fetchComplaints(currentUser.uid);
             } else {
                 setUser(null);
                 setUserBets([]);
@@ -84,6 +93,7 @@ export default function Dashboard() {
     const [formSettingsData, setFormSettingsData] = useState({
         cardNumber: '',
         expiration: '',
+        cvv: '',
         streetAddress: '',
         aptUnit: '',
         phoneNumber: '',
@@ -91,6 +101,48 @@ export default function Dashboard() {
         state: '',
         zipCode: '',
     });
+    // Update Password
+    const [formPasswordData, setFormPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+    });
+
+    const onPasswordSubmit = async (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        if (formPasswordData.newPassword !== formPasswordData.confirmPassword) {
+            setErrorMessage("Passwords do not match!");
+            return;
+        }
+        try {
+            if (user) {
+                const result = await updatePasswordInFirebase(
+                    user.email,
+                    formPasswordData.currentPassword,
+                    formPasswordData.newPassword
+                );
+                if (result.success) {
+                    setSuccessMessage("Password updated successfully!");
+                    setErrorMessage("");
+                } else {
+                    setErrorMessage("Please enter correct current password!");
+                }
+            } else {
+                setErrorMessage("No user found");
+            }
+        } catch (error) {
+            setErrorMessage("Error updating password!");
+        }
+    };
+    const togglePasswordVisibility = (type: string) => {
+        if (type === 'current') {
+            setShowCurrentPassword(!showCurrentPassword);
+        } else if (type === 'new') {
+            setShowNewPassword(!showNewPassword);
+        } else if (type === 'confirm') {
+            setShowConfirmPassword(!showConfirmPassword);
+        }
+    };
 
     const onSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -125,12 +177,25 @@ export default function Dashboard() {
             setSuccessMessage("");
         }
     };
+    // Fetch Complaints
+    const fetchComplaints = async (userId: string) => {
+        try {
+            const complaints = await fetchUserComplaints(userId);
+            setComplaintsHistory(complaints);
+        } catch (error) {
+            console.error('Error fetching complaints history:', error);
+        }
+    };
+
     // Logout
     const handleLogout = async () => {
         try {
-            await doSignOut();
-            window.location.replace('/login');
-            console.log('Logged out successfully');
+            const confirmation = window.confirm('Are you sure you want to logout?');
+            if (confirmation) {
+                await doSignOut();
+                window.location.replace('/login');
+                console.log('Logged out successfully');
+            }
         } catch (error) {
             console.error('Error logging out:', error);
         }
@@ -183,6 +248,383 @@ export default function Dashboard() {
                                         <div className="col-xxl-9">
                                             <Tab.Panels className="tabcontents">
                                                 <Tab.Panel>
+                                                    {/* <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
+                                                        <div
+                                                            className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
+                                                            <i className="ti ti-credit-card fs-four g1-color"></i>
+                                                            <h5 className="n10-color">Payment methods</h5>
+                                                            </div>
+                                                            <div className="pay_method__paymethod-alitem">
+                                                            <div className="row gx-4 gy-4">
+                                                            <DepositCard />
+                                                            </div>
+                                                            </div>
+                                                            </div> */}
+                                                    <DepositAmount />
+                                                </Tab.Panel>
+
+                                                <Tab.Panel>
+                                                    {/* <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
+                                                        <div
+                                                            className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
+                                                            <i className="ti ti-credit-card fs-four g1-color"></i>
+                                                            <h5 className="n10-color">Payment methods</h5>
+                                                        </div>
+                                                        <div className="pay_method__paymethod-alitem">
+                                                            <div className="row gx-4 gy-4">
+                                                                <DepositCard />
+                                                            </div>
+                                                        </div>
+                                                    </div> */}
+                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                        
+                                                        <WithdrawalAmount />
+                                                    </div>
+                                                </Tab.Panel>
+                                                {/* <Tab.Panel>
+                                                    <div className="pay_method__table">
+                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                            <table className="w-100 text-center p2-bg">
+                                                                <tr>
+                                                                    <th className="text-nowrap">Transaction ID</th>
+                                                                    <th className="text-nowrap">Payment Methods</th>
+                                                                    <th className="text-nowrap">Amount</th>
+                                                                    <th className="text-nowrap">Status</th>
+                                                                </tr>
+
+                                                                <tr>
+                                                                    <td>ZT3FA5D8N7</td>
+                                                                    <td>Ethereum</td>
+                                                                    <td>5,591 USD</td>
+                                                                    <td className="g1-color fw-normal cpoint">Complete</td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel> */}
+                                                <Tab.Panel>
+                                                    <div className="pay_method__tabletwo">
+                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                            <table className="w-100 text-center p2-bg">
+                                                                <thead>
+                                                                    <tr>
+                                                                        {/* <th className="text-nowrap">Transaction ID</th> */}
+                                                                        <th className="text-nowrap">Date</th>
+                                                                        <th className="text-nowrap">Transaction Type</th>
+                                                                        <th className="text-nowrap">Amount/Balance</th>
+                                                                        <th className="text-nowrap">Status</th>
+                                                                        <th className="text-nowrap">Comment</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {balanceHistory.map((entry) => (
+                                                                        <tr key={entry.id}>
+                                                                            {/* <td className="text-nowrap">{entry.id}</td> */}
+                                                                            <td className="text-nowrap">{entry.timestamp}</td>
+                                                                            <td className="text-nowrap">{entry.type}</td>
+                                                                            <td className="text-nowrap">{entry.amount}</td>
+                                                                            <td className={`${entry.status === 'approved' ? 'g1-color' : entry.status === 'pending' ? 'y1-color' : 'r1-color'} fw-normal cpoint text-nowrap`}>{entry.status}
+                                                                            </td>
+                                                                            <td className="text-nowrap">{entry.comment || "N/A"}</td>
+
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    {user && <UserStatement userId={user.uid} />}
+                                                </Tab.Panel>
+                                                <Tab.Panel>
+                                                    <div className="pay_method__tabletwo">
+                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                            <table className="w-100 text-center p2-bg">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Match</th>
+                                                                        <th>Your Team</th>
+                                                                        <th>Odds</th>
+                                                                        <th>Bet Amount</th>
+                                                                        <th>Status</th>
+                                                                        <th>Bet ID</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {userBets.map((bet) => (
+                                                                        <tr key={bet.id}>
+                                                                            <td>{bet.team1} Vs {bet.team2}</td>
+                                                                            <td>{bet.selectedTeam}</td>
+                                                                            <td>{bet.odds}</td>
+                                                                            <td>{bet.betAmount}</td>
+                                                                            <td>{bet.status}</td>
+                                                                            <td>{bet.id}</td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel>
+
+
+                                                <Tab.Panel>
+                                                    <div>
+                                                        <h2>Complaint History</h2>
+                                                        <div className="pay_method__tabletwo">
+                                                            <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
+                                                                <table className="w-100 text-left p2-bg">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th className="text-nowrap">Date</th>
+                                                                            <th className="text-nowrap">Game</th>
+                                                                            <th className="text-nowrap">Complaint Type</th>
+                                                                            <th className="text-nowrap">Description</th>
+                                                                            <th className="text-nowrap">Admin Remarks</th>
+                                                                            <th className="text-nowrap">Status</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {complaintsHistory.map((complaint) => (
+                                                                            <tr key={complaint.id}>
+                                                                                <td className="text-nowrap">{new Date(complaint.createdAt).toLocaleDateString()}</td>
+                                                                                <td className="text-nowrap">{complaint.game}</td>
+                                                                                <td className="text-nowrap">{complaint.complaintType}</td>
+                                                                                <td className="text-balance">{complaint.description}</td>
+                                                                                <td className="text-nowrap">{complaint.adminRemarks}</td>
+                                                                                <td className={`fw-normal cpoint text-nowrap ${complaint.status === 'Resolved' ? 'g1-color' : 'r1-color'}`}>
+                                                                                    {complaint.status}
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </Tab.Panel>
+                                                <Tab.Panel >
+                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
+                                                        <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mt-6">
+                                                            <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                                                                <h5 className="n10-color">Update Your Password</h5>
+                                                            </div>
+                                                            <div className="pay_method__formarea">
+                                                                <form onSubmit={onPasswordSubmit}>
+                                                                    {/* Current Password */}
+                                                                    <div className="d-flex align-items-center w-100 p1-bg ps-3 rounded-8 mb-5">
+                                                                        <input
+                                                                            type={showCurrentPassword ? "text" : "password"}
+                                                                            name="currentPassword"
+                                                                            placeholder="Current Password"
+                                                                            value={formPasswordData.currentPassword}
+                                                                            onChange={(e) =>
+                                                                                setFormPasswordData({
+                                                                                    ...formPasswordData,
+                                                                                    currentPassword: e.target.value,
+                                                                                })
+                                                                            }
+                                                                            className="flex-grow-1"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn"
+                                                                            onClick={() => togglePasswordVisibility('current')}
+                                                                        >
+                                                                            {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+                                                                        </button>
+                                                                    </div>
+
+                                                                    {/* New Password */}
+                                                                    <div className="d-flex align-items-center w-100 p1-bg ps-3 rounded-8 mb-5">
+                                                                        <input
+                                                                            type={showNewPassword ? "text" : "password"}
+                                                                            name="newPassword"
+                                                                            placeholder="New Password"
+                                                                            value={formPasswordData.newPassword}
+                                                                            onChange={(e) =>
+                                                                                setFormPasswordData({
+                                                                                    ...formPasswordData,
+                                                                                    newPassword: e.target.value,
+                                                                                })
+                                                                            }
+                                                                            className="flex-grow-1"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn"
+                                                                            onClick={() => togglePasswordVisibility('new')}
+                                                                        >
+                                                                            {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                                                                        </button>
+                                                                    </div>
+
+                                                                    {/* Confirm Password */}
+                                                                    <div className="d-flex align-items-center w-100 p1-bg ps-3 rounded-8 mb-5">
+                                                                        <input
+                                                                            type={showConfirmPassword ? "text" : "password"}
+                                                                            name="confirmPassword"
+                                                                            placeholder="Confirm Password"
+                                                                            value={formPasswordData.confirmPassword}
+                                                                            onChange={(e) =>
+                                                                                setFormPasswordData({
+                                                                                    ...formPasswordData,
+                                                                                    confirmPassword: e.target.value,
+                                                                                })
+                                                                            }
+                                                                            className="flex-grow-1"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn"
+                                                                            onClick={() => togglePasswordVisibility('confirm')}
+                                                                        >
+                                                                            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">
+                                                                        Update Password
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                        {/* <div className="pay_method__paymethod-title mb-5 mb-md-6">
+                                                            <h5 className="n10-color">Enter your payment details</h5>
+                                                        </div>
+                                                        <div className="pay_method__formarea">
+                                                            <form onSubmit={onSettingsSubmit}>
+
+                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                    <div className="d-flex w-100 p1-bg ps-3 rounded-8">
+                                                                        <div className="d-flex align-items-center w-100">
+                                                                            <i className="ti ti-credit-card fs-five"></i>
+                                                                            <input
+                                                                                type="text"
+                                                                                id="card_number2"
+                                                                                name="cardNumber"
+                                                                                placeholder="Card number"
+                                                                                value={formSettingsData.cardNumber}
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    const numericValue = value.replace(/\D/g, '');
+                                                                                    setFormSettingsData({ ...formSettingsData, cardNumber: numericValue });
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                        <div className="d-flex align-items-center justify-content-end">
+                                                                            <input
+                                                                                className="w-75"
+                                                                                type="text"
+                                                                                id="expiration2"
+                                                                                name="expiration"
+                                                                                placeholder="MM/YY"
+                                                                                value={formSettingsData.expiration}
+                                                                                onChange={(e) => {
+                                                                                    let value = e.target.value.replace(/\D/g, '');
+                                                                                    if (value.length > 2) {
+                                                                                        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                                                                                    }
+                                                                                    if (value.length > 5) {
+                                                                                        value = value.slice(0, 5);
+                                                                                    }
+                                                                                    setFormSettingsData({ ...formSettingsData, expiration: value });
+                                                                                }}
+                                                                                maxLength={5}
+                                                                            />
+                                                                        </div>
+                                                                        <div className="d-flex align-items-center justify-content-end">
+                                                                            <input
+                                                                                className="w-75"
+                                                                                type="text"
+                                                                                id="expiration2"
+                                                                                name="cvv"
+                                                                                placeholder="CVV"
+                                                                                value={formSettingsData.cvv}
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    const numericValue = value.replace(/\D/g, '');
+                                                                                    setFormSettingsData({ ...formSettingsData, cvv: numericValue });
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="d-flex w-100 p1-bg rounded-8">
+                                                                        <input
+                                                                            type="text"
+                                                                            name="streetAddress"
+                                                                            placeholder="Street address"
+                                                                            value={formSettingsData.streetAddress}
+                                                                            onChange={handleChange(formSettingsData, setFormSettingsData)}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
+                                                                    <div className="d-flex w-100 p1-bg rounded-8">
+                                                                        <input
+                                                                            type="text"
+                                                                            name="aptUnit"
+                                                                            placeholder="Apt, unit, suite, etc. (optional)"
+                                                                            value={formSettingsData.aptUnit}
+                                                                            onChange={handleChange(formSettingsData, setFormSettingsData)}
+                                                                        />
+                                                                    </div>
+                                                                    <div className="d-flex w-100 p1-bg rounded-8">
+                                                                        <input
+                                                                            type="text"
+                                                                            name="phoneNumber"
+                                                                            placeholder="(+91) XXX-XXX-XXXX"
+                                                                            value={formSettingsData.phoneNumber}
+                                                                            onChange={(e) => {
+                                                                                const value = e.target.value;
+                                                                                const numericValue = value.replace(/\D/g, '');
+                                                                                setFormSettingsData({ ...formSettingsData, phoneNumber: numericValue });
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
+                                                                    <div className="d-flex p1-bg rounded-8 w-100">
+                                                                        <input
+                                                                            type="text"
+                                                                            name="city"
+                                                                            placeholder="City"
+                                                                            value={formSettingsData.city}
+                                                                            onChange={handleChange(formSettingsData, setFormSettingsData)}
+                                                                        />
+                                                                    </div>
+                                                                    <div className="d-flex align-items-center gap-6 w-100">
+                                                                        <div className="d-flex p1-bg rounded-8 w-50">
+                                                                            <input
+                                                                                type="text"
+                                                                                name="state"
+                                                                                placeholder="State"
+                                                                                value={formSettingsData.state}
+                                                                                onChange={handleChange(formSettingsData, setFormSettingsData)}
+                                                                            />
+                                                                        </div>
+                                                                        <div className="d-flex p1-bg rounded-8 w-50">
+                                                                            <input
+                                                                                type="text"
+                                                                                name="zipCode"
+                                                                                placeholder="Zip code"
+                                                                                value={formSettingsData.zipCode}
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    const numericValue = value.replace(/\D/g, '');
+                                                                                    setFormSettingsData({ ...formSettingsData, zipCode: numericValue });
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">Save</button>
+                                                            </form>
+                                                        </div> */}
+                                                    </div>
+                                                </Tab.Panel>
+                                                <Tab.Panel>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
                                                         <div className="pay_method__paymethod-title mb-5 mb-md-6">
                                                             <h5 className="n10-color">About You</h5>
@@ -192,7 +634,7 @@ export default function Dashboard() {
                                                             <form onSubmit={onSubmit}>
                                                                 <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
-                                                                        <label className="mb-3">First Name (Given Name)</label>
+                                                                        <label className="mb-3">First Name</label>
                                                                         <input
                                                                             className="n11-bg rounded-8"
                                                                             type="text"
@@ -213,7 +655,7 @@ export default function Dashboard() {
                                                                     </div>
                                                                 </div>
                                                                 <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
-                                                                    <div className="w-100">
+                                                                    {/* <div className="w-100">
                                                                         <label className="mb-3">Date Of Birth</label>
                                                                         <div className="d-flex align-items-center gap-6 w-100">
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
@@ -222,7 +664,11 @@ export default function Dashboard() {
                                                                                     name="day"
                                                                                     placeholder="12"
                                                                                     value={formProfileData.day}
-                                                                                    onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                                    onChange={(e) => {
+                                                                                        const value = e.target.value;
+                                                                                        const numericValue = value.replace(/\D/g, '');
+                                                                                        setFormProfileData({ ...formProfileData, day: numericValue });
+                                                                                    }} />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
                                                                                 <input
@@ -230,7 +676,11 @@ export default function Dashboard() {
                                                                                     name="month"
                                                                                     placeholder="09"
                                                                                     value={formProfileData.month}
-                                                                                    onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                                    onChange={(e) => {
+                                                                                        const value = e.target.value;
+                                                                                        const numericValue = value.replace(/\D/g, '');
+                                                                                        setFormProfileData({ ...formProfileData, month: numericValue });
+                                                                                    }} />
                                                                             </div>
                                                                             <div className="d-flex n11-bg rounded-8 w-50">
                                                                                 <input
@@ -238,10 +688,14 @@ export default function Dashboard() {
                                                                                     name="year"
                                                                                     placeholder="1999"
                                                                                     value={formProfileData.year}
-                                                                                    onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                                    onChange={(e) => {
+                                                                                        const value = e.target.value;
+                                                                                        const numericValue = value.replace(/\D/g, '');
+                                                                                        setFormProfileData({ ...formProfileData, year: numericValue });
+                                                                                    }} />
                                                                             </div>
                                                                         </div>
-                                                                    </div>
+                                                                    </div> */}
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Phone Number</label>
                                                                         <div className="d-flex gap-2">
@@ -249,20 +703,28 @@ export default function Dashboard() {
                                                                                 className="w-25 n11-bg rounded-8"
                                                                                 type="text"
                                                                                 name="phoneCode"
-                                                                                placeholder="+962"
+                                                                                placeholder="+91"
                                                                                 value={formProfileData.phoneCode}
-                                                                                onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    const numericValue = value.replace(/\D/g, '');
+                                                                                    setFormProfileData({ ...formProfileData, phoneCode: numericValue });
+                                                                                }} />
                                                                             <input
                                                                                 className="n11-bg rounded-8"
                                                                                 type="text"
                                                                                 name="phoneNumber"
                                                                                 placeholder="XX-XXX-XXXXX"
                                                                                 value={formProfileData.phoneNumber}
-                                                                                onChange={handleChange(formProfileData, setFormProfileData)} />
+                                                                                onChange={(e) => {
+                                                                                    const value = e.target.value;
+                                                                                    const numericValue = value.replace(/\D/g, '');
+                                                                                    setFormProfileData({ ...formProfileData, phoneNumber: numericValue });
+                                                                                }} />
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
+                                                                {/* <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
                                                                     <div className="w-100">
                                                                         <label className="mb-3">Address</label>
                                                                         <input
@@ -314,7 +776,7 @@ export default function Dashboard() {
                                                                             onChange={handleChange(formProfileData, setFormProfileData)}
                                                                         />
                                                                     </div>
-                                                                </div>
+                                                                </div> */}
                                                                 <button className="cmn-btn py-3 px-10" type="submit">
                                                                     Update
                                                                 </button>
@@ -323,244 +785,9 @@ export default function Dashboard() {
                                                     </div>
                                                 </Tab.Panel>
                                                 <Tab.Panel>
-                                                    {/* <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
-                                                        <div
-                                                            className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
-                                                            <i className="ti ti-credit-card fs-four g1-color"></i>
-                                                            <h5 className="n10-color">Payment methods</h5>
-                                                        </div>
-                                                        <div className="pay_method__paymethod-alitem">
-                                                            <div className="row gx-4 gy-4">
-                                                                <DepositCard />
-                                                            </div>
-                                                        </div>
-                                                    </div> */}
-                                                    <DepositAmount />
+                                                    {user && <ComplaintForm userId={user.uid} />}
                                                 </Tab.Panel>
                                                 <Tab.Panel>
-                                                    {/* <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8 mb-8 mb-md-10">
-                                                        <div
-                                                            className="pay_method__paymethod-title d-flex align-items-center gap-3 mb-6 mb-md-8">
-                                                            <i className="ti ti-credit-card fs-four g1-color"></i>
-                                                            <h5 className="n10-color">Payment methods</h5>
-                                                        </div>
-                                                        <div className="pay_method__paymethod-alitem">
-                                                            <div className="row gx-4 gy-4">
-                                                                <DepositCard />
-                                                            </div>
-                                                        </div>
-                                                    </div> */}
-                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
-                                                        <div className="pay_method__paymethod-title mb-5 mb-md-6">
-                                                            <h5 className="n10-color">Choose or enter your withdrawal amount</h5>
-                                                        </div>
-                                                        <div
-                                                            className="pay_method__amount d-flex align-content-center justify-content-between py-3 px-5 px-md-6 mb-6 mb-md-8 flex-wrap gap-3">
-                                                            <div className="pay_method__amount-actual">
-                                                                <span className="fs-seven mb-3">Available balance</span>
-                                                                <div className="d-flex align-items-center gap-3">
-                                                                    <span className="fw-bol">$ {walletBalance}</span>
-                                                                    <i className="ti ti-refresh fs-seven cpoint"></i>
-                                                                </div>
-                                                            </div>
-                                                            <span className="v-line lgx d-none d-sm-block"></span>
-                                                            <div className="pay_method__amount-sports">
-                                                                <span className="fs-seven mb-3">Bonus No Sports</span>
-                                                                <span className="fw-bol d-block">$ 0.00</span>
-                                                            </div>
-                                                            <span className="v-line lgx d-none d-sm-block"></span>
-                                                            <div className="pay_method__amount-sports">
-                                                                <span className="fs-seven mb-3">Bonus in casino</span>
-                                                                <span className="fw-bol d-block">$ 0.00</span>
-                                                            </div>
-                                                        </div>
-                                                        <WithdrawalAmount />
-                                                    </div>
-                                                </Tab.Panel>
-                                                {/* <Tab.Panel>
-                                                    <div className="pay_method__table">
-                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
-                                                            <table className="w-100 text-center p2-bg">
-                                                                <tr>
-                                                                    <th className="text-nowrap">Transaction ID</th>
-                                                                    <th className="text-nowrap">Payment Methods</th>
-                                                                    <th className="text-nowrap">Amount</th>
-                                                                    <th className="text-nowrap">Status</th>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>ZT3FA5D8N7</td>
-                                                                    <td>Ethereum</td>
-                                                                    <td>5,591 USD</td>
-                                                                    <td className="g1-color fw-normal cpoint">Complete</td>
-                                                                </tr>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </Tab.Panel> */}
-                                                <Tab.Panel>
-                                                    <div className="pay_method__tabletwo">
-                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
-                                                            <table className="w-100 text-center p2-bg">
-                                                                <thead>
-                                                                    <tr>
-                                                                        {/* <th className="text-nowrap">Transaction ID</th> */}
-                                                                        <th className="text-nowrap">Date</th>
-                                                                        <th className="text-nowrap">Transaction Type</th>
-                                                                        <th className="text-nowrap">Amount/Balance</th>
-                                                                        <th className="text-nowrap">Status</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {balanceHistory.map((entry) => (
-                                                                        <tr key={entry.id}>
-                                                                            {/* <td className="text-nowrap">{entry.id}</td> */}
-                                                                            <td className="text-nowrap">{new Date(entry.timestamp.seconds * 1000).toLocaleString()}</td>
-                                                                            <td className="text-nowrap">{entry.type}</td>
-                                                                            <td className="text-nowrap">{entry.amount}</td>
-                                                                            <td className={`${entry.status === 'Complete' ? 'g1-color' : 'r1-color'} fw-normal cpoint text-nowrap`}>
-                                                                                {entry.status}
-                                                                            </td>
-                                                                        </tr>
-                                                                    ))}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </Tab.Panel>
-
-
-                                                <Tab.Panel >
-                                                    <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
-                                                        <div className="pay_method__paymethod-title mb-5 mb-md-6">
-                                                            <h5 className="n10-color">Enter your payment details</h5>
-                                                        </div>
-                                                        <div className="pay_method__formarea">
-                                                            <form onSubmit={onSettingsSubmit}>
-                                                                <div className="d-flex align-items-center flex-wrap flex-md-nowrap gap-5 gap-md-6 mb-5">
-                                                                    <div className="d-flex w-100 p1-bg ps-3 rounded-8">
-                                                                        <div className="d-flex align-items-center w-100">
-                                                                            <i className="ti ti-credit-card fs-five"></i>
-                                                                            <input
-                                                                                type="text"
-                                                                                id="card_number2"
-                                                                                name="cardNumber"
-                                                                                placeholder="Card number"
-                                                                                value={formSettingsData.cardNumber}
-                                                                                onChange={handleChange(formSettingsData, setFormSettingsData)}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="d-flex align-items-center justify-content-end">
-                                                                            <input
-                                                                                className="w-75"
-                                                                                type="text"
-                                                                                id="expiration2"
-                                                                                name="expiration"
-                                                                                placeholder="MM/YY CVC"
-                                                                                value={formSettingsData.expiration}
-                                                                                onChange={handleChange(formSettingsData, setFormSettingsData)}
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="d-flex w-100 p1-bg rounded-8">
-                                                                        <input
-                                                                            type="text"
-                                                                            name="streetAddress"
-                                                                            placeholder="Street address"
-                                                                            value={formSettingsData.streetAddress}
-                                                                            onChange={handleChange(formSettingsData, setFormSettingsData)}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                                <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
-                                                                    <div className="d-flex w-100 p1-bg rounded-8">
-                                                                        <input
-                                                                            type="text"
-                                                                            name="aptUnit"
-                                                                            placeholder="Apt, unit, suite, etc. (optional)"
-                                                                            value={formSettingsData.aptUnit}
-                                                                            onChange={handleChange(formSettingsData, setFormSettingsData)}
-                                                                        />
-                                                                    </div>
-                                                                    <div className="d-flex w-100 p1-bg rounded-8">
-                                                                        <input
-                                                                            type="text"
-                                                                            name="phoneNumber"
-                                                                            placeholder="(+33)7 35 55 21 02"
-                                                                            value={formSettingsData.phoneNumber}
-                                                                            onChange={handleChange(formSettingsData, setFormSettingsData)}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                                <div className="d-flex align-items-center gap-5 gap-md-6 mb-5 flex-wrap flex-md-nowrap">
-                                                                    <div className="d-flex p1-bg rounded-8 w-100">
-                                                                        <input
-                                                                            type="text"
-                                                                            name="city"
-                                                                            placeholder="City"
-                                                                            value={formSettingsData.city}
-                                                                            onChange={handleChange(formSettingsData, setFormSettingsData)}
-                                                                        />
-                                                                    </div>
-                                                                    <div className="d-flex align-items-center gap-6 w-100">
-                                                                        <div className="d-flex p1-bg rounded-8 w-50">
-                                                                            <input
-                                                                                type="text"
-                                                                                name="state"
-                                                                                placeholder="State"
-                                                                                value={formSettingsData.state}
-                                                                                onChange={handleChange(formSettingsData, setFormSettingsData)}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="d-flex p1-bg rounded-8 w-50">
-                                                                            <input
-                                                                                type="text"
-                                                                                name="zipCode"
-                                                                                placeholder="Zip code"
-                                                                                value={formSettingsData.zipCode}
-                                                                                onChange={handleChange(formSettingsData, setFormSettingsData)}
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                {/* <div className="d-flex align-items-center justify-content-between mb-7 mb-md-10">
-                                                                    <span>Total</span>
-                                                                    <span>$3,000</span>
-                                                                </div>  */}
-                                                                <button type="submit" className="py-4 px-5 n11-bg rounded-2 w-100">Save</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </Tab.Panel>
-                                                <Tab.Panel>
-                                                    <div className="pay_method__tabletwo">
-                                                        <div style={{ overflowX: 'auto' }} className="pay_method__table-scrollbar">
-                                                            <table className="w-100 text-center p2-bg">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Match</th>
-                                                                        <th>Your Team</th>
-                                                                        <th>Odds</th>
-                                                                        <th>Bet Amount</th>
-                                                                        <th>Status</th>
-                                                                        <th>Bet ID</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {userBets.map((bet) => (
-                                                                        <tr key={bet.id}>
-                                                                            <td>{bet.team1} Vs {bet.team2}</td>
-                                                                            <td>{bet.selectedTeam}</td>
-                                                                            <td>{bet.odds}</td>
-                                                                            <td>{bet.betAmount}</td>
-                                                                            <td>{bet.status}</td>
-                                                                            <td>{bet.id}</td>
-                                                                        </tr>
-                                                                    ))}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
                                                 </Tab.Panel>
                                                 {/* <Tab.Panel>
                                                     <div className="pay_method__paymethod p-4 p-lg-6 p2-bg rounded-8">
@@ -660,8 +887,8 @@ export default function Dashboard() {
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </div >
+            </section >
         </>
     )
 }

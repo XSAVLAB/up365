@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { soccerUpComing } from "@/public/data/tabThree";
+import { footballUpComing } from "@/public/data/tabThree";
 
 export default function FifaVoltaLive() {
     return (
@@ -16,7 +16,7 @@ export default function FifaVoltaLive() {
                                         <h3>Upcoming Events</h3>
                                     </div>
                                     <div className="top_matches__content">
-                                        {soccerUpComing.map(
+                                        {footballUpComing.map(
                                             ({
                                                 id,
                                                 floorball,

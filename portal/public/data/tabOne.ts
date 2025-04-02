@@ -1,7 +1,7 @@
 export const tabOne = [
     {
-        imgSrc: "/images/icon/soccer-icon.png",
-        buttonName: "Soccer"
+        imgSrc: "/images/icon/football-icon.png",
+        buttonName: "Football"
     },
     {
         imgSrc: "/images/icon/tennis.png",
@@ -222,10 +222,10 @@ export const basketballMatch = [
   
 ];
 
-export const soccerMatch = [
+export const footballMatch = [
     {
       id: "1",
-      football: "/images/icon/floorball.png",
+      football1: "/images/icon/floorball.png",
       titletwo: "Turkiye. Super Limelight",
       times: "Today, 23:00",
       updown: "/images/icon/updwon.png",
@@ -246,7 +246,7 @@ export const soccerMatch = [
   },
   {
     id: "2",
-    football: "/images/icon/floorball.png",
+    football1: "/images/icon/floorball.png",
     titletwo: "Turkiye. Super Limelight",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -267,7 +267,7 @@ export const soccerMatch = [
   },
   {
     id: "3",
-    football: "/images/icon/floorball.png",
+    football1: "/images/icon/floorball.png",
     titletwo: "Turkiye. Super Limelight",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -288,7 +288,7 @@ export const soccerMatch = [
   },
   {
     id: "4",
-    football: "/images/icon/floorball.png",
+    football1: "/images/icon/floorball.png",
     titletwo: "Turkiye. Super Limelight",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -309,7 +309,7 @@ export const soccerMatch = [
   },
   {
     id: "5",
-    football: "/images/icon/floorball.png",
+    football1: "/images/icon/floorball.png",
     titletwo: "Turkiye. Super Limelight",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -330,7 +330,7 @@ export const soccerMatch = [
   },
   {
     id: "6",
-    football: "/images/icon/floorball.png",
+    football1: "/images/icon/floorball.png",
     titletwo: "Turkiye. Super Limelight",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
@@ -351,7 +351,7 @@ export const soccerMatch = [
 },
 {
   id: "7",
-  football: "/images/icon/floorball.png",
+  football1: "/images/icon/floorball.png",
   titletwo: "Turkiye. Super Limelight",
   times: "Today, 23:00",
   updown: "/images/icon/updwon.png",
@@ -372,7 +372,7 @@ export const soccerMatch = [
 },
 {
   id: "8",
-  football: "/images/icon/floorball.png",
+  football1: "/images/icon/floorball.png",
   titletwo: "Turkiye. Super Limelight",
   times: "Today, 23:00",
   updown: "/images/icon/updwon.png",
@@ -393,7 +393,7 @@ export const soccerMatch = [
 },
 {
   id: "9",
-  football: "/images/icon/floorball.png",
+  football1: "/images/icon/floorball.png",
   titletwo: "Turkiye. Super Limelight",
   times: "Today, 23:00",
   updown: "/images/icon/updwon.png",
@@ -414,7 +414,7 @@ export const soccerMatch = [
 },
 {
   id: "10",
-  football: "/images/icon/floorball.png",
+  football1: "/images/icon/floorball.png",
   titletwo: "Turkiye. Super Limelight",
   times: "Today, 23:00",
   updown: "/images/icon/updwon.png",

@@ -1,4 +1,4 @@
-import { IconBellRinging, IconCreditCard, IconCreditCardOff, IconCricket, IconHistory, IconLogout, IconSettings, IconUser, IconUserEdit, IconWallet } from "@tabler/icons-react";
+import { IconBarcode, IconBellRinging, IconCards, IconCreditCard, IconCreditCardOff, IconCricket, IconDatabase, IconDiscount2, IconHelp, IconHistory, IconLogout, IconPlane, IconSettings, IconStatusChange, IconTextCaption, IconUser, IconUserEdit, IconWallet } from "@tabler/icons-react";
 import React from "react";
 
 export const dashboardTabs = [
@@ -32,8 +32,44 @@ export const dashboardTabs = [
   },
   {
     id: 6,
-    tabname: "Logout",
-    icon: <IconLogout
+    tabname: "Complaints",
+    icon: <IconHelp
+      className="ti ti-user fs-five n5-color" />,
+  },
+  {
+    id: 7,
+    tabname: "Uploads",
+    icon: <IconDatabase
+      className="ti ti-settings fs-five n5-color" />,
+  },
+  {
+    id: 8,
+    tabname: "Payment Gateway",
+    icon: <IconBarcode
+      className="ti ti-settings fs-five n5-color" />,
+  },
+  {
+    id: 9,
+    tabname: "Status",
+    icon: <IconStatusChange
+      className="ti ti-settings fs-five n5-color" />,
+  },
+  {
+    id: 10,
+    tabname: "Cricket",
+    icon: <IconCricket
+      className="ti ti-settings fs-five n5-color" />,
+  },
+  {
+    id: 11,
+    tabname: "Settings",
+    icon: <IconSettings
+      className="ti ti-settings fs-five n5-color" />,
+  },
+  {
+    id: 12,
+    tabname: "Aviator",
+    icon: <IconPlane
       className="ti ti-settings fs-five n5-color" />,
   },
 

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { liveSoccerMatch } from "@/public/data/tabTwo";
+import { liveFootballMatch } from "@/public/data/tabTwo";
 
 export default function BasketballLive() {
     return (

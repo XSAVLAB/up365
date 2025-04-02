@@ -24,7 +24,13 @@ async function fetchCricketData() {
 // Group cricket matches by series
 function groupMatchesBySeries(matches) {
   return matches.reduce((acc, match) => {
-    const seriesName = match.series;
+    const seriesName = match.series
+      .replace(/[^\w\s]/gi, "")
+      .replace(/\s+/g, "_"); // Replace invalid characters
+    if (!seriesName) {
+      console.error("Invalid series name:", match.series);
+      return acc;
+    }
     if (!acc[seriesName]) {
       acc[seriesName] = [];
     }
@@ -45,10 +51,10 @@ async function storeCricketMatchesInFirestore(seriesMatches) {
 }
 
 // Fetch FIFA World Cup Qualifying data from the API
-async function fetchFootballData() {
+async function fetchFootball1Data() {
   const API_KEY = "55e69f1de8854bf3990a08e105adb700";
   const competitionId = 2000; // Replace with actual competition ID for FIFA World Cup Qualifying
-  const url = `https://api.football-data.org/v4/competitions/${competitionId}/matches`;
+  const url = `https://api.football1-data.org/v4/competitions/${competitionId}/matches`;
   try {
     const response = await axios.get(url, {
       headers: { "X-Auth-Token": API_KEY },
@@ -60,16 +66,16 @@ async function fetchFootballData() {
   }
 }
 
-// Store football matches in Firestore
-async function storeFootballMatchesInFirestore(matches) {
+// Store football1 matches in Firestore
+async function storeFootball1MatchesInFirestore(matches) {
   const batch = db.batch();
-  const docRef = db.collection("footballData").doc("FIFAWorldCupQualifying");
+  const docRef = db.collection("football1Data").doc("FIFAWorldCupQualifying");
   batch.set(docRef, { matches }, { merge: true });
   await batch.commit();
-  console.log("Football matches stored in Firestore successfully");
+  console.log("Football1 matches stored in Firestore successfully");
 }
 
-// Main function to update both cricket and football data
+// Main function to update both cricket and football1 data
 async function updateMatches() {
   try {
     // Update cricket matches
@@ -77,9 +83,9 @@ async function updateMatches() {
     const seriesMatches = groupMatchesBySeries(cricketMatches);
     await storeCricketMatchesInFirestore(seriesMatches);
 
-    // Update football matches
-    const footballMatches = await fetchFootballData();
-    await storeFootballMatchesInFirestore(footballMatches);
+    // Update football1 matches
+    const football1Matches = await fetchFootball1Data();
+    await storeFootball1MatchesInFirestore(football1Matches);
   } catch (error) {
     console.error("Error updating matches:", error);
   }

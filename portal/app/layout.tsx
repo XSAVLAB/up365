@@ -1,15 +1,18 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@/public/scss/style.scss";
 import MainFooter from "@/components/Shared/MainFooter";
-import FooterCard from "@/components/Shared/FooterCard";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "UP365 - Sports Betting Platform",
+  manifest: "/manifest.json",
+  title: "Game Of Gem - Sports Betting Platform",
   description: "Made with actualities",
 };
+export const viewport: Viewport = {
+  themeColor: "#000000",
+}
 
 export default function RootLayout({
   children,

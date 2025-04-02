@@ -32,34 +32,60 @@ export default function TopCricket() {
 
   const sortMatches = (matches: any[]) => {
     const now = new Date().getTime();
-    return matches.sort((a: any, b: any) => {
+
+    // Separate matches with odds and those without odds
+    const matchesWithOdds = matches.filter((match: any) => match.bookmakers && match.bookmakers.length > 0);
+    const matchesWithoutOdds = matches.filter((match: any) => !match.bookmakers || match.bookmakers.length === 0);
+
+    // Sort matches with odds by date and time
+    matchesWithOdds.sort((a: any, b: any) => {
       const dateA = new Date(a.dateTimeGMT).getTime();
       const dateB = new Date(b.dateTimeGMT).getTime();
-      if (dateA > now && dateB > now) {
-        return dateA - dateB;
-      } else if (dateA < now && dateB < now) {
-        return dateB - dateA;
-      } else if (dateA > now) {
-        return -1;
-      } else {
-        return 1;
-      }
+      return dateA - dateB;
     });
+
+    // Sort matches without odds by date and time
+    matchesWithoutOdds.sort((a: any, b: any) => {
+      const dateA = new Date(a.dateTimeGMT).getTime();
+      const dateB = new Date(b.dateTimeGMT).getTime();
+      return dateA - dateB;
+    });
+
+    // Combine the sorted matches with odds at the top
+    return [...matchesWithOdds, ...matchesWithoutOdds];
   };
 
-  const handleMatchClick = (seriesName: any, dateTime: any, team1: any, team2: any, team1Img: any, team2Img: any) => {
-    const match = {
+
+  const handleMatchClick = (match: any) => {
+    // Extract the first four bookmakers
+    const selectedBookmakers = match.bookmakers.slice(0, 4);
+
+    // Extract only the prices and names from each of the first four bookmakers' outcomes
+    const bookmakersOutcomes = selectedBookmakers.map((bookmaker: any) => ({
+      title: bookmaker.title,
+      outcomes: bookmaker.outcomes.map((outcome: any) => ({
+        price: outcome.price,
+        name: outcome.name,
+      })),
+    }));
+
+    // Include bookmakers' outcomes along with the match details
+    const selectedMatchData = {
       matchType: "cricket",
-      seriesName,
-      dateTime,
-      team1,
-      team2,
-      team1Img,
-      team2Img
+      seriesName: match.series,
+      dateTime: match.dateTimeGMT,
+      team1: match.t1,
+      team2: match.t2,
+      team1Img: match.t1img,
+      team2Img: match.t2img,
+      bookmakers: bookmakersOutcomes, // Pass the selected bookmakers' outcomes (price and name only)
     };
-    setSelectedMatch(match);
+
+    setSelectedMatch(selectedMatchData);
     setIsModalOpen(true);
   };
+
+
 
   return (
     <section className="top_matches">
@@ -78,7 +104,7 @@ export default function TopCricket() {
                       <div
                         key={match.id}
                         className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4"
-                        onClick={() => handleMatchClick(match.series, match.dateTimeGMT, match.t1, match.t2, match.t1img, match.t2img)}
+                        onClick={() => handleMatchClick(match)} // Pass entire match object
                       >
                         <div className="row gx-0 gy-xl-0 gy-7">
                           <div className="col-xl-5 col-xxl-4">
