@@ -617,6 +617,8 @@ async function fetchAndStoreIplCricketData() {
 
     const batch = db.batch();
     const today = format(new Date(), "yyyy-MM-dd");
+    const tomorrow = format(addDays(new Date(), 1), "yyyy-MM-dd");
+    const dayAfterTomorrow = format(addDays(new Date(), 2), "yyyy-MM-dd");
     activeMatchIds.clear();
 
     for (const match of matches) {
@@ -628,7 +630,7 @@ async function fetchAndStoreIplCricketData() {
           "yyyy-MM-dd",
       );
 
-      const isMatchToday = matchDate === today;
+      const isActiveMatch = [today, tomorrow, dayAfterTomorrow].includes(matchDate);
 
       batch.set(matchRef, {
         title: match.title,
@@ -641,10 +643,10 @@ async function fetchAndStoreIplCricketData() {
         result: match.result,
         date_start: match.date_start_ist,
         date_end: match.date_end_ist,
-        active_odds: isMatchToday ? "true" : "false",
+        active_odds: isActiveMatch ? "true" : "false",
       });
 
-      if (isMatchToday) {
+      if (isActiveMatch) {
         activeMatchIds.add(match.match_id);
       }
     }

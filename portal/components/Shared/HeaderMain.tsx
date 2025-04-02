@@ -55,7 +55,7 @@ export default function HeaderTwo() {
                 setIsMiddleExpanded(false);
             }
         };
-        document.body.addEventListener("click", handleClickOutsideMiddle);
+        // document.body.addEventListener("click", handleClickOutsideMiddle);
         return () => {
             document.body.removeEventListener("click", handleClickOutsideMiddle);
         };
