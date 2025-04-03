@@ -1,7 +1,7 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const axios = require("axios");
-const {format, parse} = require("date-fns");
+const {format, parse, addDays} = require("date-fns");
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -630,7 +630,8 @@ async function fetchAndStoreIplCricketData() {
           "yyyy-MM-dd",
       );
 
-      const isActiveMatch = [today, tomorrow, dayAfterTomorrow].includes(matchDate);
+      const isActiveMatch = [today, tomorrow, dayAfterTomorrow]
+          .includes(matchDate);
 
       batch.set(matchRef, {
         title: match.title,

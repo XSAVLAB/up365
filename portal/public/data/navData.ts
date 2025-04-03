@@ -263,11 +263,11 @@ export const naviTemData = [
     linkText: "Cricket",
     href: "/cricket",
   },
-  {
-    id: 110341,
-    linkText: "Matka",
-    href: "/matka",
-  },
+  // {
+  //   id: 110341,
+  //   linkText: "Matka",
+  //   href: "/matka",
+  // },
   // {
   //   id: 151272,
   //   linkText: "Football",

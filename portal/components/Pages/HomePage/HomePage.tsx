@@ -11,6 +11,7 @@ import { fetchDepositCredited, fetchOfferData, fetchProfileData, updateSuccessDe
 import { doc, setDoc } from 'firebase/firestore';
 import Confetti from 'react-confetti';
 import SectionCards from './SectionCards';
+import router from 'next/navigation';
 
 
 const HomePage: React.FC = () => {
@@ -22,6 +23,7 @@ const HomePage: React.FC = () => {
     const [showBonus, setShowBonus] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
     const [showDepositSuccess, setShowDepositSuccess] = useState(false);
+    const router = useRouter();
 
 
     // Fetch current user using onAuthStateChanged
@@ -90,14 +92,15 @@ const HomePage: React.FC = () => {
     }, [user]);
 
 
-    const handleDeposit = async () => {
+    const handleDeposit = async (event: React.MouseEvent<HTMLAnchorElement>) => {
+        event.preventDefault();
         setShowBonus(false);
 
         if (user) {
             try {
                 const userDocRef = doc(db, 'users', user.uid);
-                console.log("has seen bonus?: " + user.hasSeenBonus);
                 await setDoc(userDocRef, { hasSeenBonus: true }, { merge: true });
+                router.push('/dashboard');
             } catch (error) {
                 console.error('Error updating profile data: ', error);
             }
