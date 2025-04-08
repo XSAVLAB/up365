@@ -150,7 +150,7 @@ export default function HeaderTwo() {
                             <div className="wallet-balance text-end d-none d-sm-block">
                                 <span className="fs-seven mb-1 d-block">Your balance</span>
                             </div>
-                            <span className="fw-bold d-block">Coins {walletBalance}</span>
+                            <span className="fw-bold d-block">Coins {parseFloat(walletBalance || "0").toFixed(2)}</span>
                             {/* <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative" onClick={handleWhatsAppClick}>
                                 <FaWhatsapp height={24} width={24} className="ti ti-whatsapp fs-four" />
                             </button> */}

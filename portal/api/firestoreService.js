@@ -470,6 +470,29 @@ export const submitLotteryBet = async (
     throw new Error("Bet placement failed");
   }
 };
+export const submitMatkaLottery = async (
+  userID,
+  betNumber,
+  betAmount,
+  gameType,
+  settled
+) => {
+  try {
+    const betData = {
+      userID,
+      betNumber,
+      betAmount,
+      gameType,
+      settled,
+      timestamp: formatTimestamp(),
+    };
+    await addDoc(collection(db, "matkaBets"), betData);
+    return { status: "Bet Placed" };
+  } catch (error) {
+    console.error("Error placing bet: ", error);
+    throw new Error("Bet placement failed");
+  }
+};
 
 // Fetch and listen to Lottery Bets
 export const fetchLotteryBets = (userId, gameType, onUpdate) => {

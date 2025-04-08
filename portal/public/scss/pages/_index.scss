@@ -84,10 +84,10 @@
         background-size: cover;
         background-attachment: fixed;
         @include maxQuery(991) {
-            margin: 0 -10px 0 12px;
+            margin: 40px -10px 0 12px;
         }
         @include maxQuery(480) {
-            margin: 0 -12px 0 10px;
+            margin: 40px -12px 0 10px;
         }
     }
     &__content {

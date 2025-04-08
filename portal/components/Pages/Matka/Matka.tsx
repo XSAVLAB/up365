@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { fetchUserBalance, submitLotteryBet, updateUserWallet, fetchProfileData } from '../../../api/firestoreService';
+import { fetchUserBalance, submitMatkaLottery, updateUserWallet, fetchProfileData } from '../../../api/firestoreService';
 
 import './styles.css';
 
@@ -39,6 +39,7 @@ const Pool = ({ selectedPool }: { selectedPool: string }) => {
 
     const handleSubmitBet = async (e: React.FormEvent) => {
         e.preventDefault();
+        setBetAmount(Number(selectedPool));
         if (betAmount > Number(walletBalance) || Number(walletBalance) === 0) {
             alert('Insufficient Wallet Balance.\nPlease Recharge Your Wallet...');
             return;
@@ -46,12 +47,12 @@ const Pool = ({ selectedPool }: { selectedPool: string }) => {
         if (number !== null && betAmount >= 100) {
             setBetCount((prevCount) => prevCount + 1);
             try {
-                const response = await submitLotteryBet(user?.uid, number, betAmount, 'Single Digit Lottery', null, false);
+                const response = await submitMatkaLottery(user?.uid, number, betAmount, 'Matka Lottery', false);
                 if (response.status === "Bet Placed") {
                     const newBalance = Number(walletBalance) - betAmount;
                     updateUserWallet(user?.uid, newBalance);
                     setWalletBalance(String(newBalance));
-                    alert(`Bet Submitted.\nCheck the Active Bets Table.`);
+                    alert(`Bet Submitted.`);
                 }
             } catch (error) {
                 alert('Failed to place bet. Please try again.');
@@ -76,14 +77,7 @@ const Pool = ({ selectedPool }: { selectedPool: string }) => {
                     </button>
                 ))}
             </div>
-            <input
-                type="number"
-                placeholder="Enter Bet Amount"
-                value={betAmount}
-                onChange={(e) => setBetAmount(Number(e.target.value))}
-                min="100"
-                className="bet-amount-input"
-            />
+            <p className="bet-amount-display">Bet Amount: ₹{selectedPool}</p>
             <button className="submit-bet" onClick={handleSubmitBet}>Place Bet</button>
             {message && <p className="message">{message}</p>}
         </div>
@@ -103,7 +97,7 @@ const Matka = () => {
                         <div className="pool">
                             {[100, 250, 500, 1000].map((amount) => (
                                 <button key={amount} className="entry-fee" onClick={() => setSelectedPool(amount.toString())}>
-                                    ₹ {amount}
+                                    ₹  {amount}
                                 </button>
                             ))}
                         </div>

@@ -1,7 +1,7 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const axios = require("axios");
-const {format, parse} = require("date-fns");
+const {format, parse, addDays} = require("date-fns");
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -630,7 +630,8 @@ async function fetchAndStoreIplCricketData() {
           "yyyy-MM-dd",
       );
 
-      const isActiveMatch = [today, tomorrow, dayAfterTomorrow].includes(matchDate);
+      const isActiveMatch = [today, tomorrow, dayAfterTomorrow]
+          .includes(matchDate);
 
       batch.set(matchRef, {
         title: match.title,
@@ -835,3 +836,59 @@ exports.settleBets = functions.pubsub
       console.log("Bet settlement function completed.");
       return null;
     });
+
+// Settle Matka Lottery Bets
+exports.settleMatkaLotteryBets = functions.pubsub
+    .schedule("every 3 minutes")
+    .onRun(async (context) => {
+      await settleMatkaLotteryBets();
+    });
+
+const settleMatkaLotteryBets = async () => {
+  try {
+    const minNumber = 0;
+    const maxNumber = 9;
+    const betAmounts = [100, 250, 500, 1000];
+
+    for (const amount of betAmounts) {
+      const betsSnapshot = await db
+          .collection("matkaBets")
+          .where("settled", "==", false)
+          .where("betAmount", "==", amount)
+          .get();
+
+      console.log(betsSnapshot);
+      if (betsSnapshot.empty) continue;
+
+      const bets = [];
+      let totalBetAmount = 0;
+
+      betsSnapshot.forEach((betDoc) => {
+        const betData = betDoc.data();
+        bets.push({id: betDoc.id, ...betData});
+        totalBetAmount += betData.betAmount;
+      });
+      console.log(bets);
+      const winningNumber = Math.floor(Math
+          .random() * (maxNumber - minNumber + 1)) + minNumber;
+      console.log(`Winning number: ${winningNumber}`);
+      const winners = bets.filter((bet) => bet.betNumber === winningNumber);
+      const rewardPerWinner = winners.length > 0 ?
+      (totalBetAmount * 0.8) / winners.length : 0;
+      console.log(`Reward per winner: ${rewardPerWinner}`);
+      for (const bet of bets) {
+        const userRef = db.collection("users").doc(bet.userID);
+        const userDoc = await userRef.get();
+        const userWallet = userDoc.data().wallet;
+
+        if (bet.betNumber === winningNumber) {
+          const updatedWallet = (parseFloat(userWallet) + rewardPerWinner)
+              .toFixed(2).toString();
+          await userRef.update({wallet: updatedWallet});
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error settling Matka lottery bets: ", error);
+  }
+};

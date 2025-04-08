@@ -15,9 +15,9 @@ const SectionCards = () => {
         <div className="game-cards-container">
             {games.map((game, index) => (
                 <div className="section-card" key={index} style={{ backgroundImage: `url(${game.image})` }} onClick={() => handlePlayClick(game.playUrl)}>
-                    {/* <div className="section-card-content" >
+                    <div className="section-card-content" >
                         <h3>{game.name}</h3>
-                    </div> */}
+                    </div>
                 </div>
             ))}
         </div>
